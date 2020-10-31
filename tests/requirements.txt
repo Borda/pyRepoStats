@@ -1,0 +1,8 @@
+nose>=1.0
+coverage
+codecov
+pytest>4.0
+pytest-cov
+flake8
+check-manifest
+codacy-coverage
