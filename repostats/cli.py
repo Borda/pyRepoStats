@@ -36,8 +36,12 @@ def main(github_repo: Optional[str], output_path: str, auth_token: Optional[str]
         exit('No repository specified.')
 
 
-if __name__ == '__main__':
+def cli_main():
     logging.basicConfig(level=logging.INFO)
     logging.info('running...')
     main(**get_arguments())
     logging.info('Done :]')
+
+
+if __name__ == '__main__':
+    cli_main()

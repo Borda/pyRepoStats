@@ -30,24 +30,25 @@ def fetch_all_issues(gh_repo: str, auth_header: dict) -> list:
     """Fetch all issues from a given repo using listing per pages."""
     items, min_idx, page = [], float('inf'), 1
     # get items
-    pbar = tqdm(desc='Requesting issue/PR overview')
-    while min_idx > 1:
-        req = requests.get(
-            f"{URL_GITHUB_API}/{gh_repo}/issues"
-            f"?state=all&page={page}&per_page=100",
-            headers=auth_header,
-        )
-        if req.status_code == 403:
-            pbar.close()
-            exit(API_LIMIT_MESSAGE)
-        items += json.loads(req.content)
-        if page == 1:
-            min_idx = items[0]['number']
-            pbar.reset(total=min_idx)
-        pbar.update(min_idx - items[-1]['number'])
-        min_idx = items[-1]['number']
-        page += 1
-    pbar.close()
+    with tqdm(desc='Requesting issue/PR overview') as pbar:
+        while min_idx > 1:
+            req = requests.get(
+                f"{URL_GITHUB_API}/{gh_repo}/issues"
+                f"?state=all&page={page}&per_page=100",
+                headers=auth_header,
+            )
+            if req.status_code == 403:
+                exit(API_LIMIT_MESSAGE)
+            items += json.loads(req.content)
+            if page == 1:
+                # in case there is no issue/pr
+                if sum([isinstance(i, dict) for i in items]) == 0:
+                    return []
+                min_idx = items[0]['number']
+                pbar.reset(total=min_idx)
+            pbar.update(min_idx - items[-1]['number'])
+            min_idx = items[-1]['number']
+            page += 1
     return items
 
 
@@ -149,7 +150,8 @@ def github_main(gh_repo: Optional[str], output_path: str, auth_token: Optional[s
 
         save_data(data, path_dir=output_path, repo_name=gh_repo, host='github')
 
-    assert data['issues'], 'nothing to work on...'
+    if not data['issues']:
+        logging.warning('nothing to work on...')
 
     # TODO: stats
 

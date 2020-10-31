@@ -34,7 +34,7 @@ def load_data(path_dir: str, repo_name: str, host: str = '') -> dict:
         with open(cache_path, 'r') as fp:
             data = json.load(fp)
     else:
-        data = {}
+        data = {'issues': {}}
     return data
 
 
