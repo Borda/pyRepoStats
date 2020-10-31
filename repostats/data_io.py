@@ -5,6 +5,10 @@ Copyright (C) 2020-2020 Jiri Borovec <...>
 import json
 import os
 
+import pandas as pd
+
+from repostats import __version__
+
 JSON_CACHE_NAME = 'dump-%s_%s.json'
 
 
@@ -23,8 +27,10 @@ def load_data(path_dir: str, repo_name: str, host: str = '') -> dict:
 
     >>> data = {'item': 123}
     >>> pj = save_data(data, path_dir='.', repo_name='my/repo')
-    >>> load_data(path_dir='.', repo_name='my/repo')
-    {'item': 123}
+    >>> data2 = load_data(path_dir='.', repo_name='my/repo')
+    >>> from pprint import pprint
+    >>> pprint(data2)  # doctest: +ELLIPSIS
+    {'item': 123, 'updated_at': '...', 'version': '...'}
     >>> os.remove(pj)
     """
     assert os.path.isdir(path_dir)
@@ -34,7 +40,7 @@ def load_data(path_dir: str, repo_name: str, host: str = '') -> dict:
         with open(cache_path, 'r') as fp:
             data = json.load(fp)
     else:
-        data = {'issues': {}}
+        data = {'raw': {}}
     return data
 
 
@@ -49,6 +55,11 @@ def save_data(data: dict, path_dir: str, repo_name: str, host: str = '') -> str:
     """
     assert os.path.isdir(path_dir)
     cache_path = os.path.join(path_dir, _make_json_name(repo_name, host))
+
+    data.update({
+        'version': __version__,
+        'updated_at': str(pd.datetime.today()),
+    })
 
     with open(cache_path, 'w') as fp:
         json.dump(data, fp, ensure_ascii=False)

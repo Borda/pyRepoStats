@@ -5,10 +5,11 @@ Copyright (C) 2020-2020 Jiri Borovec <...>
 import logging
 import os
 from argparse import ArgumentParser
-from typing import Optional
 from pprint import pformat
+from typing import Optional
 
 from repostats.github import github_main
+from repostats.stats import compute_users_stat
 
 PATH_ROOT = os.path.dirname(os.path.dirname(__file__))
 
@@ -31,9 +32,12 @@ def get_arguments():
 def main(github_repo: Optional[str], output_path: str, auth_token: Optional[str] = None, offline: bool = False):
     """Main entry point."""
     if github_repo:
-        github_main(github_repo, output_path=output_path, auth_token=auth_token, offline=offline)
+        data = github_main(github_repo, output_path=output_path, auth_token=auth_token, offline=offline)
     else:
         exit('No repository specified.')
+
+    # sample for GH - '[%(user)s](https://github.com/%(user)s)'
+    compute_users_stat(data['items'], show=True)
 
 
 def cli_main():

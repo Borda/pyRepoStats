@@ -2,19 +2,18 @@
 Copyright (C) 2020-2020 Jiri Borovec <...>
 """
 
+import json
+import logging
 import warnings
 from functools import partial
 from multiprocessing import Pool
 from typing import Optional, Tuple
 
-import requests
-import logging
-import json
-
 import pandas as pd
+import requests
 from tqdm import tqdm
 
-from repostats.data import load_data, save_data
+from repostats.data_io import load_data, save_data
 
 URL_GITHUB_API = 'https://api.github.com/repos'
 JSON_CACHE_NAME = 'dump-github_%s.json'
@@ -94,7 +93,7 @@ def update_detail(idx_item: Tuple[int, dict], auth_header: dict) -> tuple:
     )
     # this request is need only for PR, can be skipped for issues
     if 'pull' in item['html_url'].split('/'):
-        item['state'] = _request_status(item['events_url'], auth_header)
+        detail['state'] = _request_status(item['events_url'], auth_header)
     if any(dl is None for dl in detail.values()):
         return idx, None
     # update info
@@ -137,6 +136,18 @@ def update_details(issues: dict, issues_new: dict, auth_header: dict) -> dict:
     return issues
 
 
+def convert_items(issues: list) -> list:
+    """Aggregate issue/PR affiliations."""
+    items = [dict(
+        type='PR' if 'pull' in issue['html_url'] else 'issue',
+        state=issue['state'],
+        author=issue['user']['login'],
+        commenters=[com['user']['login'] for com in issue['comments']
+                    if '[bot]' not in com['user']['login']],
+    ) for issue in issues]
+    return items
+
+
 def github_main(gh_repo: Optional[str], output_path: str, auth_token: Optional[str] = None, offline: bool = False):
     auth_header = {'Authorization': f'token {auth_token}'} if auth_token else {}
 
@@ -146,13 +157,12 @@ def github_main(gh_repo: Optional[str], output_path: str, auth_token: Optional[s
         issues_new = fetch_all_issues(gh_repo, auth_header)
         issues_new = {str(i['number']): i for i in issues_new}
 
-        data['issues'] = update_details(data['issues'], issues_new, auth_header)
+        data['raw'] = update_details(data['raw'], issues_new, auth_header)
+        data['items'] = convert_items(data['raw'].values())
 
         save_data(data, path_dir=output_path, repo_name=gh_repo, host='github')
 
-    if not data['issues']:
+    if not data['items']:
         logging.warning('nothing to work on...')
 
-    # TODO: stats
-
-    print('...')
+    return data

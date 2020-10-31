@@ -10,7 +10,7 @@ Copyright (C) 2020-2020 Jiri Borovec <jiri.borovec@fel.cvut.cz>
 
 # Always prefer setuptools over distutils
 from os import path
-from setuptools import setup
+from setuptools import setup, find_packages
 
 import repostats
 
@@ -44,7 +44,7 @@ setup(
     long_description=repostats.__long_doc__,
     long_description_content_type='text/markdown',
 
-    packages=['repostats'],
+    packages=find_packages(exclude=['tests', 'tests/*']),
 
     keywords='repository stats',
     install_requires=load_requirements('requirements.txt'),
