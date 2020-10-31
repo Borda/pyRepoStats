@@ -1,3 +1,7 @@
+"""
+Copyright (C) 2020-2020 Jiri Borovec <...>
+"""
+
 import json
 import os
 
@@ -21,6 +25,7 @@ def load_data(path_dir: str, repo_name: str, host: str = '') -> dict:
     >>> pj = save_data(data, path_dir='.', repo_name='my/repo')
     >>> load_data(path_dir='.', repo_name='my/repo')
     {'item': 123}
+    >>> os.remove(pj)
     """
     assert os.path.isdir(path_dir)
     cache_path = os.path.join(path_dir, _make_json_name(repo_name, host))
