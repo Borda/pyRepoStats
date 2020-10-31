@@ -62,11 +62,11 @@ jobs:
         pip list
       shell: bash
 
-    #- name: Pkg install
-    #  run: |
-    #    check-manifest
-    #    python setup.py check --metadata --strict
-    #    python setup.py install --dry-run --user
+    - name: Pkg install
+      run: |
+        check-manifest
+        python setup.py check --metadata --strict
+        python setup.py install --dry-run
 
     - name: Tests and coverage
       run: |

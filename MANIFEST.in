@@ -1,0 +1,34 @@
+# Manifest syntax https://docs.python.org/2/distutils/sourcedist.html
+graft wheelhouse
+
+recursive-include repostats *.py
+recursive-exclude __pycache__  *.pyc *.pyo *.orig
+
+# Include the README
+include *.md
+
+# Include the license file
+include LICENSE
+
+# Include the visualisations
+recursive-include assets *.jpg
+
+# Exclude Jupyter notebooks
+recursive-exclude notebooks *.ipynb *.txt
+exclude notebooks
+
+# Exclude the documentation files
+recursive-exclude docs *
+exclude docs
+
+# Include the Requirements
+include *.txt
+
+# Exclude build configs
+exclude *.yml
+
+prune .git
+prune .github
+prune notebook*
+prune temp*
+prune test*
