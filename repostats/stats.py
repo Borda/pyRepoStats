@@ -4,16 +4,10 @@ Copyright (C) 2020-2020 Jiri Borovec <...>
 from typing import List
 
 import pandas as pd
-from tabulate import tabulate
 from tqdm import tqdm
 
 
-def compute_users_stat(
-        items: List[dict],
-        show: bool = True,
-        min_count: int = 3,
-        user_template: str = '%(user)s'
-) -> pd.DataFrame:
+def compute_users_stat(items: List[dict]) -> pd.DataFrame:
     """Aggregate issue/PR affiliations and summary counts."""
     df_items = pd.DataFrame(items)
 
@@ -32,10 +26,5 @@ def compute_users_stat(
     df_users = pd.DataFrame(users_stat).set_index(['user'])
     df_users['all opened'] = df_users['opened PRs'] + df_users['opened issues']
     df_users.sort_values(['all opened'], ascending=False, inplace=True)
-    df_users = df_users[['merged PRs', 'commented PRs', 'opened issues', 'commented issues', 'all opened']]
-    df_users.index = df_users.index.map(lambda u: user_template % {'user': u})
-
-    if show:
-        print(tabulate(df_users[df_users['all opened'] >= min_count], tablefmt="pipe", headers="keys"))
 
     return df_users
