@@ -63,41 +63,37 @@ def _request_comments(comments_url: str, auth_header: dict) -> Optional[list]:
     return comments
 
 
-def _request_status(event_url: str, auth_header: dict) -> Optional[str]:
+def _request_detail_pr(url: str, auth_header: dict) -> Optional[str]:
     """Request PR status, in particular we want to distinguish between closed and merged ones."""
+    url = url.replace('issues', 'pulls')
     if API_LIMIT_REACHED:
         return None
-    # https://api.github.com/repos/PyTorchLightning/pytorch-lightning/issues/2154/events
-    req = requests.get(event_url, headers=auth_header)
+    req = requests.get(url, headers=auth_header)
     if req.status_code == 403:
         return None
-    events = [c['event'] for c in json.loads(req.content)]
-    # https://developer.github.com/v3/pulls/#check-if-a-pull-request-has-been-merged
-    if 'merged' in events:
-        state = 'merged'
-    elif 'closed' in events:
-        state = 'closed'
-    else:
-        state = 'open'
-    return state
+    detail = json.loads(req.content)
+    if 'merged_at' in detail:
+        detail['state'] = 'merged'
+    return detail
 
 
 def update_detail(idx_item: Tuple[int, dict], auth_header: dict) -> tuple:
     """Get all needed issue/PR details"""
     idx, item = idx_item
-    detail = dict(
-        # this is just default value
-        state=item['state'],
+    # this request is need only for PR, can be skipped for issues
+    if 'pull' in item['html_url'].split('/'):
+        detail = _request_detail_pr(item['url'], auth_header)
+        if detail is None:
+            return idx, None
+        item.update(detail)
+    extras = dict(
         # pull all comments
         comments=_request_comments(item['comments_url'], auth_header),
     )
-    # this request is need only for PR, can be skipped for issues
-    if 'pull' in item['html_url'].split('/'):
-        detail['state'] = _request_status(item['events_url'], auth_header)
-    if any(dl is None for dl in detail.values()):
+    if any(dl is None for dl in extras.values()):
         return idx, None
     # update info
-    item.update(detail)
+    item.update(extras)
     return idx, item
 
 
