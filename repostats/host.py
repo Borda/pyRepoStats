@@ -26,6 +26,10 @@ class Host:
     NB_PARALLEL_REQUESTS = 7
     #: template name for exporting CSV
     CSV_USER_SUMMARY = '%s_%s_users-summary.csv'
+    #:
+    DATA_KEY_RAW = 'raw'
+    #:
+    DATA_KEY_SIMPLE = 'simple_items'
 
     def __init__(self, repo_name: str, output_path: str, auth_token: Optional[str] = None):
         self.repo_name = repo_name
@@ -33,9 +37,10 @@ class Host:
         self.output_path = output_path
         self.auth_token = auth_token
         self.data = {}
+        self.outdated = 0
 
     @abstractmethod
-    def _convert_to_items(self, collection: List[dict]) -> List[dict]:
+    def _convert_to_simple(self, collection: List[dict]) -> List[dict]:
         """Aggregate issue/PR affiliations."""
 
     @abstractmethod
@@ -54,17 +59,18 @@ class Host:
             overview = self._fetch_overview()
             overview = {str(i['number']): i for i in overview}
 
-            self.data['raw'] = self._update_details(self.data['raw'], overview)
-            self.data['items'] = self._convert_to_items(self.data['raw'].values())
+            self.data[self.DATA_KEY_RAW] = self._update_details(self.data[self.DATA_KEY_RAW], overview)
+            if self.outdated > 0:
+                logging.warning(
+                    'Updating from host was not completed, some of following steps may fail or being incorrect.'
+                )
+            self.data[self.DATA_KEY_SIMPLE] = self._convert_to_simple(self.data[self.DATA_KEY_RAW].values())
 
             save_data(self.data, path_dir=self.output_path, repo_name=self.repo_name, host=self.HOST_NAME)
 
-        if not self.data['items']:
-            logging.warning('nothing to work on...')
-
-    def show_user_summary(self):
-        assert 'items' in self.data, 'forgotten call `convert_to_items`'
-        df_users = compute_users_stat(self.data['items'])
+    def show_users_summary(self):
+        assert self.DATA_KEY_SIMPLE in self.data, 'forgotten call `convert_to_items`'
+        df_users = compute_users_stat(self.data[self.DATA_KEY_SIMPLE])
         # filter just some columns
         df_users = df_users[['merged PRs', 'commented PRs', 'opened issues', 'commented issues', 'all opened']]
         df_users.to_csv(os.path.join(

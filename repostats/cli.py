@@ -4,10 +4,11 @@ Copyright (C) 2020-2020 Jiri Borovec <...>
 
 import logging
 import os
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from pprint import pformat
 
 from repostats.github import GitHub
+from repostats.host import Host
 
 PATH_ROOT = os.path.dirname(os.path.dirname(__file__))
 MIN_CONTRIBUTION_COUNT = 3
@@ -20,7 +21,7 @@ def get_arguments():
     parser.add_argument('-t', '--auth_token', type=str, required=False, default=None,
                         help='Personal Auth token needed for higher API request limit')
     parser.add_argument('--offline', action='store_true', help='Skip updating all information from web.')
-    parser.add_argument('--user_summary', action='store_true', help='Show the summary stats for each user.')
+    parser.add_argument('--users_summary', action='store_true', help='Show the summary stats for each user.')
     # todo: probably use some other temp folder
     parser.add_argument('-o', '--output_path', type=str, required=False, default=PATH_ROOT,
                         help='Personal Auth token needed for higher API request limit.')
@@ -29,8 +30,7 @@ def get_arguments():
     return args
 
 
-def main(args):
-    """Main entry point."""
+def init_host(args: Namespace) -> Host:
     if args.github_repo:
         host = GitHub(
             args.github_repo,
@@ -39,12 +39,19 @@ def main(args):
         )
     else:
         host = None
+    return host
+
+
+def main(args: Namespace):
+    """Main entry point."""
+    host = init_host(args)
+    if not host:
         exit('No repository specified.')
 
     host.fetch_data(args.offline)
 
-    if args.user_summary:
-        host.show_user_summary()
+    if args.users_summary:
+        host.show_users_summary()
 
 
 def cli_main():

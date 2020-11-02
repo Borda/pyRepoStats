@@ -43,8 +43,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         with tqdm(desc='Requesting issue/PR overview') as pbar:
             while min_idx > 1:
                 req = requests.get(
-                    f"{self.URL_API}/{self.repo_name}/issues"
-                    f"?state=all&page={page}&per_page=100",
+                    f"{self.URL_API}/{self.repo_name}/issues?state=all&page={page}&per_page=100",
                     headers=self.auth_header,
                 )
                 if req.status_code == 403:
@@ -62,7 +61,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         return items
 
     @staticmethod
-    def _request(url: str, auth_header: dict) -> Optional[dict]:
+    def _request_url(url: str, auth_header: dict) -> Optional[dict]:
         """General request with checking if request limit was reached."""
         if GitHub.API_LIMIT_REACHED:
             return None
@@ -75,14 +74,14 @@ To use higher limit generate personal auth token, see https://developer.github.c
     def _request_comments(comments_url: str, auth_header: dict) -> Optional[list]:
         """Request all comments from the issue life-time."""
         # https://api.github.com/repos/PyTorchLightning/pytorch-lightning/issues/37/comments
-        return GitHub._request(comments_url, auth_header)
+        return GitHub._request_url(comments_url, auth_header)
 
     @staticmethod
     def _request_detail_pr(pr_url: str, auth_header: dict) -> Optional[dict]:
         """Request PR status, in particular we want to distinguish between closed and merged ones."""
         pr_url = pr_url.replace('issues', 'pulls')
-        detail = GitHub._request(pr_url, auth_header)
-        if detail and 'merged_at' in detail:
+        detail = GitHub._request_url(pr_url, auth_header)
+        if detail and detail.get('merged_at'):
             detail['state'] = 'merged'
         return detail
 
@@ -106,13 +105,19 @@ To use higher limit generate personal auth token, see https://developer.github.c
         item.update(extras)
         return idx, item
 
+    @staticmethod
+    def __update_issues_queue(issues: Dict[str, dict], issues_new: Dict[str, dict]) -> List[str]:
+        return [
+            idx for idx in issues_new
+            if (idx not in issues
+                or not issues[idx]['updated_at']
+                or pd.to_datetime(issues_new[idx]['updated_at']) > pd.to_datetime(issues[idx]['updated_at']))
+        ]
+
     def _update_details(self, issues: Dict[str, dict], issues_new: Dict[str, dict]) -> Dict[str, dict]:
         """Pull all exiting details to particular issues."""
         # filter missing issue or issues which was updated since last time
-        queue = [idx for idx in issues_new
-                 if (idx not in issues
-                     or not issues[idx]['updated_at']
-                     or pd.to_datetime(issues_new[idx]['updated_at']) > pd.to_datetime(issues[idx]['updated_at']))]
+        queue = self.__update_issues_queue(issues, issues_new)
         if not queue:
             logging.info("All issues/PRs are up-to-date")
             return issues
@@ -136,15 +141,18 @@ To use higher limit generate personal auth token, see https://developer.github.c
 
         pool.close()
         pool.join()
+        self.outdated = len(self.__update_issues_queue(issues, issues_new))
         return issues
 
-    def _convert_to_items(self, issues: list) -> list:
+    def _convert_to_simple(self, issues: List[dict]) -> List[dict]:
         """Aggregate issue/PR affiliations."""
-        items = [dict(
-            type='PR' if 'pull' in issue['html_url'] else 'issue',
-            state=issue['state'],
-            author=issue['user']['login'],
-            commenters=[com['user']['login'] for com in issue['comments']
-                        if '[bot]' not in com['user']['login']],
-        ) for issue in issues]
+        items = [
+            dict(
+                type='PR' if 'pull' in issue['html_url'] else 'issue',
+                state=issue['state'],
+                author=issue['user']['login'],
+                commenters=[com['user']['login'] for com in issue['comments']
+                            if '[bot]' not in com['user']['login']],
+            ) for issue in issues if 'comments' in issue
+        ]
         return items
