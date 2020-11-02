@@ -9,6 +9,7 @@ from tqdm import tqdm
 
 def compute_users_stat(items: List[dict]) -> pd.DataFrame:
     """Aggregate issue/PR affiliations and summary counts."""
+    assert items, 'nothing to do...'
     df_items = pd.DataFrame(items)
 
     users_stat = []

@@ -1,6 +1,8 @@
 # Repository Stats
 
 ![CI testing](https://github.com/Borda/pyRepoStats/workflows/CI%20testing/badge.svg?event=push)
+[![codecov](https://codecov.io/gh/Borda/pyRepoStats/branch/main/graph/badge.svg?token=09H9MDJMXG)](https://codecov.io/gh/Borda/pyRepoStats)
+[![CodeFactor](https://www.codefactor.io/repository/github/borda/pyrepostats/badge)](https://www.codefactor.io/repository/github/borda/pyrepostats)
 
 This simple tool aims on open-source projects providing simple repository stats which are a bit out of scope of base Git and need some more information about issues and PRs.
 
