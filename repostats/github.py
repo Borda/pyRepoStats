@@ -153,6 +153,6 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 author=issue['user']['login'],
                 commenters=[com['user']['login'] for com in issue['comments']
                             if '[bot]' not in com['user']['login']],
-            ) for issue in issues if 'comments' in issue
+            ) for issue in issues if isinstance(issue.get('comments'), list)
         ]
         return items

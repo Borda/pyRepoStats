@@ -49,6 +49,8 @@ def main(args: Namespace):
         exit('No repository specified.')
 
     host.fetch_data(args.offline)
+    if not args.offline and host.outdated > 0:
+        exit('The update failed to complete, pls try it again or run offline.')
 
     if args.users_summary:
         host.show_users_summary()
