@@ -72,8 +72,8 @@ class Host:
     def show_users_summary(self):
         assert self.DATA_KEY_SIMPLE in self.data, 'forgotten call `convert_to_items`'
 
-        if not self.data[self.DATA_KEY_SIMPLE]:
-            logging.warning('No data to show.')
+        if not self.data.get(self.DATA_KEY_SIMPLE):
+            logging.warning('No data to process/show.')
             return
 
         logging.debug(f'Show users stats for "{self.repo_name}"')
