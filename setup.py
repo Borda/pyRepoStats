@@ -68,5 +68,10 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
 
-    # todo: add entry point
+    # entry point from command line
+    entry_points={
+        'console_scripts': [
+            'repostat = repostats.cli:cli_main',
+        ],
+    }
 )

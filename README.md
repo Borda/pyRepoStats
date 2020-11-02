@@ -8,7 +8,7 @@ This simple tool aims on open-source projects providing simple repository stats 
 
 Simple install with setuptools/pip as 
 ```bash
-pipp install https://github.com/Borda/pyRepoStats/archive/main.zip
+pip install https://github.com/Borda/pyRepoStats/archive/main.zip
 ```
 or after cloning the repository
 ```bash
@@ -17,14 +17,31 @@ python setup.py install
 
 ## Sample usage
 
-Lets show how to pull data from Github repository
-```bash
-python repostats/cli.py -gh PyTorchLightning/pytorch-lightning-bolts -t <your-personal-token>
-```
+Lets show how to pull data from Github repository, use of the following calls
+* if you just clone this repo without installation, you need to install dependencies and call script
+    ```bash
+    pip install -r requirements.txt
+    python repostats/cli.py -gh PyTorchLightning/pytorch-lightning-bolts -t <your-personal-token>
+    ```
+* if you have already installed the package with `pip` or with `setup.py` you can call executable
+    ```bash
+    repostat -gh PyTorchLightning/pytorch-lightning-bolts -t <your-personal-token>
+    ```
+  or package with a pythonic way
+    ```bash
+    python -m repostats.cli -gh PyTorchLightning/pytorch-lightning-bolts
+    ```
+  just note that with this way usage should also consider passing `-o` argument for output path, otherwise all caches and results will be saved in installation folder, most likely _site-packages_
 
-With your personal GitHub token you have significantly increased [request limit](https://developer.github.com/v3/#rate-limiting) per hour.
+### Github use-case
 
-The call results with
+For GitHub users we recommend using your personal GitHub token which significantly increases [request limit](https://developer.github.com/v3/#rate-limiting) per hour.
+
+### Extra options
+
+The calls above just pull the data, to get/show some results check available options `python -m repostats.cli --help`
+
+To see following summary table use `--users_summary`
 ```
 | user          |   merged PRs |   commented PRs |   opened issues |   commented issues |   all opened |
 |:--------------|-------------:|----------------:|----------------:|-------------------:|-------------:|
@@ -40,3 +57,7 @@ The call results with
 | edenlightning |            0 |               2 |               3 |                  2 |            4 |
 | teddykoker    |            3 |               2 |               0 |                  0 |            3 |
 ```
+
+## Contribution
+
+Any help or suggestions are welcome, pls use Issues :]

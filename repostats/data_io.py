@@ -5,8 +5,7 @@ Copyright (C) 2020-2020 Jiri Borovec <...>
 import json
 import logging
 import os
-
-import pandas as pd
+from datetime import datetime
 
 from repostats import __version__
 
@@ -61,7 +60,7 @@ def save_data(data: dict, path_dir: str, repo_name: str, host: str = '') -> str:
 
     data.update({
         'version': __version__,
-        'updated_at': str(pd.datetime.today()),
+        'updated_at': str(datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")),
     })
 
     with open(cache_path, 'w') as fp:
