@@ -3,6 +3,7 @@ Copyright (C) 2020-2020 Jiri Borovec <...>
 """
 
 import json
+import logging
 import os
 
 import pandas as pd
@@ -35,12 +36,13 @@ def load_data(path_dir: str, repo_name: str, host: str = '') -> dict:
     """
     assert os.path.isdir(path_dir)
     cache_path = os.path.join(path_dir, _make_json_name(repo_name, host))
+    logging.info(f'Loading data from: {cache_path}')
 
     if os.path.isfile(cache_path):
         with open(cache_path, 'r') as fp:
             data = json.load(fp)
     else:
-        data = {'raw': {}}
+        data = {}
     return data
 
 
@@ -55,6 +57,7 @@ def save_data(data: dict, path_dir: str, repo_name: str, host: str = '') -> str:
     """
     assert os.path.isdir(path_dir)
     cache_path = os.path.join(path_dir, _make_json_name(repo_name, host))
+    logging.info(f'Saving data to: {cache_path}')
 
     data.update({
         'version': __version__,

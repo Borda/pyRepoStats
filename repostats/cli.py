@@ -52,6 +52,7 @@ def main(args: Namespace):
     if not args.offline and host.outdated > 0:
         exit('The update failed to complete, pls try it again or run offline.')
 
+    logging.info('Process requested stats...')
     if args.users_summary:
         host.show_users_summary()
 

@@ -53,13 +53,14 @@ class Host:
 
     def fetch_data(self, offline: bool = False):
         """Get all data - load and update if allowed."""
+        logging.info('Fetch requested data...')
         self.data = load_data(path_dir=self.output_path, repo_name=self.repo_name, host=self.HOST_NAME)
 
         if not offline:
             overview = self._fetch_overview()
             overview = {str(i['number']): i for i in overview}
 
-            self.data[self.DATA_KEY_RAW] = self._update_details(self.data[self.DATA_KEY_RAW], overview)
+            self.data[self.DATA_KEY_RAW] = self._update_details(self.data.get(self.DATA_KEY_RAW, {}), overview)
             if self.outdated > 0:
                 logging.warning(
                     'Updating from host was not completed, some of following steps may fail or being incorrect.'
@@ -70,6 +71,7 @@ class Host:
 
     def show_users_summary(self):
         assert self.DATA_KEY_SIMPLE in self.data, 'forgotten call `convert_to_items`'
+        logging.debug(f'Show users stats for "{self.repo_name}"')
         df_users = compute_users_stat(self.data[self.DATA_KEY_SIMPLE])
         # filter just some columns
         df_users = df_users[['merged PRs', 'commented PRs', 'opened issues', 'commented issues', 'all opened']]
