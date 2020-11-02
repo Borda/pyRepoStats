@@ -42,13 +42,12 @@ To use higher limit generate personal auth token, see https://developer.github.c
         # get items
         with tqdm(desc='Requesting issue/PR overview') as pbar:
             while min_idx > 1:
-                req = requests.get(
-                    f"{self.URL_API}/{self.repo_name}/issues?state=all&page={page}&per_page=100",
-                    headers=self.auth_header,
-                )
-                if req.status_code == 403:
+                req_url = f"{self.URL_API}/{self.repo_name}/issues?state=all&page={page}&per_page=100"
+                items_new = GitHub._request_url(req_url, self.auth_header)
+                if items_new is None:
                     exit(self.API_LIMIT_MESSAGE)
-                items += json.loads(req.content)
+
+                items += items_new
                 if page == 1:
                     # in case there is no issue/pr
                     if sum([isinstance(i, dict) for i in items]) == 0:
@@ -68,7 +67,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         req = requests.get(url, headers=auth_header)
         if req.status_code == 403:
             return None
-        return json.loads(req.content)
+        return json.loads(req.content.decode(req.encoding))
 
     @staticmethod
     def _request_comments(comments_url: str, auth_header: dict) -> Optional[list]:
