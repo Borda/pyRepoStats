@@ -38,7 +38,7 @@ def load_data(path_dir: str, repo_name: str, host: str = '') -> dict:
     logging.info(f'Loading data from: {cache_path}')
 
     if os.path.isfile(cache_path):
-        with open(cache_path, 'r') as fp:
+        with open(cache_path, 'r', encoding='utf8') as fp:
             data = json.load(fp)
     else:
         data = {}
@@ -63,7 +63,7 @@ def save_data(data: dict, path_dir: str, repo_name: str, host: str = '') -> str:
         'updated_at': str(datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")),
     })
 
-    with open(cache_path, 'w') as fp:
+    with open(cache_path, 'w', encoding='utf8') as fp:
         json.dump(data, fp, ensure_ascii=False)
 
     return cache_path
