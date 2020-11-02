@@ -71,8 +71,14 @@ class Host:
 
     def show_users_summary(self):
         assert self.DATA_KEY_SIMPLE in self.data, 'forgotten call `convert_to_items`'
+
+        if not self.data.get(self.DATA_KEY_SIMPLE):
+            logging.warning('No data to process/show.')
+            return
+
         logging.debug(f'Show users stats for "{self.repo_name}"')
         df_users = compute_users_stat(self.data[self.DATA_KEY_SIMPLE])
+
         # filter just some columns
         df_users = df_users[['merged PRs', 'commented PRs', 'opened issues', 'commented issues', 'all opened']]
         df_users.to_csv(os.path.join(
