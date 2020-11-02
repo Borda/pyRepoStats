@@ -7,13 +7,9 @@ import os
 from argparse import ArgumentParser
 from pprint import pformat
 
-from tabulate import tabulate
-
-from repostats.github import github_main
-from repostats.stats import compute_users_stat
+from repostats.github import GitHub
 
 PATH_ROOT = os.path.dirname(os.path.dirname(__file__))
-CSV_USER_SUMMARY = '%s_%s_users-summary.csv'
 MIN_CONTRIBUTION_COUNT = 3
 
 
@@ -35,29 +31,20 @@ def get_arguments():
 
 def main(args):
     """Main entry point."""
-    repo_name = 'any/repo'
-    host_name = 'unknown'
-    host_user_url = '%(user)s'
-
     if args.github_repo:
-        data = github_main(
+        host = GitHub(
             args.github_repo,
             output_path=args.output_path,
             auth_token=args.auth_token,
-            offline=args.offline,
         )
-        host_name = 'github'
-        repo_name = args.github_repo
-        host_user_url = '[%(user)s](https://github.com/%(user)s)'
     else:
+        host = None
         exit('No repository specified.')
 
+    host.fetch_data(args.offline)
+
     if args.user_summary:
-        df_users = compute_users_stat(data['items'])
-        df_users = df_users[['merged PRs', 'commented PRs', 'opened issues', 'commented issues', 'all opened']]
-        df_users.to_csv(os.path.join(args.output_path, CSV_USER_SUMMARY % (host_name, repo_name.replace('/', '-'))))
-        df_users.index = df_users.index.map(lambda u: host_user_url % {'user': u})
-        print(tabulate(df_users[df_users['all opened'] >= MIN_CONTRIBUTION_COUNT], tablefmt="pipe", headers="keys"))
+        host.show_user_summary()
 
 
 def cli_main():
