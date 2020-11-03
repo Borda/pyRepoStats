@@ -55,7 +55,11 @@ def compute_users_summary(items: List[dict]) -> pd.DataFrame:
     return df_users
 
 
-def compute_user_comment_timeline(items: List[dict], freq: str = 'W', parent_type: Optional[str] = None) -> pd.DataFrame:
+def compute_user_comment_timeline(
+        items: List[dict],
+        freq: str = 'W',
+        parent_type: Optional[str] = None,
+) -> pd.DataFrame:
     """Aggregate comments from all issues/PRs.
 
     >>> items = [dict(created_at='2020-10-05', parent_idx=1, author='me'),
@@ -74,7 +78,9 @@ def compute_user_comment_timeline(items: List[dict], freq: str = 'W', parent_typ
     if parent_type:
         df_comments = df_comments[df_comments['parent_type'] == parent_type]
 
-    _reformat = lambda dt: pd.to_datetime(dt).strftime(DATETIME_FREQ[freq])
+    def _reformat(dt):
+        return pd.to_datetime(dt).strftime(DATETIME_FREQ[freq])
+
     df_comments['created_at'] = df_comments['created_at'].apply(_reformat)
 
     # keep only single sample per user-time-issue
