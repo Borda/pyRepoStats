@@ -60,6 +60,8 @@ To see following summary table use `--users_summary "merged PRs" "commented PRs"
 | [teddykoker](https://github.com/teddykoker)       |            3 |               2 |               0 |                  0 |
 
 
+To deny showing figures set environment variable `export SHOW_FIGURES=0`.
+
 ## Contribution
 
 Any help or suggestions are welcome, pls use Issues :]
