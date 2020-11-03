@@ -107,6 +107,6 @@ jobs:
         AUTH_TOKEN: ${{ secrets.API_TOKEN }}
       run: |
         mkdir results
-        python repostats/cli.py -gh borda/pyRepoStats -o results
+        python repostats/cli.py -gh borda/pyRepoStats -o results -t ${{ secrets.API_TOKEN }}
         ls -l results
       shell: bash
