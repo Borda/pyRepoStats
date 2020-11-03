@@ -7,6 +7,7 @@ import os
 from argparse import ArgumentParser, Namespace
 from pprint import pformat
 
+import matplotlib.pyplot as plt
 from repostats.github import GitHub
 from repostats.host import Host
 
@@ -15,6 +16,8 @@ PATH_ROOT = os.path.dirname(os.path.dirname(__file__))
 MIN_CONTRIBUTION_COUNT = 3
 #: OS env. variable for getting Token
 ENV_VAR_AUTH_TOKEN = 'AUTH_TOKEN'
+#: take global setting from OS env
+SHOW_FIGURES = bool(int(os.getenv('SHOW_FIGURE', default=1)))
 
 
 def get_arguments():
@@ -24,11 +27,15 @@ def get_arguments():
     parser.add_argument('-t', '--auth_token', type=str, required=False, default=None,
                         help='Personal Auth token needed for higher API request limit')
     parser.add_argument('--offline', action='store_true', help='Skip updating all information from web.')
-    parser.add_argument('--users_summary', type=str, nargs='*',
-                        help='Show the summary stats for each user, the fist one is used for sorting.')
     # todo: probably use some other temp folder
     parser.add_argument('-o', '--output_path', type=str, required=False, default=PATH_ROOT,
                         help='Personal Auth token needed for higher API request limit.')
+    # todo: consider use groups
+    parser.add_argument('--users_summary', type=str, nargs='*',
+                        help='Show the summary stats for each user, the fist one is used for sorting.')
+    parser.add_argument('--user_comments', type=str, required=False, default=None, choices=['D', 'W', 'M', 'Y'],
+                        help='Select granularity of timeline - Day, Week, Month.')
+
     args = parser.parse_args()
     logging.info('Parsed arguments: \n%s', pformat(vars(args)))
     return args
@@ -64,6 +71,13 @@ def main(args: Namespace):
     logging.info('Process requested stats...')
     if args.users_summary:
         host.show_users_summary(columns=args.users_summary)
+
+    if args.user_comments:
+        host.show_user_comments(freq=args.user_comments, show_fig=SHOW_FIGURES)
+
+    # at the end show all figures
+    if SHOW_FIGURES:
+        plt.show()
 
 
 def cli_main():
