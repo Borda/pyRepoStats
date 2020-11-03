@@ -11,25 +11,6 @@ This simple tool aims on open-source projects providing simple repository stats
  which are a bit out of scope of base Git and need some more information about issues and PRs.
 """
 
-import os
-import subprocess
-
-try:
-    import matplotlib
-except ImportError:
-    print('Package `matplotlib` which shall be configured are missing...')
-else:
-    CMD_TRY_MATPLOTLIB = 'python -c "from matplotlib import pyplot; pyplot.close(pyplot.figure())"'
-    # in case you are running on machine without display, e.g. server
-    if not os.environ.get('DISPLAY', '') and matplotlib.rcParams['backend'] != 'agg':
-        print('No display found. Using non-interactive Agg backend')
-        matplotlib.use('Agg')
-    # _tkinter.TclError: couldn't connect to display "localhost:10.0"
-    elif subprocess.call(CMD_TRY_MATPLOTLIB, stdout=None, stderr=None, shell=True):
-        print('Problem with display. Using non-interactive Agg backend')
-        matplotlib.use('Agg')
-
-
 try:
     import pandas as pd
 except ImportError:
