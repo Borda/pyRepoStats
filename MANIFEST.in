@@ -11,7 +11,7 @@ include *.md
 include LICENSE
 
 # Include the visualisations
-recursive-include assets *.jpg
+recursive-include assets *.jpg *.png
 
 # Exclude Jupyter notebooks
 recursive-exclude notebooks *.ipynb *.txt
