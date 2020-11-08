@@ -69,7 +69,12 @@ class Host:
 
             save_data(self.data, path_dir=self.output_path, repo_name=self.repo_name, host=self.HOST_NAME)
 
-    def show_users_summary(self):
+    def show_users_summary(self, columns: List[str]):
+        """Show user contribution overview and print table to terminal with selected `columns`.
+
+        :param columns: select columns to be shown in terminal
+        :return: path to the exported table
+        """
         assert self.DATA_KEY_SIMPLE in self.data, 'forgotten call `convert_to_items`'
 
         if not self.data.get(self.DATA_KEY_SIMPLE):
@@ -79,14 +84,27 @@ class Host:
         logging.debug(f'Show users stats for "{self.repo_name}"')
         df_users = compute_users_stat(self.data[self.DATA_KEY_SIMPLE])
 
+        # filter columns which are possible
+        aval_columns = df_users.columns
+        miss_columns = [c for c in columns if c not in aval_columns]
+        if miss_columns:
+            logging.warning(f'You fave requested following columns {miss_columns} which are missing in the table,'
+                            f' these columns are available: {aval_columns}')
+        columns = [c for c in columns if c in aval_columns]
+
+        if not columns:
+            columns = list(df_users.columns)
+            logging.warning(f'You have not set any column was recognised, so we show all: {columns}')
+
         # filter just some columns
-        df_users = df_users[['merged PRs', 'commented PRs', 'opened issues', 'commented issues', 'all opened']]
-        df_users.to_csv(os.path.join(
-            self.output_path,
-            self.CSV_USER_SUMMARY % (self.HOST_NAME, self.name)))
+        df_users = df_users[columns]
+        df_users.sort_values(columns[0], ascending=False, inplace=True)
+        csv_path = os.path.join(self.output_path, self.CSV_USER_SUMMARY % (self.HOST_NAME, self.name))
+        df_users.to_csv(csv_path)
         df_users.index = df_users.index.map(lambda u: self.USER_URL_TEMPLATE % {'user': u})
         print(tabulate(
-            df_users[df_users['all opened'] >= self.MIN_CONTRIBUTION_COUNT],
+            df_users[df_users[columns[0]] >= self.MIN_CONTRIBUTION_COUNT],
             tablefmt="pipe",
             headers="keys",
         ))
+        return csv_path

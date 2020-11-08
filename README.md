@@ -24,7 +24,7 @@ Lets show how to pull data from Github repository, use of the following calls
 * if you just clone this repo without installation, you need to install dependencies and call script
     ```bash
     pip install -r requirements.txt
-    python repostats/cli.py -gh PyTorchLightning/pytorch-lightning-bolts -t <your-personal-token>
+    python repostats/cli.py -gh PyTorchLightning/pytorch-lightning-bolts
     ```
 * if you have already installed the package with `pip` or with `setup.py` you can call executable
     ```bash
@@ -36,6 +36,8 @@ Lets show how to pull data from Github repository, use of the following calls
     ```
   just note that with this way usage should also consider passing `-o` argument for output path, otherwise all caches and results will be saved in installation folder, most likely _site-packages_
 
+To simplify the token passing in each call, you can export the token to evnaronment variables `export AUTH_TOKEN=<your-personal-token>`
+
 ### Github use-case
 
 For GitHub users we recommend using your personal GitHub token which significantly increases [request limit](https://developer.github.com/v3/#rate-limiting) per hour.
@@ -44,22 +46,19 @@ For GitHub users we recommend using your personal GitHub token which significant
 
 The calls above just pull the data, to get/show some results check available options `python -m repostats.cli --help`
 
-To see following summary table use `--users_summary`
-```
-| user          |   merged PRs |   commented PRs |   opened issues |   commented issues |   all opened |
-|:--------------|-------------:|----------------:|----------------:|-------------------:|-------------:|
-| williamFalcon |           74 |              21 |              14 |                  8 |           95 |
-| Borda         |           39 |              26 |               4 |                 17 |           44 |
-| akihironitta  |           15 |               0 |               3 |                  4 |           23 |
-| ananyahjha93  |           11 |               1 |               5 |                 10 |           21 |
-| djbyrne       |           11 |               2 |               4 |                  4 |           19 |
-| nateraw       |            9 |               1 |               6 |                  8 |           17 |
-| annikabrundyn |           12 |               0 |               0 |                  2 |           12 |
-| oke-aditya    |            1 |               1 |               5 |                  2 |            8 |
-| HenryJia      |            1 |               0 |               3 |                  0 |            5 |
-| edenlightning |            0 |               2 |               3 |                  2 |            4 |
-| teddykoker    |            3 |               2 |               0 |                  0 |            3 |
-```
+To see following summary table use `--users_summary "merged PRs" "commented PRs" "opened issues" "commented issues"`
+
+| user                                              |   merged PRs |   commented PRs |   opened issues |   commented issues |
+|:--------------------------------------------------|-------------:|----------------:|----------------:|-------------------:|
+| [williamFalcon](https://github.com/williamFalcon) |           74 |              21 |              14 |                  8 |
+| [Borda](https://github.com/Borda)                 |           42 |              35 |               4 |                 18 |
+| [akihironitta](https://github.com/akihironitta)   |           17 |               1 |               5 |                  5 |
+| [ananyahjha93](https://github.com/ananyahjha93)   |           14 |               2 |               6 |                 21 |
+| [annikabrundyn](https://github.com/annikabrundyn) |           12 |               0 |               0 |                  2 |
+| [djbyrne](https://github.com/djbyrne)             |           11 |               2 |               4 |                  4 |
+| [nateraw](https://github.com/nateraw)             |            9 |               1 |               6 |                  8 |
+| [teddykoker](https://github.com/teddykoker)       |            3 |               2 |               0 |                  0 |
+
 
 ## Contribution
 

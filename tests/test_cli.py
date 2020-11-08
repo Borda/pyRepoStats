@@ -8,7 +8,7 @@ from repostats.cli import cli_main
 @pytest.mark.xfail(reason="offline or reached free requests limit")
 @pytest.mark.parametrize('cli_args', [
     '-gh Borda/pyRepoStats',
-    '-gh Borda/pyRepoStats --offline --users_summary',
+    '-gh Borda/pyRepoStats --offline --users_summary "all"',
 ])
 def test_online_github(cli_args):
 

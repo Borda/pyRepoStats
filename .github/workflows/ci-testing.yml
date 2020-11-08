@@ -69,6 +69,8 @@ jobs:
         python setup.py install --dry-run
 
     - name: Tests and coverage
+      env:
+        AUTH_TOKEN: ${{ secrets.API_TOKEN }}
       run: |
         coverage run --source repostats -m pytest repostats tests -v --durations=25 --junitxml=junit/test-results-${{ runner.os }}-${{ matrix.python-version }}-${{ matrix.requires }}.xml
 
@@ -99,6 +101,8 @@ jobs:
         fail_ci_if_error: false
 
     - name: Run sample
+      env:
+        AUTH_TOKEN: ${{ secrets.API_TOKEN }}
       run: |
         mkdir results
         python repostats/cli.py -gh borda/pyRepoStats -o results
