@@ -73,7 +73,7 @@ def draw_comments_timeline(df_comments: pd.DataFrame, fig_size: Tuple[int] = (12
     ax_hmap.set_yticklabels(df_comments.index, va='center')
     ax_hmap.set_xlabel('Users')
     ax_hmap.set_xticks([i + 0.5 for i, _ in enumerate(df_comments.columns)])
-    ax_hmap.set_xticklabels(df_comments.columns, rotation=90, ha='center')
+    ax_hmap.set_xticklabels(df_comments.columns, rotation=-90, ha='center')
     # Create colorbar
     cax = make_axes_locatable(ax_hmap).append_axes("right", size="3%", pad=0.1)
     cbar = plt.colorbar(im, cax=cax)
