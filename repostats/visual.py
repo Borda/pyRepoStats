@@ -9,11 +9,11 @@ import pandas as pd
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
-def draw_comments_timeline(df_comments: pd.DataFrame, figsize: Tuple[int] = (18, 14), title: str = '') -> plt.Figure:
+def draw_comments_timeline(df_comments: pd.DataFrame, fig_size: Tuple[int] = (18, 14), title: str = '') -> plt.Figure:
     """Draw a figure with two charts, one as cumulative date/contribution and user/time heatmap
 
     :param df_comments: table with aggregated comments
-    :param figsize: output figure size
+    :param fig_size: output figure size
     :param title: optional figure title
     :return: Figure
 
@@ -23,7 +23,7 @@ def draw_comments_timeline(df_comments: pd.DataFrame, figsize: Tuple[int] = (18,
     >>> fig = draw_comments_timeline(df)
     """
     fig, axarr = plt.subplots(
-        figsize=figsize,
+        figsize=fig_size,
         nrows=2,
         gridspec_kw={'height_ratios': [1, 2]},
         tight_layout=True,

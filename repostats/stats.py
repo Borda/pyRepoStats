@@ -62,11 +62,12 @@ def compute_user_comment_timeline(
 ) -> pd.DataFrame:
     """Aggregate comments from all issues/PRs.
 
-    >>> items = [dict(created_at='2020-10-05', parent_idx=1, author='me'),
-    ...          dict(created_at='2020-10-17', parent_idx=1, author='me'),
-    ...          dict(created_at='2020-10-29', parent_idx=2, author='me'),
-    ...          dict(created_at='2020-11-15', parent_idx=2, author='you')]
-    >>> compute_user_comment_timeline(items, freq='M')  # doctest: +NORMALIZE_WHITESPACE
+    >>> items = [dict(created_at='2020-10-05', parent_idx=1, parent_type='issue', author='me'),
+    ...          dict(created_at='2020-10-17', parent_idx=2, parent_type='PR', author='me'),
+    ...          dict(created_at='2020-10-17', parent_idx=1, parent_type='issue', author='me'),
+    ...          dict(created_at='2020-10-29', parent_idx=3, parent_type='issue', author='me'),
+    ...          dict(created_at='2020-11-15', parent_idx=3, parent_type='issue', author='you')]
+    >>> compute_user_comment_timeline(items, freq='M', parent_type='issue')  # doctest: +NORMALIZE_WHITESPACE
     author      me  you
     created_at
     2020-10      2    0
