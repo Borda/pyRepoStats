@@ -1,4 +1,6 @@
+numpy >= 1.14
 requests
 pandas
 tabulate
+matplotlib
 tqdm

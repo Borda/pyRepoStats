@@ -31,6 +31,12 @@ class GitHub(Host):
 Request failed, probably you have reached free/personal request's limit...
 To use higher limit generate personal auth token, see https://developer.github.com/v3/#rate-limiting
 """
+    #: define bot users as name pattern
+    USER_BOTS = (
+        'codecov',
+        'pep8speaks',
+        '[bot]',
+    )
 
     def __init__(self, repo_name: str, output_path: str, auth_token: Optional[str] = None):
         super().__init__(repo_name=repo_name, output_path=output_path, auth_token=auth_token)
@@ -143,15 +149,38 @@ To use higher limit generate personal auth token, see https://developer.github.c
         self.outdated = len(self.__update_issues_queue(issues, issues_new))
         return issues
 
+    @staticmethod
+    def __parse_user(field: dict) -> str:
+        return field['user']['login']
+
     def _convert_to_simple(self, issues: List[dict]) -> List[dict]:
         """Aggregate issue/PR affiliations."""
         items = [
             dict(
                 type='PR' if 'pull' in issue['html_url'] else 'issue',
                 state=issue['state'],
-                author=issue['user']['login'],
-                commenters=[com['user']['login'] for com in issue['comments']
-                            if '[bot]' not in com['user']['login']],
-            ) for issue in issues if isinstance(issue.get('comments'), list)
+                author=self.__parse_user(issue),
+                commenters=list(set(self.__parse_user(com) for com in issue['comments']
+                                    if not self._is_user_bot(self.__parse_user(com)))),
+            )
+            for issue in tqdm(issues, desc='Parsing simplified items')
+            if isinstance(issue.get('comments'), list)
         ]
         return items
+
+    def _convert_comments_timeline(self, issues: List[dict]) -> List[dict]:
+        """Aggregate comments for all issue/PR affiliations."""
+        comments = []
+        for item in tqdm(issues, desc='Parsing comments from all repo'):
+            item_comments = item.get('comments')
+            if not isinstance(item_comments, list):
+                continue
+            comments += [
+                dict(
+                    parent_type='PR' if 'pull' in item['html_url'] else 'issue',
+                    parent_idx=int(item['number']),
+                    author=self.__parse_user(cmt),
+                    created_at=cmt['created_at'],  # todo
+                ) for cmt in item_comments if not self._is_user_bot(self.__parse_user(cmt))
+            ]
+        return comments

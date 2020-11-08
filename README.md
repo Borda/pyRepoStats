@@ -59,6 +59,11 @@ To see following summary table use `--users_summary "merged PRs" "commented PRs"
 | [nateraw](https://github.com/nateraw)             |            9 |               1 |               6 |                  8 |
 | [teddykoker](https://github.com/teddykoker)       |            3 |               2 |               0 |                  0 |
 
+We also offer showing some contribution aggregation over time such as Day/Week/Month, to do you use option `--user_comments W` which draw following double chart: (a) cumulative aggregation over all users and (b) heatmap like image with time in Y and user in X axis.
+
+![User-comments-aggregation](./assets/user-comments-aggregation.png)
+
+To deny showing figures set environment variable `export SHOW_FIGURES=0`.
 
 ## Contribution
 

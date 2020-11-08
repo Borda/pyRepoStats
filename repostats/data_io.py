@@ -63,6 +63,7 @@ def save_data(data: dict, path_dir: str, repo_name: str, host: str = '') -> str:
         'updated_at': str(datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")),
     })
 
+    # todo: consider saving to another/tep file and replace afterwords, prevent interruption while dump
     with codecs.open(cache_path, 'w', encoding='utf8') as fp:
         json.dump(data, fp, ensure_ascii=False)
 

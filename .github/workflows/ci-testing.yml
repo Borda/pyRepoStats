@@ -71,6 +71,8 @@ jobs:
     - name: Tests and coverage
       env:
         AUTH_TOKEN: ${{ secrets.API_TOKEN }}
+        # suppress showing figures as it may bail on server without display
+        SHOW_FIGURE: 0
       run: |
         coverage run --source repostats -m pytest repostats tests -v --durations=25 --junitxml=junit/test-results-${{ runner.os }}-${{ matrix.python-version }}-${{ matrix.requires }}.xml
 
@@ -98,9 +100,9 @@ jobs:
 
     - name: Run sample
       env:
-        AUTH_TOKEN: ${{ secrets.API_TOKEN }}
+        SHOW_FIGURE: 0
       run: |
         mkdir results
-        python repostats/cli.py -gh borda/pyRepoStats -o results
+        python repostats/cli.py -gh borda/pyRepoStats -o results -t ${{ secrets.API_TOKEN }}
         ls -l results
       shell: bash

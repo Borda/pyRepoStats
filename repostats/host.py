@@ -7,10 +7,12 @@ import os
 from abc import abstractmethod
 from typing import Optional, Dict, List
 
+import matplotlib.pyplot as plt
 from tabulate import tabulate
 
 from repostats.data_io import load_data, save_data
-from repostats.stats import compute_users_stat
+from repostats.stats import compute_users_summary, compute_user_comment_timeline
+from repostats.visual import draw_comments_timeline
 
 
 class Host:
@@ -24,12 +26,20 @@ class Host:
     MIN_CONTRIBUTION_COUNT = 3
     #: limit number of parallel requests to host
     NB_PARALLEL_REQUESTS = 7
-    #: template name for exporting CSV
-    CSV_USER_SUMMARY = '%s_%s_users-summary.csv'
-    #:
+    #: template name for exporting CSV with users overview
+    CSV_USERS_SUMMARY = '%s_%s_users-summary.csv'
+    #: template name for exporting CSV with comment's contributions
+    CSV_USER_COMMENTS = '%s_%s_user-comments_freq:%s_type:%s.csv'
+    #: template name for exporting Figure/PDF with comment's contributions
+    PDF_USER_COMMENTS = '%s_%s_user-comments_freq:%s_type:%s.pdf'
+    #: kay to the raw fetch data from host
     DATA_KEY_RAW = 'raw'
-    #:
+    #: simplified host data, collection of issues/PRs
     DATA_KEY_SIMPLE = 'simple_items'
+    #: timeline of all comments in the repo
+    DATA_KEY_COMMENTS = 'comments_timeline'
+    #: define bot users as name pattern
+    USER_BOTS = tuple()
 
     def __init__(self, repo_name: str, output_path: str, auth_token: Optional[str] = None):
         self.repo_name = repo_name
@@ -44,8 +54,16 @@ class Host:
         """Aggregate issue/PR affiliations."""
 
     @abstractmethod
+    def _convert_comments_timeline(self, issues: List[dict]) -> List[dict]:
+        """Aggregate comments for all issue/PR affiliations."""
+
+    @abstractmethod
     def _fetch_overview(self) -> List[dict]:
         """Download all info if from screening."""
+
+    def _is_user_bot(self, user: str) -> bool:
+        """Allow filter bots from users."""
+        return any(u in user for u in self.USER_BOTS)
 
     @abstractmethod
     def _update_details(self, collection: Dict[str, dict], collect_new: Dict[str, dict]) -> Dict[str, dict]:
@@ -66,6 +84,7 @@ class Host:
                     'Updating from host was not completed, some of following steps may fail or being incorrect.'
                 )
             self.data[self.DATA_KEY_SIMPLE] = self._convert_to_simple(self.data[self.DATA_KEY_RAW].values())
+            self.data[self.DATA_KEY_COMMENTS] = self._convert_comments_timeline(self.data[self.DATA_KEY_RAW].values())
 
             save_data(self.data, path_dir=self.output_path, repo_name=self.repo_name, host=self.HOST_NAME)
 
@@ -82,7 +101,7 @@ class Host:
             return
 
         logging.debug(f'Show users stats for "{self.repo_name}"')
-        df_users = compute_users_stat(self.data[self.DATA_KEY_SIMPLE])
+        df_users = compute_users_summary(self.data[self.DATA_KEY_SIMPLE])
 
         # filter columns which are possible
         aval_columns = df_users.columns
@@ -99,7 +118,7 @@ class Host:
         # filter just some columns
         df_users = df_users[columns]
         df_users.sort_values(columns[0], ascending=False, inplace=True)
-        csv_path = os.path.join(self.output_path, self.CSV_USER_SUMMARY % (self.HOST_NAME, self.name))
+        csv_path = os.path.join(self.output_path, self.CSV_USERS_SUMMARY % (self.HOST_NAME, self.name))
         df_users.to_csv(csv_path)
         df_users.index = df_users.index.map(lambda u: self.USER_URL_TEMPLATE % {'user': u})
         print(tabulate(
@@ -108,3 +127,40 @@ class Host:
             headers="keys",
         ))
         return csv_path
+
+    def show_user_comments(self, freq: str = 'W', parent_type: str = '', show_fig: bool = True):
+        """Show aggregated user contribution statistics in a table and a double chart
+
+        :param freq: aggregation frequency - Day, Week, Month, ...
+        :param parent_type: item kind like issue/PR
+        :param show_fig: show figure after all
+        :return: path to CSV table and PDF figure
+        """
+        assert self.DATA_KEY_COMMENTS in self.data, 'forgotten call `convert_comments_timeline`'
+
+        if not self.data.get(self.DATA_KEY_COMMENTS):
+            logging.warning('No data to process/show.')
+            return
+
+        logging.debug(f'Show comments stats for "{self.repo_name}"')
+        df_comments = compute_user_comment_timeline(
+            self.data[self.DATA_KEY_COMMENTS],
+            parent_type=parent_type,
+            freq=freq,
+        )
+        csv_path = os.path.join(self.output_path,
+                                self.CSV_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type))
+        df_comments.to_csv(csv_path)
+
+        cum_sum = df_comments.sum(axis=0)
+        select_users = list(cum_sum[cum_sum >= self.MIN_CONTRIBUTION_COUNT].index)
+        fig = draw_comments_timeline(
+            df_comments[select_users], title=f'User comments aggregation - Freq: {freq}, Type:{parent_type}'
+        )
+        fig_path = os.path.join(self.output_path,
+                                self.PDF_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type))
+        fig.savefig(fig_path)
+        if not show_fig:
+            plt.close(fig)
+
+        return csv_path, fig_path
