@@ -10,7 +10,7 @@ from tqdm import tqdm
 #: define conversion for frequency grouping
 DATETIME_FREQ = {
     'D': "%Y-%m-%d",
-    'W': "%Y-%W",
+    'W': "%Y-w%W",
     'M': "%Y-%m",
     'Y': "%Y",
 }
@@ -74,15 +74,16 @@ def compute_user_comment_timeline(
     """
     assert freq in DATETIME_FREQ, 'unsupported freq format, allowed: %r' % DATETIME_FREQ.keys()
 
-    df_comments = pd.DataFrame(items)
-    if parent_type:
-        df_comments = df_comments[df_comments['parent_type'] == parent_type]
-
     def _reformat(dt):
         return pd.to_datetime(dt).strftime(DATETIME_FREQ[freq])
 
-    df_comments['created_at'] = df_comments['created_at'].apply(_reformat)
+    if parent_type:
+        # filter issue/PR type aka comment parent
+        items = [i for i in items if parent_type.lower() in i['parent_type']]
 
+    df_comments = pd.DataFrame(items)
+    # convert to date according to the freq.
+    df_comments['created_at'] = df_comments['created_at'].apply(_reformat)
     # keep only single sample per user-time-issue
     df_comments.drop_duplicates(ignore_index=True, inplace=True)
 
