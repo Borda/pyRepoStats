@@ -25,15 +25,29 @@ def draw_comments_timeline(df_comments: pd.DataFrame, figsize: Tuple[int] = (18,
     fig.gca().set_title(title)
 
     # show the cumulative chart
-    df_comments.plot(ax=axarr[0], kind='area', stacked=True, grid=True, xlabel='DateTime', legend=False, cmap='gist_ncar')
+    df_comments.plot(
+        ax=axarr[0],
+        kind='area',
+        stacked=True,
+        grid=True,
+        xlabel='DateTime',
+        legend=False,
+        cmap='gist_ncar',
+    )
     axarr[0].set_xticklabels(axarr[0].get_xticklabels(), rotation=70, ha='center')
     axarr[0].set_xlim(0, max([t._x for t in axarr[0].get_xticklabels() if t._text]))
     axarr[0].legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=8, fancybox=True, shadow=True)
 
-    # see: https://matplotlib.org/3.3.2/gallery/images_contours_and_fields/image_annotated_heatmap.html#sphx-glr-gallery-images-contours-and-fields-image-annotated-heatmap-py
     # im = ax.imshow(df_comments.values, vmin=0, interpolation='nearest', cmap='YlGn')
+    # see: https://matplotlib.org/3.3.2/gallery/images_contours_and_fields/image_annotated_heatmap.html
     df_comments.sort_index(ascending=False, inplace=True)
-    im = axarr[1].pcolormesh(df_comments.values, vmin=0, cmap='YlGn', edgecolors='w', linewidth=1)
+    im = axarr[1].pcolormesh(
+        df_comments.values,
+        vmin=0,
+        cmap='YlGn',
+        edgecolors='w',
+        linewidth=1,
+    )
     # axes descriptions
     axarr[1].set_ylabel('Aggregated dates')
     axarr[1].set_yticks([i + 0.5 for i, _ in enumerate(df_comments.index)])
