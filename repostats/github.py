@@ -38,8 +38,19 @@ To use higher limit generate personal auth token, see https://developer.github.c
         '[bot]',
     )
 
-    def __init__(self, repo_name: str, output_path: str, auth_token: Optional[str] = None):
-        super().__init__(repo_name=repo_name, output_path=output_path, auth_token=auth_token)
+    def __init__(
+            self,
+            repo_name: str,
+            output_path: str,
+            auth_token: Optional[str] = None,
+            min_contribution: int = 3,
+    ):
+        super().__init__(
+            repo_name=repo_name,
+            output_path=output_path,
+            auth_token=auth_token,
+            min_contribution=min_contribution,
+        )
         self.auth_header = {'Authorization': f'token {auth_token}'} if auth_token else {}
 
     def _fetch_overview(self) -> List[dict]:
@@ -180,7 +191,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
                     parent_type='PR' if 'pull' in item['html_url'] else 'issue',
                     parent_idx=int(item['number']),
                     author=self.__parse_user(cmt),
-                    created_at=cmt['created_at'],  # todo
+                    created_at=cmt['created_at'],
                 ) for cmt in item_comments if not self._is_user_bot(self.__parse_user(cmt))
             ]
         return comments

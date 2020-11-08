@@ -22,8 +22,6 @@ class Host:
     HOST_NAME = 'unknown'
     #: if host provides direct link to user
     USER_URL_TEMPLATE = '%(user)s'
-    #: define min number contributions
-    MIN_CONTRIBUTION_COUNT = 3
     #: limit number of parallel requests to host
     NB_PARALLEL_REQUESTS = 7
     #: template name for exporting CSV with users overview
@@ -41,11 +39,24 @@ class Host:
     #: define bot users as name pattern
     USER_BOTS = tuple()
 
-    def __init__(self, repo_name: str, output_path: str, auth_token: Optional[str] = None):
+    def __init__(
+            self,
+            repo_name: str,
+            output_path: str,
+            auth_token: Optional[str] = None,
+            min_contribution: int = 3,
+    ):
+        """
+        :param repo_name: Repository name, need to  ne unique
+        :param output_path: Path to saving dumped cache, csw tables, pdf figures
+        :param auth_token: authentication token fro API access
+        :param min_contribution: minimal nb contributions for visualization
+        """
         self.repo_name = repo_name
         self.name = repo_name.replace('/', '-')
         self.output_path = output_path
         self.auth_token = auth_token
+        self.min_contribution_count = min_contribution
         self.data = {}
         self.outdated = 0
 
@@ -122,7 +133,7 @@ class Host:
         df_users.to_csv(csv_path)
         df_users.index = df_users.index.map(lambda u: self.USER_URL_TEMPLATE % {'user': u})
         print(tabulate(
-            df_users[df_users[columns[0]] >= self.MIN_CONTRIBUTION_COUNT],
+            df_users[df_users[columns[0]] >= self.min_contribution_count],
             tablefmt="pipe",
             headers="keys",
         ))
@@ -153,7 +164,7 @@ class Host:
         df_comments.to_csv(csv_path)
 
         cum_sum = df_comments.sum(axis=0)
-        select_users = list(cum_sum[cum_sum >= self.MIN_CONTRIBUTION_COUNT].index)
+        select_users = list(cum_sum[cum_sum >= self.min_contribution_count].index)
         fig = draw_comments_timeline(
             df_comments[select_users], title=f'User comments aggregation - Freq: {freq}, Type:{parent_type}'
         )

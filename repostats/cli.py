@@ -12,12 +12,10 @@ from repostats.github import GitHub
 from repostats.host import Host
 
 PATH_ROOT = os.path.dirname(os.path.dirname(__file__))
-#: define minimal user contribution to show in tables
-MIN_CONTRIBUTION_COUNT = 3
 #: OS env. variable for getting Token
 ENV_VAR_AUTH_TOKEN = 'AUTH_TOKEN'
 #: take global setting from OS env
-SHOW_FIGURES = bool(int(os.getenv('SHOW_FIGURE', default=1)))
+ENV_VAR_SHOW_FIGURES = 'SHOW_FIGURE'
 
 
 def get_arguments():
@@ -30,6 +28,8 @@ def get_arguments():
     # todo: probably use some other temp folder
     parser.add_argument('-o', '--output_path', type=str, required=False, default=PATH_ROOT,
                         help='Personal Auth token needed for higher API request limit.')
+    parser.add_argument('-n', '--min_contribution', type=int, required=False, default=3,
+                        help='Specify minimal user contribution for visualisations.')
     # todo: consider use groups for options
     parser.add_argument('--users_summary', type=str, nargs='*',
                         help='Show the summary stats for each user, the fist one is used for sorting.')
@@ -43,12 +43,13 @@ def get_arguments():
 
 
 def init_host(args: Namespace) -> Host:
+    default_params = dict(
+        output_path=args.output_path,
+        auth_token=args.auth_token,
+        min_contribution=args.min_contribution,
+    )
     if args.github_repo:
-        host = GitHub(
-            args.github_repo,
-            output_path=args.output_path,
-            auth_token=args.auth_token,
-        )
+        host = GitHub(args.github_repo, **default_params)
     else:
         host = None
     return host
@@ -60,6 +61,7 @@ def main(args: Namespace):
     if not args.auth_token:
         logging.debug('Using `auth_token` from your OS environment variables...')
         args.auth_token = auth_token
+    show_figures = bool(int(os.getenv(ENV_VAR_SHOW_FIGURES, default=1)))
 
     host = init_host(args)
     if not host:
@@ -75,10 +77,10 @@ def main(args: Namespace):
 
     if args.user_comments:
         # todo: accept and parse multiple type/freq combinations
-        host.show_user_comments(freq=args.user_comments, show_fig=SHOW_FIGURES)
+        host.show_user_comments(freq=args.user_comments, show_fig=show_figures)
 
     # at the end show all figures
-    if SHOW_FIGURES:
+    if show_figures:
         plt.show()
 
 

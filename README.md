@@ -46,22 +46,24 @@ For GitHub users we recommend using your personal GitHub token which significant
 
 The calls above just pull the data, to get/show some results check available options `python -m repostats.cli --help`
 
-To see following summary table use `--users_summary "merged PRs" "commented PRs" "opened issues" "commented issues"`
+* To see following summary table use `--users_summary "merged PRs" "commented PRs" "opened issues" "commented issues"`
 
-| user                                              |   merged PRs |   commented PRs |   opened issues |   commented issues |
-|:--------------------------------------------------|-------------:|----------------:|----------------:|-------------------:|
-| [williamFalcon](https://github.com/williamFalcon) |           74 |              21 |              14 |                  8 |
-| [Borda](https://github.com/Borda)                 |           42 |              35 |               4 |                 18 |
-| [akihironitta](https://github.com/akihironitta)   |           17 |               1 |               5 |                  5 |
-| [ananyahjha93](https://github.com/ananyahjha93)   |           14 |               2 |               6 |                 21 |
-| [annikabrundyn](https://github.com/annikabrundyn) |           12 |               0 |               0 |                  2 |
-| [djbyrne](https://github.com/djbyrne)             |           11 |               2 |               4 |                  4 |
-| [nateraw](https://github.com/nateraw)             |            9 |               1 |               6 |                  8 |
-| [teddykoker](https://github.com/teddykoker)       |            3 |               2 |               0 |                  0 |
+    | user                                              |   merged PRs |   commented PRs |   opened issues |   commented issues |
+    |:--------------------------------------------------|-------------:|----------------:|----------------:|-------------------:|
+    | [williamFalcon](https://github.com/williamFalcon) |           74 |              21 |              14 |                  8 |
+    | [Borda](https://github.com/Borda)                 |           42 |              35 |               4 |                 18 |
+    | [akihironitta](https://github.com/akihironitta)   |           17 |               1 |               5 |                  5 |
+    | [ananyahjha93](https://github.com/ananyahjha93)   |           14 |               2 |               6 |                 21 |
+    | [annikabrundyn](https://github.com/annikabrundyn) |           12 |               0 |               0 |                  2 |
+    | [djbyrne](https://github.com/djbyrne)             |           11 |               2 |               4 |                  4 |
+    | [nateraw](https://github.com/nateraw)             |            9 |               1 |               6 |                  8 |
+    | [teddykoker](https://github.com/teddykoker)       |            3 |               2 |               0 |                  0 |
 
-We also offer showing some contribution aggregation over time such as Day/Week/Month, to do you use option `--user_comments W` which draw following double chart: (a) cumulative aggregation over all users and (b) heatmap like image with time in Y and user in X axis.
+* With `--min_contribution N` you can simple filter what is the minimal number of contribution to  show users in table or in Figures.
 
-![User-comments-aggregation](./assets/user-comments-aggregation.png)
+* We also offer showing some contribution aggregation over time such as Day/Week/Month, to do you use option `--user_comments W` which draw following double chart: (a) cumulative aggregation over all users and (b) heatmap like image with time in Y and user in X axis.
+
+    ![User-comments-aggregation](./assets/user-comments-aggregation.png)
 
 To deny showing figures set environment variable `export SHOW_FIGURES=0`.
 
