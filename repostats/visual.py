@@ -9,7 +9,7 @@ import pandas as pd
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
-def draw_comments_timeline(df_comments: pd.DataFrame, fig_size: Tuple[int] = (18, 14), title: str = '') -> plt.Figure:
+def draw_comments_timeline(df_comments: pd.DataFrame, fig_size: Tuple[int] = (12, 14), title: str = '') -> plt.Figure:
     """Draw a figure with two charts, one as cumulative date/contribution and user/time heatmap
 
     :param df_comments: table with aggregated comments
@@ -47,7 +47,7 @@ def draw_comments_timeline(df_comments: pd.DataFrame, fig_size: Tuple[int] = (18
     ax_abar.set_xticklabels(times[::2], rotation=70, ha='center')
     ax_abar.set_xlim(0, len(times) - 1)
     ax_abar.set_ylim(0, max(np.sum(df_comments.values, axis=1)) * 1.1)
-    leg_cols = 9
+    leg_cols = 7
     leg_rows = np.ceil(len(df_comments.columns) / leg_cols)
     ax_abar.legend(
         loc='upper center',
@@ -59,7 +59,7 @@ def draw_comments_timeline(df_comments: pd.DataFrame, fig_size: Tuple[int] = (18
 
     # im = ax.imshow(df_comments.values, vmin=0, interpolation='nearest', cmap='YlGn')
     # see: https://matplotlib.org/3.3.2/gallery/images_contours_and_fields/image_annotated_heatmap.html
-    df_comments.sort_index(ascending=False, inplace=True)
+    df_comments = df_comments.sort_index(ascending=False)
     im = ax_hmap.pcolormesh(
         df_comments.values,
         vmin=0,

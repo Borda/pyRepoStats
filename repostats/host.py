@@ -152,7 +152,11 @@ class Host:
                                 self.CSV_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type))
         df_comments.to_csv(csv_path)
 
-        fig = draw_comments_timeline(df_comments, title=f'User comments aggregation - Freq: {freq}, Type:{parent_type}')
+        cum_sum = df_comments.sum(axis=0)
+        select_users = list(cum_sum[cum_sum >= self.MIN_CONTRIBUTION_COUNT].index)
+        fig = draw_comments_timeline(
+            df_comments[select_users], title=f'User comments aggregation - Freq: {freq}, Type:{parent_type}'
+        )
         fig_path = os.path.join(self.output_path,
                                 self.PDF_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type))
         fig.savefig(fig_path)
