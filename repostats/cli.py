@@ -10,6 +10,7 @@ from pprint import pformat
 import matplotlib.pyplot as plt
 from repostats.github import GitHub
 from repostats.host import Host
+from repostats.stats import DATETIME_FREQ
 
 PATH_ROOT = os.path.dirname(os.path.dirname(__file__))
 #: OS env. variable for getting Token
@@ -33,9 +34,10 @@ def get_arguments():
     # todo: consider use groups for options
     parser.add_argument('--users_summary', type=str, nargs='*',
                         help='Show the summary stats for each user, the fist one is used for sorting.')
-    # todo: consider also what king of issue/PR here or another - tuple(type,freq)
-    parser.add_argument('--user_comments', type=str, required=False, default=None, choices=['D', 'W', 'M', 'Y'],
-                        help='Select granularity of timeline - Day, Week, Month.')
+    parser.add_argument('--user_comments', type=str, required=False, default=None, nargs='*',
+                        choices=['D', 'W', 'M', 'Y', 'issue', 'pr', 'all'],
+                        help='Select combination of granularity of timeline - [D]ay, [W]eek, [M]onth and [Y]ear,'
+                             ' and item type - issue or PR (if you not specify, all will be used).')
 
     args = parser.parse_args()
     logging.info('Parsed arguments: \n%s', pformat(vars(args)))
@@ -76,8 +78,18 @@ def main(args: Namespace):
         host.show_users_summary(columns=args.users_summary)
 
     if args.user_comments:
-        # todo: accept and parse multiple type/freq combinations
-        host.show_user_comments(freq=args.user_comments, show_fig=show_figures)
+        freqs = [f for f in args.user_comments if f in DATETIME_FREQ]
+        types = [t for t in args.user_comments if t not in DATETIME_FREQ]
+        if not freqs:
+            logging.warning(
+                f'You have requested {args.user_comments} but not of them is time aggregation: {DATETIME_FREQ.keys()}'
+            )
+        # if none set, use all
+        types = ['all'] if not types else types
+        for freq in freqs:
+            for tp in types:
+                tp = '' if tp.lower() == 'all' else tp
+                host.show_user_comments(freq=freq, parent_type=tp, show_fig=show_figures)
 
     # at the end show all figures
     if show_figures:

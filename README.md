@@ -46,7 +46,7 @@ For GitHub users we recommend using your personal GitHub token which significant
 
 The calls above just pull the data, to get/show some results check available options `python -m repostats.cli --help`
 
-* To see following summary table use `--users_summary "merged PRs" "commented PRs" "opened issues" "commented issues"`
+* To see following summary table use `--users_summary "merged PRs" "commented PRs" "opened issues" "commented issues"` where the fist column is used for sorting rows with users:
 
     | user                                              |   merged PRs |   commented PRs |   opened issues |   commented issues |
     |:--------------------------------------------------|-------------:|----------------:|----------------:|-------------------:|
@@ -59,9 +59,11 @@ The calls above just pull the data, to get/show some results check available opt
     | [nateraw](https://github.com/nateraw)             |            9 |               1 |               6 |                  8 |
     | [teddykoker](https://github.com/teddykoker)       |            3 |               2 |               0 |                  0 |
 
-* With `--min_contribution N` you can simple filter what is the minimal number of contribution to  show users in table or in Figures.
+* With `--min_contribution N` you can simple filter what is the minimal number of contribution to  show users in Table or Figures.
 
-* We also offer showing some contribution aggregation over time such as Day/Week/Month, to do you use option `--user_comments W` which draw following double chart: (a) cumulative aggregation over all users and (b) heatmap like image with time in Y and user in X axis.
+* We also offer showing some contribution aggregation over time such as Day/Week/Month/Year, to do you use option `--user_comments W` which draw following double chart: (a) cumulative aggregation over all users and (b) heatmap like image with time in Y and user in X axis.
+  Moreover you can also also specify type such as issue or PR; so with `--user_comments W issue pr` you can simply get two figures - one with weekly aggregation for issue and another for PRs.
+  The very same way you can specify multiple time sampling `--user_comments W M` for weekly and monthly aggregations.
 
     ![User-comments-aggregation](./assets/user-comments-aggregation.png)
 

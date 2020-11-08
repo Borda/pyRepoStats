@@ -105,13 +105,12 @@ class Host:
         :param columns: select columns to be shown in terminal
         :return: path to the exported table
         """
+        logging.debug('Show users summary...')
         assert self.DATA_KEY_SIMPLE in self.data, 'forgotten call `convert_to_items`'
 
         if not self.data.get(self.DATA_KEY_SIMPLE):
             logging.warning('No data to process/show.')
             return
-
-        logging.debug(f'Show users stats for "{self.repo_name}"')
         df_users = compute_users_summary(self.data[self.DATA_KEY_SIMPLE])
 
         # filter columns which are possible
@@ -147,29 +146,29 @@ class Host:
         :param show_fig: show figure after all
         :return: path to CSV table and PDF figure
         """
+        logging.info(f'Show comments aggregation for freq: "{freq}" & type: "{parent_type}"')
         assert self.DATA_KEY_COMMENTS in self.data, 'forgotten call `convert_comments_timeline`'
 
         if not self.data.get(self.DATA_KEY_COMMENTS):
             logging.warning('No data to process/show.')
             return
 
-        logging.debug(f'Show comments stats for "{self.repo_name}"')
         df_comments = compute_user_comment_timeline(
             self.data[self.DATA_KEY_COMMENTS],
             parent_type=parent_type,
             freq=freq,
         )
         csv_path = os.path.join(self.output_path,
-                                self.CSV_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type))
+                                self.CSV_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type or "all"))
         df_comments.to_csv(csv_path)
 
         cum_sum = df_comments.sum(axis=0)
         select_users = list(cum_sum[cum_sum >= self.min_contribution_count].index)
         fig = draw_comments_timeline(
-            df_comments[select_users], title=f'User comments aggregation - Freq: {freq}, Type:{parent_type}'
+            df_comments[select_users], title=f'User comments aggregation - Freq: {freq}, Type:{parent_type or "all"}'
         )
         fig_path = os.path.join(self.output_path,
-                                self.PDF_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type))
+                                self.PDF_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type or "all"))
         fig.savefig(fig_path)
         if not show_fig:
             plt.close(fig)

@@ -80,7 +80,7 @@ def compute_user_comment_timeline(
 
     if parent_type:
         # filter issue/PR type aka comment parent
-        items = [i for i in items if parent_type.lower() in i['parent_type']]
+        items = [i for i in items if parent_type.lower() in i['parent_type'].lower()]
 
     df_comments = pd.DataFrame(items)
     # convert to date according to the freq.

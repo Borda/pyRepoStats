@@ -1,6 +1,7 @@
 """
 Copyright (C) 2020-2020 Jiri Borovec <...>
 """
+import logging
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -27,7 +28,7 @@ def draw_comments_timeline(df_comments: pd.DataFrame, title: str = 'User contrib
     leg_cols = int(fig_width / 1.8)
     leg_rows = np.ceil(len(df_comments.columns) / leg_cols)
     # compose from offset plus max time-step cumulative contribution and legend
-    fig_height_top = 1 + max(np.sum(df_comments.values, axis=1)) * 0.1 + leg_rows * 0.25
+    fig_height_top = 1 + max(np.sum(df_comments.values, axis=1)) * 0.03 + leg_rows * 0.3
     fig_height_bottom = 1 + len(df_comments.index) * 0.3
 
     # create the main figure
@@ -39,6 +40,10 @@ def draw_comments_timeline(df_comments: pd.DataFrame, title: str = 'User contrib
     )
     fig.gca().set_title(title)
     ax_abar, ax_hmap = axarr
+
+    if df_comments.empty:
+        logging.error('You have passed empty DataFrame, so also empty Figure is returned.')
+        return fig
 
     # show the cumulative chart
     df_comments.plot(
@@ -55,10 +60,10 @@ def draw_comments_timeline(df_comments: pd.DataFrame, title: str = 'User contrib
     ax_abar.set_xticks(range(len(times))[::x_step])
     ax_abar.set_xticklabels(times[::2], rotation=70, ha='center')
     ax_abar.set_xlim(0, len(times) - 1)
-    ax_abar.set_ylim(0, max(np.sum(df_comments.values, axis=1)) * 1.1)
+    ax_abar.set_ylim(0, max(np.sum(df_comments.values, axis=1)) * 1.05)
     ax_abar.legend(
         loc='upper center',
-        bbox_to_anchor=(0.5, 1.0 + (leg_rows * 0.065)),
+        bbox_to_anchor=(0.5, 1.0 + (leg_rows * 0.25 / fig_height_top)),
         ncol=leg_cols,
         fancybox=True,
         shadow=True,
@@ -82,7 +87,7 @@ def draw_comments_timeline(df_comments: pd.DataFrame, title: str = 'User contrib
     ax_hmap.set_xticks([i + 0.5 for i, _ in enumerate(df_comments.columns)])
     ax_hmap.set_xticklabels(df_comments.columns, rotation=-90, ha='center')
     # Create colorbar
-    cax = make_axes_locatable(ax_hmap).append_axes("right", size="3%", pad=0.1)
+    cax = make_axes_locatable(ax_hmap).append_axes("right", size=0.3, pad=0.1)
     cbar = plt.colorbar(im, cax=cax)
     cbar.ax.set_ylabel('Contributions', rotation=90, va="center")
     cbar.minorticks_on()
