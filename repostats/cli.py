@@ -30,9 +30,10 @@ def get_arguments():
     # todo: probably use some other temp folder
     parser.add_argument('-o', '--output_path', type=str, required=False, default=PATH_ROOT,
                         help='Personal Auth token needed for higher API request limit.')
-    # todo: consider use groups
+    # todo: consider use groups for options
     parser.add_argument('--users_summary', type=str, nargs='*',
                         help='Show the summary stats for each user, the fist one is used for sorting.')
+    # todo: consider also what king of issue/PR here or another - tuple(type,freq)
     parser.add_argument('--user_comments', type=str, required=False, default=None, choices=['D', 'W', 'M', 'Y'],
                         help='Select granularity of timeline - Day, Week, Month.')
 
