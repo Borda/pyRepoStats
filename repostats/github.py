@@ -31,7 +31,12 @@ class GitHub(Host):
 Request failed, probably you have reached free/personal request's limit...
 To use higher limit generate personal auth token, see https://developer.github.com/v3/#rate-limiting
 """
-    BOTS_USERS = ('pep8speaks', '[bot]')
+    #: define bot users as name pattern
+    USER_BOTS = (
+        'codecov',
+        'pep8speaks',
+        '[bot]',
+    )
 
     def __init__(self, repo_name: str, output_path: str, auth_token: Optional[str] = None):
         super().__init__(repo_name=repo_name, output_path=output_path, auth_token=auth_token)
@@ -148,9 +153,6 @@ To use higher limit generate personal auth token, see https://developer.github.c
     def __parse_user(field: dict) -> str:
         return field['user']['login']
 
-    def __is_user_bot(self, user: str) -> bool:
-        return any(u in user for u in self.BOTS_USERS)
-
     def _convert_to_simple(self, issues: List[dict]) -> List[dict]:
         """Aggregate issue/PR affiliations."""
         items = [
@@ -159,7 +161,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 state=issue['state'],
                 author=self.__parse_user(issue),
                 commenters=list(set(self.__parse_user(com) for com in issue['comments']
-                                    if not self.__is_user_bot(self.__parse_user(com)))),
+                                    if not self._is_user_bot(self.__parse_user(com)))),
             )
             for issue in tqdm(issues, desc='Parsing simplified items')
             if isinstance(issue.get('comments'), list)
@@ -179,6 +181,6 @@ To use higher limit generate personal auth token, see https://developer.github.c
                     parent_idx=int(item['number']),
                     author=self.__parse_user(cmt),
                     created_at=cmt['created_at'],  # todo
-                ) for cmt in item_comments if not self.__is_user_bot(self.__parse_user(cmt))
+                ) for cmt in item_comments if not self._is_user_bot(self.__parse_user(cmt))
             ]
         return comments

@@ -74,6 +74,7 @@ def main(args: Namespace):
         host.show_users_summary(columns=args.users_summary)
 
     if args.user_comments:
+        # todo: accept and parse multiple type/freq combinations
         host.show_user_comments(freq=args.user_comments, show_fig=SHOW_FIGURES)
 
     # at the end show all figures
