@@ -104,7 +104,7 @@ jobs:
 
     - name: Run sample
       env:
-        AUTH_TOKEN: ${{ secrets.API_TOKEN }}
+        SHOW_FIGURE: 0
       run: |
         mkdir results
         python repostats/cli.py -gh borda/pyRepoStats -o results -t ${{ secrets.API_TOKEN }}
