@@ -59,6 +59,7 @@ class Host:
         self.min_contribution_count = min_contribution
         self.data = {}
         self.outdated = 0
+        self.timestamp = None
 
     @abstractmethod
     def _convert_to_simple(self, collection: List[dict]) -> List[dict]:
@@ -98,6 +99,8 @@ class Host:
             self.data[self.DATA_KEY_COMMENTS] = self._convert_comments_timeline(self.data[self.DATA_KEY_RAW].values())
 
             save_data(self.data, path_dir=self.output_path, repo_name=self.repo_name, host=self.HOST_NAME)
+        # take the saved date
+        self.timestamp = self.data.get('updated_at')
 
     def show_users_summary(self, columns: List[str]):
         """Show user contribution overview and print table to terminal with selected `columns`.
@@ -164,12 +167,13 @@ class Host:
 
         cum_sum = df_comments.sum(axis=0)
         select_users = list(cum_sum[cum_sum >= self.min_contribution_count].index)
-        fig = draw_comments_timeline(
-            df_comments[select_users], title=f'User comments aggregation - Freq: {freq}, Type:{parent_type or "all"}'
+        fig, extras = draw_comments_timeline(
+            df_comments[select_users],
+            title=f'User comments aggregation @{self.timestamp} - Freq: {freq}, Type:{parent_type or "all"}'
         )
         fig_path = os.path.join(self.output_path,
                                 self.PDF_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type or "all"))
-        fig.savefig(fig_path)
+        fig.savefig(fig_path, bbox_extra_artists=(extras['legend'], extras['colorbar']), bbox_inches='tight')
         if not show_fig:
             plt.close(fig)
 

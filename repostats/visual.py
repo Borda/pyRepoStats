@@ -2,6 +2,7 @@
 Copyright (C) 2020-2020 Jiri Borovec <...>
 """
 import logging
+from typing import Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,26 +10,28 @@ import pandas as pd
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
-def draw_comments_timeline(df_comments: pd.DataFrame, title: str = 'User contribution aggregation') -> plt.Figure:
+def draw_comments_timeline(
+        df_comments: pd.DataFrame, title: str = 'User contribution aggregation'
+) -> Tuple[plt.Figure, dict]:
     """Draw a figure with two charts, one as cumulative date/contribution and user/time heatmap
 
     :param df_comments: table with aggregated comments
     :param fig_size: output figure size
     :param title: optional figure title
-    :return: Figure
+    :return: Figure and extras
 
     >>> import pandas as pd
     >>> comments = [dict(Date='2020-10', me=5, you=3), dict(Date='2020-11', me=2, you=4)]
     >>> df = pd.DataFrame(comments).set_index('Date')
-    >>> fig = draw_comments_timeline(df)
+    >>> fig, extras = draw_comments_timeline(df)
     """
     # take the offset plus max from time-steps in area-bar and users in heatmap
     fig_width = 2 + max(len(df_comments.columns) * 0.3, len(df_comments.index) * 0.2)
     # define legend grid for are-bar
     leg_cols = int(fig_width / 1.8)
     leg_rows = np.ceil(len(df_comments.columns) / leg_cols)
-    # compose from offset plus max time-step cumulative contribution and legend
-    fig_height_top = 1 + max(np.sum(df_comments.values, axis=1)) * 0.03 + leg_rows * 0.3
+    # compose from offset plus nb legend lines
+    fig_height_top = 4 + leg_rows * 0.3
     fig_height_bottom = 1 + len(df_comments.index) * 0.3
 
     # create the main figure
@@ -61,7 +64,7 @@ def draw_comments_timeline(df_comments: pd.DataFrame, title: str = 'User contrib
     ax_abar.set_xticklabels(times[::2], rotation=70, ha='center')
     ax_abar.set_xlim(0, len(times) - 1)
     ax_abar.set_ylim(0, max(np.sum(df_comments.values, axis=1)) * 1.05)
-    ax_abar.legend(
+    lgd = ax_abar.legend(
         loc='upper center',
         bbox_to_anchor=(0.5, 1.0 + (leg_rows * 0.25 / fig_height_top)),
         ncol=leg_cols,
@@ -93,4 +96,4 @@ def draw_comments_timeline(df_comments: pd.DataFrame, title: str = 'User contrib
     cbar.minorticks_on()
 
     # fig.tight_layout(pad=0.1)
-    return fig
+    return fig, {'legend': lgd, 'colorbar': cax}
