@@ -13,10 +13,8 @@ from repostats.host import Host
 from repostats.stats import DATETIME_FREQ
 
 PATH_ROOT = os.path.dirname(os.path.dirname(__file__))
-#: OS env. variable for getting Token
-ENV_VAR_AUTH_TOKEN = 'AUTH_TOKEN'
 #: take global setting from OS env
-ENV_VAR_SHOW_FIGURES = 'SHOW_FIGURE'
+SHOW_FIGURES = bool(int(os.getenv('SHOW_FIGURE', default=1)))
 
 
 def get_arguments():
@@ -59,12 +57,6 @@ def init_host(args: Namespace) -> Host:
 
 def main(args: Namespace):
     """Main entry point."""
-    auth_token = os.getenv(ENV_VAR_AUTH_TOKEN)
-    if not args.auth_token:
-        logging.debug('Using `auth_token` from your OS environment variables...')
-        args.auth_token = auth_token
-    show_figures = bool(int(os.getenv(ENV_VAR_SHOW_FIGURES, default=1)))
-
     host = init_host(args)
     if not host:
         exit('No repository specified.')
@@ -89,10 +81,10 @@ def main(args: Namespace):
         for freq in freqs:
             for tp in types:
                 tp = '' if tp.lower() == 'all' else tp
-                host.show_user_comments(freq=freq, parent_type=tp, show_fig=show_figures)
+                host.show_user_comments(freq=freq, parent_type=tp, show_fig=SHOW_FIGURES)
 
     # at the end show all figures
-    if show_figures:
+    if SHOW_FIGURES:
         plt.show()
 
 

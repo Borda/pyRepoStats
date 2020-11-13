@@ -24,6 +24,8 @@ class GitHub(Host):
     USER_URL_TEMPLATE = '[%(user)s](https://github.com/%(user)s)'
     #: name to the host
     URL_API = 'https://api.github.com/repos'
+    #: OS env. variable for getting Token
+    OS_ENV_AUTH_TOKEN = 'GH_API_TOKEN'
     #: if you have reached the number of free/allowed requests
     API_LIMIT_REACHED = False
     #: hint/explanation what happened

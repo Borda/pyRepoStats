@@ -70,7 +70,7 @@ jobs:
 
     - name: Tests and coverage
       env:
-        AUTH_TOKEN: ${{ secrets.API_TOKEN }}
+        GH_API_TOKEN: ${{ secrets.API_TOKEN }}
         # suppress showing figures as it may bail on server without display
         SHOW_FIGURE: 0
       run: |

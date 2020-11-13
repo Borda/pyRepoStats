@@ -38,6 +38,8 @@ class Host:
     DATA_KEY_COMMENTS = 'comments_timeline'
     #: define bot users as name pattern
     USER_BOTS = tuple()
+    #: OS env. variable for getting Token
+    OS_ENV_AUTH_TOKEN = 'AUTH_API_TOKEN'
 
     def __init__(
             self,
@@ -55,8 +57,13 @@ class Host:
         self.repo_name = repo_name
         self.name = repo_name.replace('/', '-')
         self.output_path = output_path
-        self.auth_token = auth_token
         self.min_contribution_count = min_contribution
+        self.auth_token = auth_token
+        os_token = os.getenv(self.OS_ENV_AUTH_TOKEN)
+        if not self.auth_token and os_token:
+            logging.debug(f'Using `{self.OS_ENV_AUTH_TOKEN}` from your OS environment variables...')
+            self.auth_token = os_token
+
         self.data = {}
         self.outdated = 0
         self.timestamp = None

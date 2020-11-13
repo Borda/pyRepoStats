@@ -36,7 +36,7 @@ Lets show how to pull data from Github repository, use of the following calls
     ```
   just note that with this way usage should also consider passing `-o` argument for output path, otherwise all caches and results will be saved in installation folder, most likely _site-packages_
 
-To simplify the token passing in each call, you can export the token to evnaronment variables `export AUTH_TOKEN=<your-personal-token>`
+To simplify the token passing in each call, you can export the token to environment variables `export GH_API_TOKEN=<your-personal-token>` for Github.
 
 ### Github use-case
 
