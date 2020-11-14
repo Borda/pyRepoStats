@@ -54,7 +54,7 @@ def draw_comments_timeline(
         kind='area',
         stacked=True,
         grid=True,
-        ylabel='Contributions',
+        ylabel='Contributions / commented',
         xlabel='Aggregated time',
         legend=False,
         cmap='gist_ncar',
