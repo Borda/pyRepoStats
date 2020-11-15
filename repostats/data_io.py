@@ -30,7 +30,11 @@ def load_data(path_dir: str, repo_name: str, host: str = '') -> dict:
     >>> data2 = load_data(path_dir='.', repo_name='my/repo')
     >>> from pprint import pprint
     >>> pprint(data2)  # doctest: +ELLIPSIS
-    {'item': 123, 'updated_at': '...', 'version': '...'}
+    {'host-name': '',
+     'item': 123,
+     'repo-name': 'my/repo',
+     'updated_at': '...',
+     'version': '...'}
     >>> os.remove(pj)
     """
     assert os.path.isdir(path_dir)
@@ -61,6 +65,8 @@ def save_data(data: dict, path_dir: str, repo_name: str, host: str = '') -> str:
     data.update({
         'version': __version__,
         'updated_at': str(datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")),
+        'host-name': host,
+        'repo-name': repo_name,
     })
 
     # todo: consider saving to another/tep file and replace afterwords, prevent interruption while dump

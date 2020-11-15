@@ -17,6 +17,10 @@ from repostats.host import Host
 
 
 class GitHub(Host):
+    """Specific implementation for GitHub host.
+
+    see: https://docs.github.com/en/free-pro-team@latest/rest/overview/endpoints-available-for-github-apps
+    """
 
     #: host name, server
     HOST_NAME = 'github'
@@ -176,7 +180,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 commenters=list(set(self.__parse_user(com) for com in issue['comments']
                                     if not self._is_user_bot(self.__parse_user(com)))),
             )
-            for issue in tqdm(issues, desc='Parsing simplified items')
+            for issue in tqdm(issues, desc='Parsing simplified tickets')
             if isinstance(issue.get('comments'), list)
         ]
         return items

@@ -31,9 +31,11 @@ class Host:
     #: template name for exporting Figure/PDF with comment's contributions
     PDF_USER_COMMENTS = '%s_%s_user-comments_freq:%s_type:%s.pdf'
     #: kay to the raw fetch data from host
-    DATA_KEY_RAW = 'raw'
+    DATA_KEY_RAW_INFO = 'raw_info'
+    #: kay to the raw fetch data from host
+    DATA_KEY_RAW_TICKETS = 'raw_tickets'
     #: simplified host data, collection of issues/PRs
-    DATA_KEY_SIMPLE = 'simple_items'
+    DATA_KEY_SIMPLE = 'simple_tickets'
     #: timeline of all comments in the repo
     DATA_KEY_COMMENTS = 'comments_timeline'
     #: define bot users as name pattern
@@ -77,8 +79,12 @@ class Host:
         """Aggregate comments for all issue/PR affiliations."""
 
     @abstractmethod
+    def _fetch_info(self) -> List[dict]:
+        """Download general package info."""
+
+    @abstractmethod
     def _fetch_overview(self) -> List[dict]:
-        """Download all info if from screening."""
+        """Download all info from repository screening."""
 
     def _is_user_bot(self, user: str) -> bool:
         """Allow filter bots from users."""
@@ -94,16 +100,20 @@ class Host:
         self.data = load_data(path_dir=self.output_path, repo_name=self.repo_name, host=self.HOST_NAME)
 
         if not offline:
+            self.data[self.DATA_KEY_RAW_INFO] = self._fetch_info()
             overview = self._fetch_overview()
             overview = {str(i['number']): i for i in overview}
 
-            self.data[self.DATA_KEY_RAW] = self._update_details(self.data.get(self.DATA_KEY_RAW, {}), overview)
+            self.data[self.DATA_KEY_RAW_TICKETS] = self._update_details(
+                self.data.get(self.DATA_KEY_RAW_TICKETS, {}), overview
+            )
             if self.outdated > 0:
                 logging.warning(
                     'Updating from host was not completed, some of following steps may fail or being incorrect.'
                 )
-            self.data[self.DATA_KEY_SIMPLE] = self._convert_to_simple(self.data[self.DATA_KEY_RAW].values())
-            self.data[self.DATA_KEY_COMMENTS] = self._convert_comments_timeline(self.data[self.DATA_KEY_RAW].values())
+            raw_tickets = self.data[self.DATA_KEY_RAW_TICKETS].values()
+            self.data[self.DATA_KEY_SIMPLE] = self._convert_to_simple(raw_tickets)
+            self.data[self.DATA_KEY_COMMENTS] = self._convert_comments_timeline(raw_tickets)
 
             save_data(self.data, path_dir=self.output_path, repo_name=self.repo_name, host=self.HOST_NAME)
         # take the saved date
@@ -116,7 +126,7 @@ class Host:
         :return: path to the exported table
         """
         logging.debug('Show users summary...')
-        assert self.DATA_KEY_SIMPLE in self.data, 'forgotten call `convert_to_items`'
+        assert self.DATA_KEY_SIMPLE in self.data, 'forgotten call `_convert_to_simple`'
 
         if not self.data.get(self.DATA_KEY_SIMPLE):
             logging.warning('No data to process/show.')
