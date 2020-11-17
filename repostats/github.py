@@ -4,6 +4,7 @@ Copyright (C) 2020-2020 Jiri Borovec <...>
 
 import json
 import logging
+import traceback
 import warnings
 from functools import partial
 from multiprocessing import Pool
@@ -41,6 +42,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
     USER_BOTS = (
         'codecov',
         'pep8speaks',
+        'stale',
         '[bot]',
     )
 
@@ -87,7 +89,11 @@ To use higher limit generate personal auth token, see https://developer.github.c
         """General request with checking if request limit was reached."""
         if GitHub.API_LIMIT_REACHED:
             return None
-        req = requests.get(url, headers=auth_header)
+        try:
+            req = requests.get(url, headers=auth_header, timeout=5)
+        except requests.exceptions.Timeout:
+            traceback.print_exc()
+            return None
         if req.status_code == 403:
             return None
         return json.loads(req.content.decode(req.encoding))
