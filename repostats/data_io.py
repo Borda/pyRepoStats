@@ -6,6 +6,8 @@ import json
 import logging
 import os
 from datetime import datetime
+from distutils.version import LooseVersion
+from warnings import warn
 
 from repostats import __version__
 
@@ -44,6 +46,11 @@ def load_data(path_dir: str, repo_name: str, host: str = '') -> dict:
     if os.path.isfile(cache_path):
         with codecs.open(cache_path, 'r', encoding='utf8') as fp:
             data = json.load(fp)
+        data['version'] = data.get('version', '0.0')
+
+        if LooseVersion(data['version']) < LooseVersion("0.1.4"):
+            warn(f"Your last dum was made with {data['version']} which has missing review comments."
+                 "We highly recommend to invalidate this cache and fetch all data from the ground...")
     else:
         data = {}
     return data

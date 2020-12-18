@@ -45,6 +45,8 @@ To use higher limit generate personal auth token, see https://developer.github.c
         'stale',
         '[bot]',
     )
+    #: Wait time for URL reply in seconds
+    REQUEST_TIMEOUT = 15
 
     def __init__(
             self,
@@ -90,7 +92,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         if GitHub.API_LIMIT_REACHED:
             return None
         try:
-            req = requests.get(url, headers=auth_header, timeout=5)
+            req = requests.get(url, headers=auth_header, timeout=GitHub.REQUEST_TIMEOUT)
         except requests.exceptions.Timeout:
             traceback.print_exc()
             return None
@@ -123,9 +125,14 @@ To use higher limit generate personal auth token, see https://developer.github.c
             if detail is None:
                 return idx, None
             item.update(detail)
+            # pull review comments
+            r_comments = GitHub._request_comments(item['review_comments_url'], auth_header)
+        else:
+            r_comments = []
         extras = dict(
             # pull all comments
             comments=GitHub._request_comments(item['comments_url'], auth_header),
+            review_comments=r_comments,
         )
         if any(dl is None for dl in extras.values()):
             return idx, None
@@ -183,11 +190,14 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 type='PR' if 'pull' in issue['html_url'] else 'issue',
                 state=issue['state'],
                 author=self.__parse_user(issue),
-                commenters=list(set(self.__parse_user(com) for com in issue['comments']
-                                    if not self._is_user_bot(self.__parse_user(com)))),
+                commenters=list(set([
+                    self.__parse_user(com) for com in issue['comments'] + issue['review_comments']
+                    if not self._is_user_bot(self.__parse_user(com))
+                ])),
             )
             for issue in tqdm(issues, desc='Parsing simplified tickets')
-            if isinstance(issue.get('comments'), list)
+            # if fetch fails `comments` is int and `review_comments` is missing
+            if isinstance(issue['comments'], list) and isinstance(issue.get('review_comments'), list)
         ]
         return items
 
@@ -195,7 +205,8 @@ To use higher limit generate personal auth token, see https://developer.github.c
         """Aggregate comments for all issue/PR affiliations."""
         comments = []
         for item in tqdm(issues, desc='Parsing comments from all repo'):
-            item_comments = item.get('comments')
+            item_comments = item['comments'] if isinstance(item['comments'], list) else []
+            item_comments += item.get('review_comments', [])
             if not isinstance(item_comments, list):
                 continue
             comments += [
