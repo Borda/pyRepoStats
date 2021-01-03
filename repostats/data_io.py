@@ -9,6 +9,9 @@ from datetime import datetime
 from distutils.version import LooseVersion
 from warnings import warn
 
+import pandas as pd
+from dateutil.parser import ParserError
+
 from repostats import __version__
 
 JSON_CACHE_NAME = 'dump-%s_%s.json'
@@ -49,8 +52,8 @@ def load_data(path_dir: str, repo_name: str, host: str = '') -> dict:
         data['version'] = data.get('version', '0.0')
 
         if LooseVersion(data['version']) < LooseVersion("0.1.4"):
-            warn(f"Your last dum was made with {data['version']} which has missing review comments."
-                 "We highly recommend to invalidate this cache and fetch all data from the ground...")
+            warn(f"Your last dump was made with {data['version']} which has missing review comments.\n"
+                 " We highly recommend to invalidate this cache and fetch all data from the ground...")
     else:
         data = {}
     return data
@@ -81,3 +84,22 @@ def save_data(data: dict, path_dir: str, repo_name: str, host: str = '') -> str:
         json.dump(data, fp, ensure_ascii=False)
 
     return cache_path
+
+
+def convert_date(date: str):
+    """Convert date-time if possible
+
+    >>> convert_date("2020-08")
+    Timestamp('2020-08-01 00:00:00+0000', tz='UTC')
+    """
+    if not date:
+        return date
+    try:
+        date = pd.to_datetime(date)
+    except ParserError:
+        warn(f"Unrecognised/invalid date format for input: {date}")
+        date = None
+    # need to set TimeZone cor comparison
+    if date and not date.tzname():
+        date = date.tz_localize(tz='UTC')
+    return date

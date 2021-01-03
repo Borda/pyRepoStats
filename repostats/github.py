@@ -190,9 +190,10 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 type='PR' if 'pull' in issue['html_url'] else 'issue',
                 state=issue['state'],
                 author=self.__parse_user(issue),
+                created_at=issue['created_at'],
                 commenters=list(set([
                     self.__parse_user(com) for com in issue['comments'] + issue['review_comments']
-                    if not self._is_user_bot(self.__parse_user(com))
+                    if not self._is_user_bot(self.__parse_user(com)) and self._is_in_time_period(com['created_at'])
                 ])),
             )
             for issue in tqdm(issues, desc='Parsing simplified tickets')
@@ -215,6 +216,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
                     parent_idx=int(item['number']),
                     author=self.__parse_user(cmt),
                     created_at=cmt['created_at'],
-                ) for cmt in item_comments if not self._is_user_bot(self.__parse_user(cmt))
+                ) for cmt in item_comments
+                if not self._is_user_bot(self.__parse_user(cmt)) and self._is_in_time_period(cmt['created_at'])
             ]
         return comments
