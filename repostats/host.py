@@ -10,7 +10,7 @@ from typing import Optional, Dict, List
 import matplotlib.pyplot as plt
 from tabulate import tabulate
 
-from repostats.data_io import load_data, save_data
+from repostats.data_io import load_data, save_data, convert_date, is_in_time_period
 from repostats.stats import compute_users_summary, compute_user_comment_timeline
 from repostats.visual import draw_comments_timeline
 
@@ -69,6 +69,8 @@ class Host:
         self.data = {}
         self.outdated = 0
         self.timestamp = None
+        self.datetime_from = None
+        self.datetime_to = None
 
     @abstractmethod
     def _convert_to_simple(self, collection: List[dict]) -> List[dict]:
@@ -111,13 +113,30 @@ class Host:
                 logging.warning(
                     'Updating from host was not completed, some of following steps may fail or being incorrect.'
                 )
-            raw_tickets = self.data[self.DATA_KEY_RAW_TICKETS].values()
-            self.data[self.DATA_KEY_SIMPLE] = self._convert_to_simple(raw_tickets)
-            self.data[self.DATA_KEY_COMMENTS] = self._convert_comments_timeline(raw_tickets)
+            self.preprocess_data()
 
             save_data(self.data, path_dir=self.output_path, repo_name=self.repo_name, host=self.HOST_NAME)
         # take the saved date
         self.timestamp = self.data.get('updated_at')
+
+    def preprocess_data(self):
+        """Some pre-processing of raw data."""
+        raw_tickets = self.data[self.DATA_KEY_RAW_TICKETS].values()
+        self.data[self.DATA_KEY_SIMPLE] = self._convert_to_simple(raw_tickets)
+        self.data[self.DATA_KEY_COMMENTS] = self._convert_comments_timeline(raw_tickets)
+
+    def set_time_period(self, date_from: str = None, date_to: str = None):
+        """sSet optional time window fro selections."""
+        date_from = convert_date(date_from)
+        if date_from:
+            self.datetime_from = date_from
+        date_to = convert_date(date_to)
+        if date_to:
+            self.datetime_to = date_to
+
+    def _is_in_time_period(self, dt) -> bool:
+        """Check if particular date is in in range"""
+        return is_in_time_period(dt, datetime_from=self.datetime_from, datetime_to=self.datetime_to)
 
     def show_users_summary(self, columns: List[str]):
         """Show user contribution overview and print table to terminal with selected `columns`.
@@ -131,7 +150,12 @@ class Host:
         if not self.data.get(self.DATA_KEY_SIMPLE):
             logging.warning('No data to process/show.')
             return
-        df_users = compute_users_summary(self.data[self.DATA_KEY_SIMPLE])
+
+        df_users = compute_users_summary(
+            self.data[self.DATA_KEY_SIMPLE],
+            datetime_from=self.datetime_from,
+            datetime_to=self.datetime_to,
+        )
 
         # filter columns which are possible
         aval_columns = df_users.columns

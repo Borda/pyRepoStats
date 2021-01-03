@@ -190,15 +190,22 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 type='PR' if 'pull' in issue['html_url'] else 'issue',
                 state=issue['state'],
                 author=self.__parse_user(issue),
+                created_at=issue['created_at'],
+                closed_at=issue.get('closed_at'),
                 commenters=list(set([
                     self.__parse_user(com) for com in issue['comments'] + issue['review_comments']
-                    if not self._is_user_bot(self.__parse_user(com))
+                    if not self._is_user_bot(self.__parse_user(com)) and self._is_in_time_period(com['updated_at'])
                 ])),
             )
             for issue in tqdm(issues, desc='Parsing simplified tickets')
             # if fetch fails `comments` is int and `review_comments` is missing
             if isinstance(issue['comments'], list) and isinstance(issue.get('review_comments'), list)
         ]
+        # update the counting time according item type
+        [it.update({
+            # use latest updated for issue and merged time for PRs
+            'count_at': it.get('updated_at', it['created_at']) if it['type'] == 'issue' else it['closed_at']
+        }) for it in items]
         return items
 
     def _convert_comments_timeline(self, issues: List[dict]) -> List[dict]:
@@ -215,6 +222,9 @@ To use higher limit generate personal auth token, see https://developer.github.c
                     parent_idx=int(item['number']),
                     author=self.__parse_user(cmt),
                     created_at=cmt['created_at'],
+                    count_at=cmt.get('updated_at', cmt['created_at']),
                 ) for cmt in item_comments if not self._is_user_bot(self.__parse_user(cmt))
             ]
+        # filter within given time frame
+        comments = [cmt for cmt in comments if self._is_in_time_period(cmt['count_at'])]
         return comments

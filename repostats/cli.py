@@ -30,12 +30,14 @@ def get_arguments():
     parser.add_argument('-n', '--min_contribution', type=int, required=False, default=3,
                         help='Specify minimal user contribution for visualisations.')
     # todo: consider use groups for options
-    parser.add_argument('--users_summary', type=str, nargs='*',
+    parser.add_argument('--users_summary', type=str, nargs='*', required=False,
                         help='Show the summary stats for each user, the fist one is used for sorting.')
     parser.add_argument('--user_comments', type=str, required=False, default=None, nargs='*',
                         choices=['D', 'W', 'M', 'Y', 'issue', 'pr', 'all'],
                         help='Select combination of granularity of timeline - [D]ay, [W]eek, [M]onth and [Y]ear,'
                              ' and item type - issue or PR (if you not specify, all will be used).')
+    parser.add_argument('--date_from', type=str, required=False, help='Define beginning time period.', default=None)
+    parser.add_argument('--date_to', type=str, required=False, help='Define ending time period.', default=None)
 
     args = parser.parse_args()
     logging.info('Parsed arguments: \n%s', pformat(vars(args)))
@@ -64,6 +66,9 @@ def main(args: Namespace):
     host.fetch_data(args.offline)
     if not args.offline and host.outdated > 0:
         exit('The update failed to complete, pls try it again or run offline.')
+
+    host.set_time_period(date_from=args.date_from, date_to=args.date_to)
+    host.preprocess_data()
 
     logging.info('Process requested stats...')
     if args.users_summary:
