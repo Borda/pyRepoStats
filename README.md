@@ -26,7 +26,7 @@ python setup.py install
 
 ## Sample usage
 
-Lets show how to pull data from Github repository, use of the following calls
+Let's show how to pull data from Github repository, use of the following calls
 * if you just clone this repo without installation, you need to install dependencies and call script
     ```bash
     pip install -r requirements.txt
@@ -65,10 +65,12 @@ The calls above just pull the data, to get/show some results check available opt
     | [nateraw](https://github.com/nateraw)             |            9 |               1 |               6 |                  8 |
     | [teddykoker](https://github.com/teddykoker)       |            3 |               2 |               0 |                  0 |
 
-* With `--min_contribution N` you can simple filter what is the minimal number of contribution to  show users in Table or Figures.
+* With `--min_contribution N` you can a simple filter what is the minimal number of contribution to  show users in Table or Figures.
+
+* You can also define a time frame with `--date_from` and `--date_to` for filtering events - created issues, merged PRs and comments/reviews.
 
 * We also offer showing some contribution aggregation over time such as Day/Week/Month/Year, to do you use option `--user_comments W` which draw following double chart: (a) cumulative aggregation over all users and (b) heatmap like image with time in Y and user in X axis.
-  Moreover you can also also specify type such as issue or PR; so with `--user_comments W issue pr` you can simply get two figures - one with weekly aggregation for issue and another for PRs.
+  Moreover, you can also specify type such as issue or PR; so with `--user_comments W issue pr` you can simply get two figures - one with weekly aggregation for issue and another for PRs.
   The very same way you can specify multiple time sampling `--user_comments W M` for weekly and monthly aggregations.
 
     ![User-comments-aggregation](./assets/user-comments-aggregation.png)
