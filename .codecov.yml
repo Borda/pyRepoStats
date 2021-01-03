@@ -18,14 +18,19 @@ coverage:
         target: 85% # specify the target coverage for each commit status
         threshold: 20% # allow this little decrease on project
         # https://github.com/codecov/support/wiki/Filtering-Branches
-        # branches: master
+        branches: main
         if_ci_failed: error
+        # Use Codecov in informational mode
+        informational: true  # status will pass no matter what the coverage is or what other settings are specified.
     # https://github.com/codecov/support/wiki/Patch-Status
     patch:
       default:
         against: auto
-        target: 40% # specify the target "X%" coverage to hit
-        # threshold: 50% # allow this much decrease on patch
+        # target: 40% # specify the target "X%" coverage to hit
+        threshold: 30% # allow this much decrease on patch
+        # informational: true
+        # Only post a status to pull requests, defaults to false.
+        only_pulls: true  # If true no status will be posted for commits not on a pull request
     changes: false
 
 parsers:
