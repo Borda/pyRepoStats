@@ -10,7 +10,7 @@ from typing import Optional, Dict, List
 import matplotlib.pyplot as plt
 from tabulate import tabulate
 
-from repostats.data_io import load_data, save_data, convert_date
+from repostats.data_io import load_data, save_data, convert_date, is_in_time_period
 from repostats.stats import compute_users_summary, compute_user_comment_timeline
 from repostats.visual import draw_comments_timeline
 
@@ -136,18 +136,7 @@ class Host:
 
     def _is_in_time_period(self, dt) -> bool:
         """Check if particular date is in in range"""
-        # convert to comparable format
-        if isinstance(dt, str):
-            dt = convert_date(dt)
-        # in case there is no date spec, it is automatically false
-        if not dt:
-            return False
-        is_in = True
-        if self.datetime_from:
-            is_in &= dt >= self.datetime_from
-        if self.datetime_to:
-            is_in &= dt <= self.datetime_to
-        return is_in
+        return is_in_time_period(dt, datetime_from=self.datetime_from, datetime_to=self.datetime_to)
 
     def show_users_summary(self, columns: List[str]):
         """Show user contribution overview and print table to terminal with selected `columns`.
@@ -162,9 +151,11 @@ class Host:
             logging.warning('No data to process/show.')
             return
 
-        # todo: here we need to separate time window for commenting and creating/merging
-        #  if item has created at or merged at...
-        df_users = compute_users_summary(self.data[self.DATA_KEY_SIMPLE])
+        df_users = compute_users_summary(
+            self.data[self.DATA_KEY_SIMPLE],
+            datetime_from=self.datetime_from,
+            datetime_to=self.datetime_to,
+        )
 
         # filter columns which are possible
         aval_columns = df_users.columns

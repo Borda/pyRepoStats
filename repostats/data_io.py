@@ -7,6 +7,7 @@ import logging
 import os
 from datetime import datetime
 from distutils.version import LooseVersion
+from typing import Any, Union
 from warnings import warn
 
 import pandas as pd
@@ -86,7 +87,7 @@ def save_data(data: dict, path_dir: str, repo_name: str, host: str = '') -> str:
     return cache_path
 
 
-def convert_date(date: str):
+def convert_date(date: Any):
     """Convert date-time if possible
 
     >>> convert_date("2020-08")
@@ -103,3 +104,29 @@ def convert_date(date: str):
     if date and not date.tzname():
         date = date.tz_localize(tz='UTC')
     return date
+
+
+def is_in_time_period(
+        dt: Union[datetime, str],
+        datetime_from: Union[datetime, str] = None,
+        datetime_to: Union[datetime, str] = None,
+) -> bool:
+        """Check if particular date is in range.
+
+        >>> is_in_time_period('2020', datetime_from=pd.to_datetime('2019'))
+        True
+        >>> is_in_time_period('2020-08-02', datetime_to='2020-09')
+        True
+        """
+        # convert to comparable format
+        dt, datetime_from, datetime_to = convert_date(dt), convert_date(datetime_from), convert_date(datetime_to)
+        # in case there is no date spec, it is automatically false
+        if not dt:
+            return False
+        # step-by-step checking
+        is_in = True
+        if datetime_from:
+            is_in &= dt >= datetime_from
+        if datetime_to:
+            is_in &= dt <= datetime_to
+        return is_in

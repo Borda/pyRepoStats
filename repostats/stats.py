@@ -8,6 +8,8 @@ from tqdm import tqdm
 
 # see: https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
 #: define conversion for frequency grouping
+from repostats.data_io import is_in_time_period
+
 DATETIME_FREQ = {
     'D': "%Y-%m-%d",
     'W': "%Y-w%W",
@@ -16,7 +18,7 @@ DATETIME_FREQ = {
 }
 
 
-def compute_users_summary(items: List[dict]) -> pd.DataFrame:
+def compute_users_summary(items: List[dict], datetime_from: str = None, datetime_to: str = None) -> pd.DataFrame:
     """Aggregate issue/PR affiliations and summary counts.
 
     >>> items = [dict(type='PR', state='closed', author='me', commenters=['me', 'you']),
@@ -40,11 +42,24 @@ def compute_users_summary(items: List[dict]) -> pd.DataFrame:
         user_stat = {'user': user}
         # parse particular user stats
         for tp, df in df_items.groupby('type'):
-            df_auth = df[df['author'] == user]
-            user_stat[f'opened {tp}s'] = len(df_auth)
-            user_stat[f'merged {tp}s'] = sum(df_auth['state'] == 'merged')
-            df_na = df[df['author'] != user]
-            user_stat[f'commented {tp}s'] = sum(df_na['commenters'].apply(lambda l: user in l))
+            df_self_author = df[df['author'] == user]
+            # add selection if it is in range
+            for c_in, c_out in [('created', 'created_at'), ('closed', 'closed_at')]:
+                df_self_author[c_in] = [
+                    is_in_time_period(dt, datetime_from=datetime_from, datetime_to=datetime_to)
+                    for dt in df_self_author[c_out]
+                ]
+            df_merged = df_self_author[df_self_author['state'] == 'merged']
+            df_not_author = df[df['author'] != user]
+            user_stat.update({
+                # count only opened cases in such time
+                f'opened {tp}s': sum(df_self_author['created']),
+                # count only closed/merged cases in such time
+                f'merged {tp}s': sum(df_merged['closed']),
+                # in this time all comments shall be already filtered and we need all issues
+                #  as they can be created before time window and commented in given period...
+                f'commented {tp}s': sum(df_not_author['commenters'].apply(lambda l: user in l)),
+            })
         users_stat.append(user_stat)
 
     # transform to pandas table
