@@ -44,10 +44,12 @@ def compute_users_summary(items: List[dict], datetime_from: str = None, datetime
         for tp, df in df_items.groupby('type'):
             df_self_author = df[df['author'] == user]
             # add selection if it is in range
-            for c_in, c_out in [('created', 'created_at'), ('closed', 'closed_at')]:
-                df_self_author[c_in] = [
+            for c_out, c_in in [('created', 'created_at'), ('closed', 'closed_at')]:
+                if c_in not in df_self_author.columns:
+                    df_self_author[c_in] = None
+                df_self_author[c_out] = [
                     is_in_time_period(dt, datetime_from=datetime_from, datetime_to=datetime_to)
-                    for dt in df_self_author[c_out]
+                    for dt in df_self_author[c_in]
                 ]
             df_merged = df_self_author[df_self_author['state'] == 'merged']
             df_not_author = df[df['author'] != user]

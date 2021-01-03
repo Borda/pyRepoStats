@@ -120,13 +120,18 @@ def is_in_time_period(
         """
         # convert to comparable format
         dt, datetime_from, datetime_to = convert_date(dt), convert_date(datetime_from), convert_date(datetime_to)
-        # in case there is no date spec, it is automatically false
-        if not dt:
-            return False
-        # step-by-step checking
+        # initial setting - in case no range given all is fine
         is_in = True
-        if datetime_from:
-            is_in &= dt >= datetime_from
-        if datetime_to:
-            is_in &= dt <= datetime_to
+
+        if not datetime_from and not datetime_to:
+            is_in = True
+        # in case there is no date spec, it is automatically false
+        if not dt and (datetime_from or datetime_to):
+            is_in = False
+        else:
+            # step-by-step checking
+            if datetime_from:
+                is_in &= dt >= datetime_from
+            if datetime_to:
+                is_in &= dt <= datetime_to
         return is_in
