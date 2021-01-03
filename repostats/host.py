@@ -136,9 +136,12 @@ class Host:
 
     def _is_in_time_period(self, dt) -> bool:
         """Check if particular date is in in range"""
+        # convert to comparable format
         if isinstance(dt, str):
             dt = convert_date(dt)
-        assert dt, f'datetime shall be Timestamp, but it is {type(dt)}'
+        # in case there is no date spec, it is automatically false
+        if not dt:
+            return False
         is_in = True
         if self.datetime_from:
             is_in &= dt >= self.datetime_from
