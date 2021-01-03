@@ -160,6 +160,7 @@ class Host:
             return
 
         # todo: here we need to separate time window for commenting and creating/merging
+        #  if item has created at or merged at...
         df_users = compute_users_summary(self.data[self.DATA_KEY_SIMPLE])
 
         # filter columns which are possible
