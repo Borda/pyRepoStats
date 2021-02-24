@@ -43,7 +43,7 @@ def load_data(path_dir: str, repo_name: str, host: str = '') -> dict:
      'version': '...'}
     >>> os.remove(pj)
     """
-    assert os.path.isdir(path_dir)
+    assert os.path.isdir(path_dir), f'Wrong folder: {path_dir}'
     cache_path = os.path.join(path_dir, _make_json_name(repo_name, host))
     logging.info(f'Loading data from: {cache_path}')
 

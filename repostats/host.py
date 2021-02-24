@@ -58,7 +58,8 @@ class Host:
         """
         self.repo_name = repo_name
         self.name = repo_name.replace('/', '-')
-        self.output_path = output_path
+        self.output_path = os.path.realpath(os.path.expanduser(output_path))
+        assert os.path.isdir(self.output_path), f'Wrong folder: {self.output_path}'
         self.min_contribution_count = min_contribution
         self.auth_token = auth_token
         os_token = os.getenv(self.OS_ENV_AUTH_TOKEN)
