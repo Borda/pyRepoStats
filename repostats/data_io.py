@@ -53,8 +53,10 @@ def load_data(path_dir: str, repo_name: str, host: str = '') -> dict:
         data['version'] = data.get('version', '0.0')
 
         if LooseVersion(data['version']) < LooseVersion("0.1.4"):
-            warn(f"Your last dump was made with {data['version']} which has missing review comments.\n"
-                 " We highly recommend to invalidate this cache and fetch all data from the ground...")
+            warn(
+                f"Your last dump was made with {data['version']} which has missing review comments.\n"
+                " We highly recommend to invalidate this cache and fetch all data from the ground..."
+            )
     else:
         data = {}
     return data
@@ -107,9 +109,9 @@ def convert_date(date: Any):
 
 
 def is_in_time_period(
-        dt: Union[datetime, str],
-        datetime_from: Union[datetime, str] = None,
-        datetime_to: Union[datetime, str] = None,
+    dt: Union[datetime, str],
+    datetime_from: Union[datetime, str] = None,
+    datetime_to: Union[datetime, str] = None,
 ) -> bool:
     """ Check if particular date is in range.
 

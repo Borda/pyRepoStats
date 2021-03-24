@@ -1,8 +1,12 @@
-nose>=1.0
 coverage
 codecov
 pytest>4.0
 pytest-cov
+pytest-xdist
+codacy-coverage
+
 flake8
 check-manifest
-codacy-coverage
+twine>=3.2
+isort>=5.0
+yapf>=0.29.0

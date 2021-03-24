@@ -8,7 +8,7 @@ import traceback
 import warnings
 from functools import partial
 from multiprocessing import Pool
-from typing import Optional, Tuple, Dict, List
+from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 import requests
@@ -49,11 +49,11 @@ To use higher limit generate personal auth token, see https://developer.github.c
     REQUEST_TIMEOUT = 15
 
     def __init__(
-            self,
-            repo_name: str,
-            output_path: str,
-            auth_token: Optional[str] = None,
-            min_contribution: int = 3,
+        self,
+        repo_name: str,
+        output_path: str,
+        auth_token: Optional[str] = None,
+        min_contribution: int = 3,
     ):
         super().__init__(
             repo_name=repo_name,
@@ -143,10 +143,10 @@ To use higher limit generate personal auth token, see https://developer.github.c
     @staticmethod
     def __update_issues_queue(issues: Dict[str, dict], issues_new: Dict[str, dict]) -> List[str]:
         return [
-            idx for idx in issues_new
-            if (idx not in issues
-                or not issues[idx]['updated_at']
-                or pd.to_datetime(issues_new[idx]['updated_at']) > pd.to_datetime(issues[idx]['updated_at']))
+            idx for idx in issues_new if (
+                idx not in issues or not issues[idx]['updated_at']
+                or pd.to_datetime(issues_new[idx]['updated_at']) > pd.to_datetime(issues[idx]['updated_at'])
+            )
         ]
 
     def _update_details(self, issues: Dict[str, dict], issues_new: Dict[str, dict]) -> Dict[str, dict]:
@@ -161,9 +161,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         _update = partial(GitHub._update_detail, auth_header=self.auth_header)
         pool = Pool(self.NB_PARALLEL_REQUESTS)
 
-        for idx, item in tqdm(pool.imap(_update, _queue),
-                              total=len(_queue),
-                              desc="Fetching/update details"):
+        for idx, item in tqdm(pool.imap(_update, _queue), total=len(_queue), desc="Fetching/update details"):
             if item is None:
                 if not GitHub.API_LIMIT_REACHED:
                     # show this warning only once
@@ -192,20 +190,23 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 author=self.__parse_user(issue),
                 created_at=issue['created_at'],
                 closed_at=issue.get('closed_at'),
-                commenters=list(set([
-                    self.__parse_user(com) for com in issue['comments'] + issue['review_comments']
-                    if not self._is_user_bot(self.__parse_user(com)) and self._is_in_time_period(com['updated_at'])
-                ])),
-            )
-            for issue in tqdm(issues, desc='Parsing simplified tickets')
+                commenters=list(
+                    set([
+                        self.__parse_user(com) for com in issue['comments'] + issue['review_comments']
+                        if not self._is_user_bot(self.__parse_user(com)) and self._is_in_time_period(com['updated_at'])
+                    ])
+                ),
+            ) for issue in tqdm(issues, desc='Parsing simplified tickets')
             # if fetch fails `comments` is int and `review_comments` is missing
             if isinstance(issue['comments'], list) and isinstance(issue.get('review_comments'), list)
         ]
         # update the counting time according item type
-        [it.update({
-            # use latest updated for issue and merged time for PRs
-            'count_at': it.get('updated_at', it['created_at']) if it['type'] == 'issue' else it['closed_at']
-        }) for it in items]
+        [
+            it.update({
+                # use latest updated for issue and merged time for PRs
+                'count_at': it.get('updated_at', it['created_at']) if it['type'] == 'issue' else it['closed_at']
+            }) for it in items
+        ]
         return items
 
     def _convert_comments_timeline(self, issues: List[dict]) -> List[dict]:

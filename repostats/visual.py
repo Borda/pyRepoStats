@@ -10,9 +10,8 @@ import pandas as pd
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
-def draw_comments_timeline(
-        df_comments: pd.DataFrame, title: str = 'User contribution aggregation'
-) -> Tuple[plt.Figure, dict]:
+def draw_comments_timeline(df_comments: pd.DataFrame,
+                           title: str = 'User contribution aggregation') -> Tuple[plt.Figure, dict]:
     """Draw a figure with two charts, one as cumulative date/contribution and user/time heatmap
 
     :param df_comments: table with aggregated comments
