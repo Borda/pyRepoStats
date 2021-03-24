@@ -142,12 +142,13 @@ To use higher limit generate personal auth token, see https://developer.github.c
 
     @staticmethod
     def __update_issues_queue(issues: Dict[str, dict], issues_new: Dict[str, dict]) -> List[str]:
-        return [
+        idxs = [
             idx for idx in issues_new if (
                 idx not in issues or not issues[idx]['updated_at']
-                or pd.to_datetime(issues_new[idx]['updated_at']) > pd.to_datetime(issues[idx]['updated_at'])
+                or _dt_update(issues_new, idx) > _dt_update(issues, idx)
             )
         ]
+        return idxs
 
     def _update_details(self, issues: Dict[str, dict], issues_new: Dict[str, dict]) -> Dict[str, dict]:
         """Pull all exiting details to particular issues."""
@@ -190,12 +191,10 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 author=self.__parse_user(issue),
                 created_at=issue['created_at'],
                 closed_at=issue.get('closed_at'),
-                commenters=list(
-                    set([
-                        self.__parse_user(com) for com in issue['comments'] + issue['review_comments']
-                        if not self._is_user_bot(self.__parse_user(com)) and self._is_in_time_period(com['updated_at'])
-                    ])
-                ),
+                commenters=_unique_list([
+                    self.__parse_user(com) for com in issue['comments'] + issue['review_comments']
+                    if not self._is_user_bot(self.__parse_user(com)) and self._is_in_time_period(com['updated_at'])
+                ]),
             ) for issue in tqdm(issues, desc='Parsing simplified tickets')
             # if fetch fails `comments` is int and `review_comments` is missing
             if isinstance(issue['comments'], list) and isinstance(issue.get('review_comments'), list)
@@ -229,3 +228,11 @@ To use higher limit generate personal auth token, see https://developer.github.c
         # filter within given time frame
         comments = [cmt for cmt in comments if self._is_in_time_period(cmt['count_at'])]
         return comments
+
+
+def _unique_list(arr) -> list:
+    return list(set(arr))
+
+
+def _dt_update(arr, i):
+    return pd.to_datetime(arr[i]['updated_at'])
