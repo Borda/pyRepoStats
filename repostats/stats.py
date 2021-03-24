@@ -73,9 +73,9 @@ def compute_users_summary(items: List[dict], datetime_from: str = None, datetime
 
 
 def compute_user_comment_timeline(
-        items: List[dict],
-        freq: str = 'W',
-        parent_type: Optional[str] = None,
+    items: List[dict],
+    freq: str = 'W',
+    parent_type: Optional[str] = None,
 ) -> pd.DataFrame:
     """Aggregate comments from all issues/PRs.
 

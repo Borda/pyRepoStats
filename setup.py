@@ -10,15 +10,16 @@ Copyright (C) 2020-2020 Jiri Borovec <jiri.borovec@fel.cvut.cz>
 
 # Always prefer setuptools over distutils
 from os import path
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 import repostats
 
-PATH_HERE = path.abspath(path.dirname(__file__))
+_PATH_HERE = path.abspath(path.dirname(__file__))
 
 
-def load_requirements(fname='requirements.txt'):
-    with open(path.join(PATH_HERE, fname), encoding='utf-8') as fp:
+def _load_requirements(fname='requirements.txt'):
+    with open(path.join(_PATH_HERE, fname), encoding='utf-8') as fp:
         reqs = [rq.rstrip() for rq in fp.readlines()]
     reqs = [ln[:ln.index('#')] if '#' in ln else ln for ln in reqs]
     reqs = [ln for ln in reqs if ln]
@@ -26,7 +27,7 @@ def load_requirements(fname='requirements.txt'):
 
 
 # Get the long description from the README file
-# with open(path.join(PATH_HERE, 'README.md'), encoding='utf-8') as fp:
+# with open(path.join(_PATH_HERE, 'README.md'), encoding='utf-8') as fp:
 #     long_description = fp.read()
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
@@ -35,19 +36,15 @@ setup(
     name='repo-stats',
     version=repostats.__version__,
     url=repostats.__homepage__,
-
     author=repostats.__author__,
     author_email=repostats.__author_email__,
     license=repostats.__license__,
     description=repostats.__doc__,
-
     long_description=repostats.__long_doc__,
     long_description_content_type='text/markdown',
-
     packages=find_packages(exclude=['tests', 'tests/*']),
-
     keywords='repository stats',
-    install_requires=load_requirements('requirements.txt'),
+    install_requires=_load_requirements('requirements.txt'),
     include_package_data=True,
     classifiers=[
         'Environment :: Console',

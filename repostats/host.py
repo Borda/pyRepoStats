@@ -5,13 +5,13 @@ Copyright (C) 2020-2020 Jiri Borovec <...>
 import logging
 import os
 from abc import abstractmethod
-from typing import Optional, Dict, List
+from typing import Dict, List, Optional
 
 import matplotlib.pyplot as plt
 from tabulate import tabulate
 
-from repostats.data_io import load_data, save_data, convert_date, is_in_time_period
-from repostats.stats import compute_users_summary, compute_user_comment_timeline
+from repostats.data_io import convert_date, is_in_time_period, load_data, save_data
+from repostats.stats import compute_user_comment_timeline, compute_users_summary
 from repostats.visual import draw_comments_timeline
 
 
@@ -44,11 +44,11 @@ class Host:
     OS_ENV_AUTH_TOKEN = 'AUTH_API_TOKEN'
 
     def __init__(
-            self,
-            repo_name: str,
-            output_path: str,
-            auth_token: Optional[str] = None,
-            min_contribution: int = 3,
+        self,
+        repo_name: str,
+        output_path: str,
+        auth_token: Optional[str] = None,
+        min_contribution: int = 3,
     ):
         """
         :param repo_name: Repository name, need to  ne unique
@@ -107,9 +107,8 @@ class Host:
             overview = self._fetch_overview()
             overview = {str(i['number']): i for i in overview}
 
-            self.data[self.DATA_KEY_RAW_TICKETS] = self._update_details(
-                self.data.get(self.DATA_KEY_RAW_TICKETS, {}), overview
-            )
+            self.data[self.DATA_KEY_RAW_TICKETS] = \
+                self._update_details(self.data.get(self.DATA_KEY_RAW_TICKETS, {}), overview)
             if self.outdated > 0:
                 logging.warning(
                     'Updating from host was not completed, some of following steps may fail or being incorrect.'
@@ -162,8 +161,10 @@ class Host:
         aval_columns = df_users.columns
         miss_columns = [c for c in columns if c not in aval_columns]
         if miss_columns:
-            logging.warning(f'You fave requested following columns {miss_columns} which are missing in the table,'
-                            f' these columns are available: {aval_columns}')
+            logging.warning(
+                f'You fave requested following columns {miss_columns} which are missing in the table,'
+                f' these columns are available: {aval_columns}'
+            )
         columns = [c for c in columns if c in aval_columns]
 
         if not columns:
@@ -176,11 +177,13 @@ class Host:
         csv_path = os.path.join(self.output_path, self.CSV_USERS_SUMMARY % (self.HOST_NAME, self.name))
         df_users.to_csv(csv_path)
         df_users.index = df_users.index.map(lambda u: self.USER_URL_TEMPLATE % {'user': u})
-        print(tabulate(
-            df_users[df_users[columns[0]] >= self.min_contribution_count],
-            tablefmt="pipe",
-            headers="keys",
-        ))
+        print(
+            tabulate(
+                df_users[df_users[columns[0]] >= self.min_contribution_count],
+                tablefmt="pipe",
+                headers="keys",
+            )
+        )
         return csv_path
 
     def show_user_comments(self, freq: str = 'W', parent_type: str = '', show_fig: bool = True):
@@ -203,8 +206,9 @@ class Host:
             parent_type=parent_type,
             freq=freq,
         )
-        csv_path = os.path.join(self.output_path,
-                                self.CSV_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type or "all"))
+        csv_path = os.path.join(
+            self.output_path, self.CSV_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type or "all")
+        )
         df_comments.to_csv(csv_path)
 
         cum_sum = df_comments.sum(axis=0)
@@ -213,8 +217,9 @@ class Host:
             df_comments[select_users],
             title=f'User comments aggregation @{self.timestamp} - Freq: {freq}, Type:{parent_type or "all"}'
         )
-        fig_path = os.path.join(self.output_path,
-                                self.PDF_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type or "all"))
+        fig_path = os.path.join(
+            self.output_path, self.PDF_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type or "all")
+        )
         fig.savefig(fig_path, bbox_extra_artists=(extras['legend'], extras['colorbar']), bbox_inches='tight')
         if not show_fig:
             plt.close(fig)
