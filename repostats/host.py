@@ -1,5 +1,5 @@
 """
-Copyright (C) 2020-2020 Jiri Borovec <...>
+Copyright (C) 2020-2021 Jiri Borovec <...>
 """
 
 import logging
@@ -51,10 +51,11 @@ class Host:
         min_contribution: int = 3,
     ):
         """
-        :param repo_name: Repository name, need to  ne unique
-        :param output_path: Path to saving dumped cache, csw tables, pdf figures
-        :param auth_token: authentication token fro API access
-        :param min_contribution: minimal nb contributions for visualization
+        Args:
+            repo_name: Repository name, need to  ne unique
+            output_path: Path to saving dumped cache, csw tables, pdf figures
+            auth_token: authentication token fro API access
+            min_contribution: minimal nb contributions for visualization
         """
         self.repo_name = repo_name
         self.name = repo_name.replace('/', '-')
@@ -141,8 +142,11 @@ class Host:
     def show_users_summary(self, columns: List[str]):
         """Show user contribution overview and print table to terminal with selected `columns`.
 
-        :param columns: select columns to be shown in terminal
-        :return: path to the exported table
+        Args:
+            columns: select columns to be shown in terminal
+
+        Returns:
+            path to the exported table
         """
         logging.debug('Show users summary...')
         assert self.DATA_KEY_SIMPLE in self.data, 'forgotten call `_convert_to_simple`'
@@ -189,10 +193,13 @@ class Host:
     def show_user_comments(self, freq: str = 'W', parent_type: str = '', show_fig: bool = True):
         """Show aggregated user contribution statistics in a table and a double chart
 
-        :param freq: aggregation frequency - Day, Week, Month, ...
-        :param parent_type: item kind like issue/PR
-        :param show_fig: show figure after all
-        :return: path to CSV table and PDF figure
+        Args:
+            freq: aggregation frequency - Day, Week, Month, ...
+            parent_type: item kind like issue/PR
+            show_fig: show figure after all
+
+        Returns:
+            path to CSV table and PDF figure
         """
         logging.info(f'Show comments aggregation for freq: "{freq}" & type: "{parent_type}"')
         assert self.DATA_KEY_COMMENTS in self.data, 'forgotten call `convert_comments_timeline`'

@@ -1,5 +1,5 @@
 """
-Copyright (C) 2020-2020 Jiri Borovec <...>
+Copyright (C) 2020-2021 Jiri Borovec <...>
 """
 import logging
 from typing import Tuple
@@ -14,10 +14,13 @@ def draw_comments_timeline(df_comments: pd.DataFrame,
                            title: str = 'User contribution aggregation') -> Tuple[plt.Figure, dict]:
     """Draw a figure with two charts, one as cumulative date/contribution and user/time heatmap
 
-    :param df_comments: table with aggregated comments
-    :param fig_size: output figure size
-    :param title: optional figure title
-    :return: Figure and extras
+    Args:
+        df_comments: table with aggregated comments
+        fig_size: output figure size
+        title: optional figure title
+
+    Returns:
+        Figure and extras
 
     >>> import pandas as pd
     >>> comments = [dict(Date='2020-10', me=5, you=3), dict(Date='2020-11', me=2, you=4)]

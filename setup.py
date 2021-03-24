@@ -5,7 +5,7 @@ See:
 * https://packaging.python.org/en/latest/distributing.html
 * https://github.com/pypa/sampleproject
 
-Copyright (C) 2020-2020 Jiri Borovec <jiri.borovec@fel.cvut.cz>
+Copyright (C) 2020-2021 Jiri Borovec <jiri.borovec@fel.cvut.cz>
 """
 
 # Always prefer setuptools over distutils

@@ -3,7 +3,7 @@ __author__ = "Jiri Borovec"
 __author_email__ = "j.borovec@...cz"
 __license__ = "MIT"
 __homepage__ = "https://borda.github.io/pyRepoStats",
-__copyright__ = "Copyright (c) 2020-2020, %s." % __author__
+__copyright__ = "Copyright (c) 2020-2021, %s." % __author__
 __doc__ = 'Repository Statistics'
 __long_doc__ = "# %s" % __doc__ + """
 
