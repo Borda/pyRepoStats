@@ -65,10 +65,10 @@ To use higher limit generate personal auth token, see https://developer.github.c
 
     def _fetch_overview(self) -> List[dict]:
         """Fetch all issues from a given repo using listing per pages."""
-        items, min_idx, page = [], float('inf'), 1
+        items, items_new, min_idx, page = [], [None], float('inf'), 1
         # get items
         with tqdm(desc='Requesting issue/PR overview') as pbar:
-            while min_idx > 1:
+            while min_idx > 1 and items_new:
                 req_url = f"{self.URL_API}/{self.repo_name}/issues?state=all&page={page}&per_page=100"
                 items_new = GitHub._request_url(req_url, self.auth_header)
                 if items_new is None:
