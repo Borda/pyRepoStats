@@ -43,7 +43,7 @@ class Host:
     USER_BOTS = tuple()
     #: OS env. variable for getting Token
     OS_ENV_AUTH_TOKEN = 'AUTH_API_TOKEN'
-    #: common spam messages
+    #: common spam messages, no special value to give credit for it...
     SPAM_MESSAGES = (
         'LGTM',
         'looks good to me',
