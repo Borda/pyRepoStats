@@ -108,7 +108,7 @@ def main(args: Namespace):
 
     logging.info('Process requested stats...')
     if args.users_summary:
-        host.show_users_summary(columns=args.users_summary)
+        host.print_users_summary(columns=args.users_summary)
 
     if args.user_comments:
         freqs = [f for f in args.user_comments if f in DATETIME_FREQ]
