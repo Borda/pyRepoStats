@@ -193,8 +193,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
 
         def _get_commenters(issue):
             return _unique_list([
-                self.__parse_user(com) for com in issue['comments'] + issue['review_comments']
-                if _filer_commenter(com)
+                self.__parse_user(com) for com in issue['comments'] + issue['review_comments'] if _filer_commenter(com)
             ])
 
         items = [
