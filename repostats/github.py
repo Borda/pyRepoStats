@@ -182,8 +182,26 @@ To use higher limit generate personal auth token, see https://developer.github.c
     def __parse_user(field: dict) -> str:
         return field['user']['login']
 
+    def __filer_commenter(self, comment: dict, in_period: bool) -> int:
+        """Filter valid commenter by name and content."""
+        if self._is_user_bot(self.__parse_user(comment)):
+            return 1
+        if in_period and not self._is_in_time_period(comment['updated_at']):
+            return 2
+        if self._is_spam_message(comment['body']):
+            return 3
+        return 0
+
     def _convert_to_simple(self, issues: List[dict]) -> List[dict]:
         """Aggregate issue/PR affiliations."""
+
+        def _get_commenters(issue) -> list:
+            return _unique_list([
+                self.__parse_user(com) for com in issue['comments'] + issue['review_comments']
+                if self.__filer_commenter(com, in_period=True) == 0
+            ])
+
+        # init collections of items from issues
         items = [
             dict(
                 type='PR' if 'pull' in issue['html_url'] else 'issue',
@@ -191,10 +209,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 author=self.__parse_user(issue),
                 created_at=issue['created_at'],
                 closed_at=issue.get('closed_at'),
-                commenters=_unique_list([
-                    self.__parse_user(com) for com in issue['comments'] + issue['review_comments']
-                    if not self._is_user_bot(self.__parse_user(com)) and self._is_in_time_period(com['updated_at'])
-                ]),
+                commenters=_get_commenters(issue),
             ) for issue in tqdm(issues, desc='Parsing simplified tickets')
             # if fetch fails `comments` is int and `review_comments` is missing
             if isinstance(issue['comments'], list) and isinstance(issue.get('review_comments'), list)
@@ -204,12 +219,13 @@ To use higher limit generate personal auth token, see https://developer.github.c
             it.update({
                 # use latest updated for issue and merged time for PRs
                 'count_at': it.get('updated_at', it['created_at']) if it['type'] == 'issue' else it['closed_at']
-            }) for it in items
+            }) for it in tqdm(items, desc='Update simplified tickets')
         ]
         return items
 
     def _convert_comments_timeline(self, issues: List[dict]) -> List[dict]:
         """Aggregate comments for all issue/PR affiliations."""
+
         comments = []
         for item in tqdm(issues, desc='Parsing comments from all repo'):
             item_comments = item['comments'] if isinstance(item['comments'], list) else []
@@ -223,7 +239,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
                     author=self.__parse_user(cmt),
                     created_at=cmt['created_at'],
                     count_at=cmt.get('updated_at', cmt['created_at']),
-                ) for cmt in item_comments if not self._is_user_bot(self.__parse_user(cmt))
+                ) for cmt in item_comments if self.__filer_commenter(cmt, in_period=False) == 0
             ]
         # filter within given time frame
         comments = [cmt for cmt in comments if self._is_in_time_period(cmt['count_at'])]

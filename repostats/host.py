@@ -4,8 +4,9 @@ Copyright (C) 2020-2021 Jiri Borovec <...>
 
 import logging
 import os
+import re
 from abc import abstractmethod
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 from tabulate import tabulate
@@ -32,7 +33,7 @@ class Host:
     PDF_USER_COMMENTS = '%s_%s_user-comments_freq:%s_type:%s.pdf'
     #: kay to the raw fetch data from host
     DATA_KEY_RAW_INFO = 'raw_info'
-    #: kay to the raw fetch data from host
+    #: key to the raw fetch data from host
     DATA_KEY_RAW_TICKETS = 'raw_tickets'
     #: simplified host data, collection of issues/PRs
     DATA_KEY_SIMPLE = 'simple_tickets'
@@ -42,6 +43,15 @@ class Host:
     USER_BOTS = tuple()
     #: OS env. variable for getting Token
     OS_ENV_AUTH_TOKEN = 'AUTH_API_TOKEN'
+    #: common spam messages, no special value to give credit for it...
+    SPAM_MESSAGES = (
+        'done',
+        'LGTM',
+        'looks good to me',
+        r'(Awesome|great|good|nice|well)\s+(work|job|done|neat)',
+        'Thank you',
+        'Thanks',
+    )
 
     def __init__(
         self,
@@ -74,6 +84,27 @@ class Host:
         self.datetime_from = None
         self.datetime_to = None
 
+    @staticmethod
+    def _is_spam_message(msg: str, thr: float = 0.2) -> bool:
+        """Filter useless / spam messages, if the spa text takes most of the comment.
+
+        >>> Host._is_spam_message("lgtm !")
+        True
+        >>> Host._is_spam_message("just fine...")
+        False
+        >>> Host._is_spam_message("Well   Done.")
+        True
+        """
+        ratio = 0
+        msg = ' '.join(msg.split()).lower()
+        for spam in Host.SPAM_MESSAGES:
+            found = re.search(spam.lower(), msg)
+            if found:
+                ratio += len(found.group())
+        if ratio:
+            ratio /= float(len(msg))
+        return ratio >= thr
+
     @abstractmethod
     def _convert_to_simple(self, collection: List[dict]) -> List[dict]:
         """Aggregate issue/PR affiliations."""
@@ -98,7 +129,7 @@ class Host:
     def _update_details(self, collection: Dict[str, dict], collect_new: Dict[str, dict]) -> Dict[str, dict]:
         """Download all info if from screening."""
 
-    def fetch_data(self, offline: bool = False):
+    def fetch_data(self, offline: bool = False) -> None:
         """Get all data - load and update if allowed."""
         logging.info('Fetch requested data...')
         self.data = load_data(path_dir=self.output_path, repo_name=self.repo_name, host=self.HOST_NAME)
@@ -120,14 +151,19 @@ class Host:
         # take the saved date
         self.timestamp = self.data.get('updated_at')
 
-    def preprocess_data(self):
+    def preprocess_data(self) -> None:
         """Some pre-processing of raw data."""
         raw_tickets = self.data[self.DATA_KEY_RAW_TICKETS].values()
         self.data[self.DATA_KEY_SIMPLE] = self._convert_to_simple(raw_tickets)
         self.data[self.DATA_KEY_COMMENTS] = self._convert_comments_timeline(raw_tickets)
 
-    def set_time_period(self, date_from: str = None, date_to: str = None):
-        """sSet optional time window fro selections."""
+    def set_time_period(self, date_from: str = None, date_to: str = None) -> None:
+        """Set optional time window for selections.
+
+        Args:
+            date_from: date/time for period start
+            date_to: date/time for period ends
+        """
         date_from = convert_date(date_from)
         if date_from:
             self.datetime_from = date_from
@@ -139,7 +175,7 @@ class Host:
         """Check if particular date is in in range"""
         return is_in_time_period(dt, datetime_from=self.datetime_from, datetime_to=self.datetime_to)
 
-    def show_users_summary(self, columns: List[str]):
+    def print_users_summary(self, columns: List[str]) -> str:
         """Show user contribution overview and print table to terminal with selected `columns`.
 
         Args:
@@ -162,14 +198,14 @@ class Host:
         )
 
         # filter columns which are possible
-        aval_columns = df_users.columns
-        miss_columns = [c for c in columns if c not in aval_columns]
+        avail_columns = df_users.columns
+        miss_columns = [c for c in columns if c not in avail_columns]
         if miss_columns:
             logging.warning(
                 f'You fave requested following columns {miss_columns} which are missing in the table,'
-                f' these columns are available: {aval_columns}'
+                f' these columns are available: {avail_columns}'
             )
-        columns = [c for c in columns if c in aval_columns]
+        columns = [c for c in columns if c in avail_columns]
 
         if not columns:
             columns = list(df_users.columns)
@@ -190,7 +226,7 @@ class Host:
         )
         return csv_path
 
-    def show_user_comments(self, freq: str = 'W', parent_type: str = '', show_fig: bool = True):
+    def show_user_comments(self, freq: str = 'W', parent_type: str = '', show_fig: bool = True) -> Tuple[str, str]:
         """Show aggregated user contribution statistics in a table and a double chart
 
         Args:
