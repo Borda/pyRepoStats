@@ -4,6 +4,7 @@ Copyright (C) 2020-2021 Jiri Borovec <...>
 
 import logging
 import os
+import re
 from abc import abstractmethod
 from typing import Dict, List, Optional, Tuple
 
@@ -43,7 +44,13 @@ class Host:
     #: OS env. variable for getting Token
     OS_ENV_AUTH_TOKEN = 'AUTH_API_TOKEN'
     #: common spam messages
-    SPAM_MESSAGES = ('LGTM', 'nice work', 'well done', 'good job', 'Thanks', 'Thank you')
+    SPAM_MESSAGES = (
+        'LGTM',
+        'looks good to me'
+        r'(Awesome|great|good|nice|well) (work|job|done|neat)',
+        'Thank you',
+        'Thanks',
+    )
 
     def __init__(
         self,
@@ -76,13 +83,23 @@ class Host:
         self.datetime_from = None
         self.datetime_to = None
 
-    def _is_spam_message(self, msg: str, thr: float = 0.2) -> bool:
-        """Filter useless / spam messages, if the spa text takes most of the comment."""
+    @staticmethod
+    def _is_spam_message(msg: str, thr: float = 0.2) -> bool:
+        """Filter useless / spam messages, if the spa text takes most of the comment.
+
+        >>> Host._is_spam_message("lgtm !")
+        True
+        >>> Host._is_spam_message("just fine...")
+        False
+        >>> Host._is_spam_message("Well Done.")
+        True
+        """
         ratio = 0
         msg = ' '.join(msg.split()).lower()
-        for spam in self.SPAM_MESSAGES:
-            if spam.lower() in msg:
-                ratio += len(spam)
+        for spam in Host.SPAM_MESSAGES:
+            found = re.search(spam.lower(), msg)
+            if found:
+                ratio += len(found.group())
         if ratio:
             ratio /= float(len(msg))
         return ratio >= thr
