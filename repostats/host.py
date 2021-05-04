@@ -46,8 +46,8 @@ class Host:
     #: common spam messages
     SPAM_MESSAGES = (
         'LGTM',
-        'looks good to me'
-        r'(Awesome|great|good|nice|well) (work|job|done|neat)',
+        'looks good to me',
+        r'(Awesome|great|good|nice|well)\s+(work|job|done|neat)',
         'Thank you',
         'Thanks',
     )
@@ -91,7 +91,7 @@ class Host:
         True
         >>> Host._is_spam_message("just fine...")
         False
-        >>> Host._is_spam_message("Well Done.")
+        >>> Host._is_spam_message("Well   Done.")
         True
         """
         ratio = 0
