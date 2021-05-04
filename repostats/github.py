@@ -182,20 +182,26 @@ To use higher limit generate personal auth token, see https://developer.github.c
     def __parse_user(field: dict) -> str:
         return field['user']['login']
 
+    def __filer_commenter(self, comment: dict, in_period: bool) -> int:
+        """Filter valid commenter by name and content."""
+        if self._is_user_bot(self.__parse_user(comment)):
+            return 1
+        if in_period and not self._is_in_time_period(comment['updated_at']):
+            return 2
+        if self._is_spam_message(comment['body']):
+            return 3
+        return 0
+
     def _convert_to_simple(self, issues: List[dict]) -> List[dict]:
         """Aggregate issue/PR affiliations."""
 
-        def _filer_commenter(com):
-            is_not_bot = not self._is_user_bot(self.__parse_user(com))
-            is_in_range = self._is_in_time_period(com['updated_at'])
-            is_usefull = not self._is_spam_message(com['body'])
-            return is_not_bot and is_in_range and is_usefull
-
-        def _get_commenters(issue):
+        def _get_commenters(issue) -> list:
             return _unique_list([
-                self.__parse_user(com) for com in issue['comments'] + issue['review_comments'] if _filer_commenter(com)
+                self.__parse_user(com) for com in issue['comments'] + issue['review_comments']
+                if self.__filer_commenter(com, in_period=True) == 0
             ])
 
+        # init collections of items from issues
         items = [
             dict(
                 type='PR' if 'pull' in issue['html_url'] else 'issue',
@@ -220,11 +226,6 @@ To use higher limit generate personal auth token, see https://developer.github.c
     def _convert_comments_timeline(self, issues: List[dict]) -> List[dict]:
         """Aggregate comments for all issue/PR affiliations."""
 
-        def _filer_commenter(com):
-            is_not_bot = not self._is_user_bot(self.__parse_user(com))
-            is_usefull = not self._is_spam_message(com['body'])
-            return is_not_bot and is_usefull
-
         comments = []
         for item in tqdm(issues, desc='Parsing comments from all repo'):
             item_comments = item['comments'] if isinstance(item['comments'], list) else []
@@ -238,7 +239,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
                     author=self.__parse_user(cmt),
                     created_at=cmt['created_at'],
                     count_at=cmt.get('updated_at', cmt['created_at']),
-                ) for cmt in item_comments if _filer_commenter(cmt)
+                ) for cmt in item_comments if self.__filer_commenter(cmt, in_period=False) == 0
             ]
         # filter within given time frame
         comments = [cmt for cmt in comments if self._is_in_time_period(cmt['count_at'])]

@@ -45,6 +45,7 @@ class Host:
     OS_ENV_AUTH_TOKEN = 'AUTH_API_TOKEN'
     #: common spam messages, no special value to give credit for it...
     SPAM_MESSAGES = (
+        'done',
         'LGTM',
         'looks good to me',
         r'(Awesome|great|good|nice|well)\s+(work|job|done|neat)',
