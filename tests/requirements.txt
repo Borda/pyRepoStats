@@ -8,5 +8,3 @@ codacy-coverage
 flake8
 check-manifest
 twine>=3.2
-isort>=5.0
-yapf>=0.29.0

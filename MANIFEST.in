@@ -25,7 +25,7 @@ exclude docs
 include *.txt
 
 # Exclude build configs
-exclude *.yml *.yaml
+exclude *.yml *.yaml *.toml
 
 prune .git
 prune .github

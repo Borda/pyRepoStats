@@ -13,7 +13,7 @@ from os import path
 
 from setuptools import find_packages, setup
 
-import repostats
+import repo_stats
 
 _PATH_HERE = path.abspath(path.dirname(__file__))
 
@@ -34,13 +34,13 @@ def _load_requirements(fname='requirements.txt'):
 # Fields marked as "Optional" may be commented out.
 setup(
     name='repo-stats',
-    version=repostats.__version__,
-    url=repostats.__homepage__,
-    author=repostats.__author__,
-    author_email=repostats.__author_email__,
-    license=repostats.__license__,
-    description=repostats.__doc__,
-    long_description=repostats.__long_doc__,
+    version=repo_stats.__version__,
+    url=repo_stats.__homepage__,
+    author=repo_stats.__author__,
+    author_email=repo_stats.__author_email__,
+    license=repo_stats.__license__,
+    description=repo_stats.__doc__,
+    long_description=repo_stats.__long_doc__,
     long_description_content_type='text/markdown',
     packages=find_packages(exclude=['tests', 'tests/*']),
     keywords='repository stats',
@@ -68,7 +68,7 @@ setup(
     # entry point from command line
     entry_points={
         'console_scripts': [
-            'repostat = repostats.cli:cli_main',
+            'repostat = repo_stats.cli:cli_main',
         ],
     }
 )

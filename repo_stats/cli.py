@@ -9,9 +9,9 @@ from pprint import pformat
 
 import matplotlib.pyplot as plt
 
-from repostats.github import GitHub
-from repostats.host import Host
-from repostats.stats import DATETIME_FREQ
+from repo_stats.github import GitHub
+from repo_stats.host import Host
+from repo_stats.stats import DATETIME_FREQ
 
 PATH_ROOT = os.path.dirname(os.path.dirname(__file__))
 #: take global setting from OS env
