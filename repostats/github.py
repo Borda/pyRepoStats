@@ -77,7 +77,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 items += items_new
                 if page == 1:
                     # in case there is no issue/pr
-                    if sum([isinstance(i, dict) for i in items]) == 0:
+                    if sum(isinstance(i, dict) for i in items) == 0:
                         return []
                     min_idx = items[0]['number']
                     pbar.reset(total=min_idx)

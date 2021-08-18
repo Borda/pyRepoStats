@@ -11,7 +11,7 @@ from typing import Any, Union
 from warnings import warn
 
 import pandas as pd
-from dateutil.parser import ParserError
+from pandas.errors import ParserError
 
 from repostats import __version__
 
