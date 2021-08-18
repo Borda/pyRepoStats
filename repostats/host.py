@@ -11,9 +11,9 @@ from typing import Dict, List, Optional, Tuple
 import matplotlib.pyplot as plt
 from tabulate import tabulate
 
-from repo_stats.data_io import convert_date, is_in_time_period, load_data, save_data
-from repo_stats.stats import compute_user_comment_timeline, compute_users_summary
-from repo_stats.visual import draw_comments_timeline
+from repostats.data_io import convert_date, is_in_time_period, load_data, save_data
+from repostats.stats import compute_user_comment_timeline, compute_users_summary
+from repostats.visual import draw_comments_timeline
 
 
 class Host:

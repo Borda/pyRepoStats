@@ -74,7 +74,7 @@ jobs:
         # suppress showing figures as it may bail on server without display
         SHOW_FIGURE: 0
       run: |
-        python -m pytest repo_stats tests -v --cov=repo_stats --durations=25 --junitxml=junit/test-results-${{ runner.os }}-${{ matrix.python-version }}-${{ matrix.requires }}.xml
+        python -m pytest repostats tests -v --cov=repostats --durations=25 --junitxml=junit/test-results-${{ runner.os }}-${{ matrix.python-version }}-${{ matrix.requires }}.xml
 
     - name: Upload pytest test results
       uses: actions/upload-artifact@master
@@ -103,6 +103,6 @@ jobs:
         SHOW_FIGURE: 0
       run: |
         mkdir results
-        python repo_stats/cli.py -gh borda/pyRepoStats -o results -t ${{ secrets.API_TOKEN }}
+        python repostats/cli.py -gh borda/pyRepoStats -o results -t ${{ secrets.API_TOKEN }}
         ls -l results
       shell: bash

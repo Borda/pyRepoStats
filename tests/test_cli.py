@@ -2,7 +2,7 @@ from unittest import mock
 
 import pytest
 
-from repo_stats.cli import cli_main
+from repostats.cli import cli_main
 
 
 @pytest.mark.xfail(reason="offline or reached free requests limit")

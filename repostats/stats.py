@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 # see: https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
 #: define conversion for frequency grouping
-from repo_stats.data_io import is_in_time_period
+from repostats.data_io import is_in_time_period
 
 DATETIME_FREQ = {
     "D": "%Y-%m-%d",

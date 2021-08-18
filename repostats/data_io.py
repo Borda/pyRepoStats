@@ -13,7 +13,7 @@ from warnings import warn
 import pandas as pd
 from pandas.errors import ParserError
 
-from repo_stats import __version__
+from repostats import __version__
 
 JSON_CACHE_NAME = "dump-%s_%s.json"
 
