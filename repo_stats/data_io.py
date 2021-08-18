@@ -15,15 +15,15 @@ from pandas.errors import ParserError
 
 from repo_stats import __version__
 
-JSON_CACHE_NAME = 'dump-%s_%s.json'
+JSON_CACHE_NAME = "dump-%s_%s.json"
 
 
-def _make_json_name(repo_name: str, host: str = '') -> str:
+def _make_json_name(repo_name: str, host: str = "") -> str:
     """Create standard file name."""
-    return JSON_CACHE_NAME % (host, repo_name.replace('/', '-'))
+    return JSON_CACHE_NAME % (host, repo_name.replace("/", "-"))
 
 
-def load_data(path_dir: str, repo_name: str, host: str = '') -> dict:
+def load_data(path_dir: str, repo_name: str, host: str = "") -> dict:
     """Load dumped data.
 
     Args:
@@ -47,16 +47,16 @@ def load_data(path_dir: str, repo_name: str, host: str = '') -> dict:
          'version': '...'}
         >>> os.remove(pj)
     """
-    assert os.path.isdir(path_dir), f'Wrong folder: {path_dir}'
+    assert os.path.isdir(path_dir), f"Wrong folder: {path_dir}"
     cache_path = os.path.join(path_dir, _make_json_name(repo_name, host))
-    logging.info(f'Loading data from: {cache_path}')
+    logging.info(f"Loading data from: {cache_path}")
 
     if os.path.isfile(cache_path):
-        with codecs.open(cache_path, 'r', encoding='utf8') as fp:
+        with codecs.open(cache_path, "r", encoding="utf8") as fp:
             data = json.load(fp)
-        data['version'] = data.get('version', '0.0')
+        data["version"] = data.get("version", "0.0")
 
-        if LooseVersion(data['version']) < LooseVersion("0.1.4"):
+        if LooseVersion(data["version"]) < LooseVersion("0.1.4"):
             warn(
                 f"Your last dump was made with {data['version']} which has missing review comments.\n"
                 " We highly recommend to invalidate this cache and fetch all data from the ground..."
@@ -66,7 +66,7 @@ def load_data(path_dir: str, repo_name: str, host: str = '') -> dict:
     return data
 
 
-def save_data(data: dict, path_dir: str, repo_name: str, host: str = '') -> str:
+def save_data(data: dict, path_dir: str, repo_name: str, host: str = "") -> str:
     """Dump processing data.
 
     Args:
@@ -80,17 +80,19 @@ def save_data(data: dict, path_dir: str, repo_name: str, host: str = '') -> str:
     """
     assert os.path.isdir(path_dir)
     cache_path = os.path.join(path_dir, _make_json_name(repo_name, host))
-    logging.info(f'Saving data to: {cache_path}')
+    logging.info(f"Saving data to: {cache_path}")
 
-    data.update({
-        'version': __version__,
-        'updated_at': str(datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")),
-        'host-name': host,
-        'repo-name': repo_name,
-    })
+    data.update(
+        {
+            "version": __version__,
+            "updated_at": str(datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")),
+            "host-name": host,
+            "repo-name": repo_name,
+        }
+    )
 
     # todo: consider saving to another/tep file and replace afterwords, prevent interruption while dump
-    with codecs.open(cache_path, 'w', encoding='utf8') as fp:
+    with codecs.open(cache_path, "w", encoding="utf8") as fp:
         json.dump(data, fp, ensure_ascii=False)
 
     return cache_path
@@ -111,7 +113,7 @@ def convert_date(date: Any):
         date = None
     # need to set TimeZone cor comparison
     if date and not date.tzname():
-        date = date.tz_localize(tz='UTC')
+        date = date.tz_localize(tz="UTC")
     return date
 
 
@@ -120,7 +122,7 @@ def is_in_time_period(
     datetime_from: Union[datetime, str] = None,
     datetime_to: Union[datetime, str] = None,
 ) -> bool:
-    """ Check if particular date is in range.
+    """Check if particular date is in range.
 
     >>> is_in_time_period('2020', datetime_from=pd.to_datetime('2019'))
     True

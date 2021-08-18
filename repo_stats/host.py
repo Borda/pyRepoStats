@@ -20,37 +20,37 @@ class Host:
     """Template for any Git host."""
 
     #: host name, server
-    HOST_NAME = 'unknown'
+    HOST_NAME = "unknown"
     #: if host provides direct link to user
-    USER_URL_TEMPLATE = '%(user)s'
+    USER_URL_TEMPLATE = "%(user)s"
     #: limit number of parallel requests to host
     NB_PARALLEL_REQUESTS = 7
     #: template name for exporting CSV with users overview
-    CSV_USERS_SUMMARY = '%s_%s_users-summary.csv'
+    CSV_USERS_SUMMARY = "%s_%s_users-summary.csv"
     #: template name for exporting CSV with comment's contributions
-    CSV_USER_COMMENTS = '%s_%s_user-comments_freq:%s_type:%s.csv'
+    CSV_USER_COMMENTS = "%s_%s_user-comments_freq:%s_type:%s.csv"
     #: template name for exporting Figure/PDF with comment's contributions
-    PDF_USER_COMMENTS = '%s_%s_user-comments_freq:%s_type:%s.pdf'
+    PDF_USER_COMMENTS = "%s_%s_user-comments_freq:%s_type:%s.pdf"
     #: kay to the raw fetch data from host
-    DATA_KEY_RAW_INFO = 'raw_info'
+    DATA_KEY_RAW_INFO = "raw_info"
     #: key to the raw fetch data from host
-    DATA_KEY_RAW_TICKETS = 'raw_tickets'
+    DATA_KEY_RAW_TICKETS = "raw_tickets"
     #: simplified host data, collection of issues/PRs
-    DATA_KEY_SIMPLE = 'simple_tickets'
+    DATA_KEY_SIMPLE = "simple_tickets"
     #: timeline of all comments in the repo
-    DATA_KEY_COMMENTS = 'comments_timeline'
+    DATA_KEY_COMMENTS = "comments_timeline"
     #: define bot users as name pattern
     USER_BOTS = tuple()
     #: OS env. variable for getting Token
-    OS_ENV_AUTH_TOKEN = 'AUTH_API_TOKEN'
+    OS_ENV_AUTH_TOKEN = "AUTH_API_TOKEN"
     #: common spam messages, no special value to give credit for it...
     SPAM_MESSAGES = (
-        'done',
-        'LGTM',
-        'looks good to me',
-        r'(Awesome|great|good|nice|well)\s+(work|job|done|neat)',
-        'Thank you',
-        'Thanks',
+        "done",
+        "LGTM",
+        "looks good to me",
+        r"(Awesome|great|good|nice|well)\s+(work|job|done|neat)",
+        "Thank you",
+        "Thanks",
     )
 
     def __init__(
@@ -68,14 +68,14 @@ class Host:
             min_contribution: minimal nb contributions for visualization
         """
         self.repo_name = repo_name
-        self.name = repo_name.replace('/', '-')
+        self.name = repo_name.replace("/", "-")
         self.output_path = os.path.realpath(os.path.expanduser(output_path))
-        assert os.path.isdir(self.output_path), f'Wrong folder: {self.output_path}'
+        assert os.path.isdir(self.output_path), f"Wrong folder: {self.output_path}"
         self.min_contribution_count = min_contribution
         self.auth_token = auth_token
         os_token = os.getenv(self.OS_ENV_AUTH_TOKEN)
         if not self.auth_token and os_token:
-            logging.debug(f'Using `{self.OS_ENV_AUTH_TOKEN}` from your OS environment variables...')
+            logging.debug(f"Using `{self.OS_ENV_AUTH_TOKEN}` from your OS environment variables...")
             self.auth_token = os_token
 
         self.data = {}
@@ -96,7 +96,7 @@ class Host:
         True
         """
         ratio = 0
-        msg = ' '.join(msg.split()).lower()
+        msg = " ".join(msg.split()).lower()
         for spam in Host.SPAM_MESSAGES:
             found = re.search(spam.lower(), msg)
             if found:
@@ -131,25 +131,26 @@ class Host:
 
     def fetch_data(self, offline: bool = False) -> None:
         """Get all data - load and update if allowed."""
-        logging.info('Fetch requested data...')
+        logging.info("Fetch requested data...")
         self.data = load_data(path_dir=self.output_path, repo_name=self.repo_name, host=self.HOST_NAME)
 
         if not offline:
             self.data[self.DATA_KEY_RAW_INFO] = self._fetch_info()
             overview = self._fetch_overview()
-            overview = {str(i['number']): i for i in overview}
+            overview = {str(i["number"]): i for i in overview}
 
-            self.data[self.DATA_KEY_RAW_TICKETS] = \
-                self._update_details(self.data.get(self.DATA_KEY_RAW_TICKETS, {}), overview)
+            self.data[self.DATA_KEY_RAW_TICKETS] = self._update_details(
+                self.data.get(self.DATA_KEY_RAW_TICKETS, {}), overview
+            )
             if self.outdated > 0:
                 logging.warning(
-                    'Updating from host was not completed, some of following steps may fail or being incorrect.'
+                    "Updating from host was not completed, some of following steps may fail or being incorrect."
                 )
             self.preprocess_data()
 
             save_data(self.data, path_dir=self.output_path, repo_name=self.repo_name, host=self.HOST_NAME)
         # take the saved date
-        self.timestamp = self.data.get('updated_at')
+        self.timestamp = self.data.get("updated_at")
 
     def preprocess_data(self) -> None:
         """Some pre-processing of raw data."""
@@ -184,11 +185,11 @@ class Host:
         Returns:
             path to the exported table
         """
-        logging.debug('Show users summary...')
-        assert self.DATA_KEY_SIMPLE in self.data, 'forgotten call `_convert_to_simple`'
+        logging.debug("Show users summary...")
+        assert self.DATA_KEY_SIMPLE in self.data, "forgotten call `_convert_to_simple`"
 
         if not self.data.get(self.DATA_KEY_SIMPLE):
-            logging.warning('No data to process/show.')
+            logging.warning("No data to process/show.")
             return
 
         df_users = compute_users_summary(
@@ -202,21 +203,21 @@ class Host:
         miss_columns = [c for c in columns if c not in avail_columns]
         if miss_columns:
             logging.warning(
-                f'You fave requested following columns {miss_columns} which are missing in the table,'
-                f' these columns are available: {avail_columns}'
+                f"You fave requested following columns {miss_columns} which are missing in the table,"
+                f" these columns are available: {avail_columns}"
             )
         columns = [c for c in columns if c in avail_columns]
 
         if not columns:
             columns = list(df_users.columns)
-            logging.warning(f'You have not set any column was recognised, so we show all: {columns}')
+            logging.warning(f"You have not set any column was recognised, so we show all: {columns}")
 
         # filter just some columns
         df_users = df_users[columns]
         df_users.sort_values(columns[0], ascending=False, inplace=True)
         csv_path = os.path.join(self.output_path, self.CSV_USERS_SUMMARY % (self.HOST_NAME, self.name))
         df_users.to_csv(csv_path)
-        df_users.index = df_users.index.map(lambda u: self.USER_URL_TEMPLATE % {'user': u})
+        df_users.index = df_users.index.map(lambda u: self.USER_URL_TEMPLATE % {"user": u})
         print(
             tabulate(
                 df_users[df_users[columns[0]] >= self.min_contribution_count],
@@ -226,7 +227,7 @@ class Host:
         )
         return csv_path
 
-    def show_user_comments(self, freq: str = 'W', parent_type: str = '', show_fig: bool = True) -> Tuple[str, str]:
+    def show_user_comments(self, freq: str = "W", parent_type: str = "", show_fig: bool = True) -> Tuple[str, str]:
         """Show aggregated user contribution statistics in a table and a double chart
 
         Args:
@@ -238,10 +239,10 @@ class Host:
             path to CSV table and PDF figure
         """
         logging.info(f'Show comments aggregation for freq: "{freq}" & type: "{parent_type}"')
-        assert self.DATA_KEY_COMMENTS in self.data, 'forgotten call `convert_comments_timeline`'
+        assert self.DATA_KEY_COMMENTS in self.data, "forgotten call `convert_comments_timeline`"
 
         if not self.data.get(self.DATA_KEY_COMMENTS):
-            logging.warning('No data to process/show.')
+            logging.warning("No data to process/show.")
             return
 
         df_comments = compute_user_comment_timeline(
@@ -258,12 +259,12 @@ class Host:
         select_users = list(cum_sum[cum_sum >= self.min_contribution_count].index)
         fig, extras = draw_comments_timeline(
             df_comments[select_users],
-            title=f'User comments aggregation @{self.timestamp} - Freq: {freq}, Type:{parent_type or "all"}'
+            title=f'User comments aggregation @{self.timestamp} - Freq: {freq}, Type:{parent_type or "all"}',
         )
         fig_path = os.path.join(
             self.output_path, self.PDF_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type or "all")
         )
-        fig.savefig(fig_path, bbox_extra_artists=(extras['legend'], extras['colorbar']), bbox_inches='tight')
+        fig.savefig(fig_path, bbox_extra_artists=(extras["legend"], extras["colorbar"]), bbox_inches="tight")
         if not show_fig:
             plt.close(fig)
 

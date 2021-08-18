@@ -18,10 +18,10 @@ import repo_stats
 _PATH_HERE = path.abspath(path.dirname(__file__))
 
 
-def _load_requirements(fname='requirements.txt'):
-    with open(path.join(_PATH_HERE, fname), encoding='utf-8') as fp:
+def _load_requirements(fname="requirements.txt"):
+    with open(path.join(_PATH_HERE, fname), encoding="utf-8") as fp:
         reqs = [rq.rstrip() for rq in fp.readlines()]
-    reqs = [ln[:ln.index('#')] if '#' in ln else ln for ln in reqs]
+    reqs = [ln[: ln.index("#")] if "#" in ln else ln for ln in reqs]
     reqs = [ln for ln in reqs if ln]
     return reqs
 
@@ -33,7 +33,7 @@ def _load_requirements(fname='requirements.txt'):
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
 setup(
-    name='repo-stats',
+    name="repo-stats",
     version=repo_stats.__version__,
     url=repo_stats.__homepage__,
     author=repo_stats.__author__,
@@ -41,34 +41,33 @@ setup(
     license=repo_stats.__license__,
     description=repo_stats.__doc__,
     long_description=repo_stats.__long_doc__,
-    long_description_content_type='text/markdown',
-    packages=find_packages(exclude=['tests', 'tests/*']),
-    keywords='repository stats',
-    install_requires=_load_requirements('requirements.txt'),
+    long_description_content_type="text/markdown",
+    packages=find_packages(exclude=["tests", "tests/*"]),
+    keywords="repository stats",
+    install_requires=_load_requirements("requirements.txt"),
     include_package_data=True,
     classifiers=[
-        'Environment :: Console',
-        'Natural Language :: English',
+        "Environment :: Console",
+        "Natural Language :: English",
         # How mature is this project? Common values are
         #   3 - Alpha, 4 - Beta, 5 - Production/Stable
-        'Development Status :: 4 - Beta',
+        "Development Status :: 4 - Beta",
         # Indicate who your project is intended for
-        'Intended Audience :: Developers',
-        'Topic :: Software Development :: Build Tools',
+        "Intended Audience :: Developers",
+        "Topic :: Software Development :: Build Tools",
         # Pick your license as you wish
-        'License :: OSI Approved :: BSD License',
-        'Operating System :: OS Independent',
+        "License :: OSI Approved :: BSD License",
+        "Operating System :: OS Independent",
         # Specify the Python versions you support here.
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ],
-
     # entry point from command line
     entry_points={
-        'console_scripts': [
-            'repostat = repo_stats.cli:cli_main',
+        "console_scripts": [
+            "repostat = repo_stats.cli:cli_main",
         ],
-    }
+    },
 )
