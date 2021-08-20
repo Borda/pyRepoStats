@@ -24,13 +24,13 @@ class GitHub(Host):
     """
 
     #: host name, server
-    HOST_NAME = 'github'
+    HOST_NAME = "github"
     #: if host provides direct link to user
-    USER_URL_TEMPLATE = '[%(user)s](https://github.com/%(user)s)'
+    USER_URL_TEMPLATE = "[%(user)s](https://github.com/%(user)s)"
     #: name to the host
-    URL_API = 'https://api.github.com/repos'
+    URL_API = "https://api.github.com/repos"
     #: OS env. variable for getting Token
-    OS_ENV_AUTH_TOKEN = 'GH_API_TOKEN'
+    OS_ENV_AUTH_TOKEN = "GH_API_TOKEN"
     #: if you have reached the number of free/allowed requests
     API_LIMIT_REACHED = False
     #: hint/explanation what happened
@@ -40,10 +40,10 @@ To use higher limit generate personal auth token, see https://developer.github.c
 """
     #: define bot users as name pattern
     USER_BOTS = (
-        'codecov',
-        'pep8speaks',
-        'stale',
-        '[bot]',
+        "codecov",
+        "pep8speaks",
+        "stale",
+        "[bot]",
     )
     #: Wait time for URL reply in seconds
     REQUEST_TIMEOUT = 15
@@ -61,13 +61,13 @@ To use higher limit generate personal auth token, see https://developer.github.c
             auth_token=auth_token,
             min_contribution=min_contribution,
         )
-        self.auth_header = {'Authorization': f'token {auth_token}'} if auth_token else {}
+        self.auth_header = {"Authorization": f"token {auth_token}"} if auth_token else {}
 
     def _fetch_overview(self) -> List[dict]:
         """Fetch all issues from a given repo using listing per pages."""
-        items, items_new, min_idx, page = [], [None], float('inf'), 1
+        items, items_new, min_idx, page = [], [None], float("inf"), 1
         # get items
-        with tqdm(desc='Requesting issue/PR overview') as pbar:
+        with tqdm(desc="Requesting issue/PR overview") as pbar:
             while min_idx > 1 and items_new:
                 req_url = f"{self.URL_API}/{self.repo_name}/issues?state=all&page={page}&per_page=100"
                 items_new = GitHub._request_url(req_url, self.auth_header)
@@ -79,10 +79,10 @@ To use higher limit generate personal auth token, see https://developer.github.c
                     # in case there is no issue/pr
                     if sum(isinstance(i, dict) for i in items) == 0:
                         return []
-                    min_idx = items[0]['number']
+                    min_idx = items[0]["number"]
                     pbar.reset(total=min_idx)
-                pbar.update(min_idx - items[-1]['number'])
-                min_idx = items[-1]['number']
+                pbar.update(min_idx - items[-1]["number"])
+                min_idx = items[-1]["number"]
                 page += 1
         return items
 
@@ -109,10 +109,10 @@ To use higher limit generate personal auth token, see https://developer.github.c
     @staticmethod
     def _request_detail_pr(pr_url: str, auth_header: dict) -> Optional[dict]:
         """Request PR status, in particular we want to distinguish between closed and merged ones."""
-        pr_url = pr_url.replace('issues', 'pulls')
+        pr_url = pr_url.replace("issues", "pulls")
         detail = GitHub._request_url(pr_url, auth_header)
-        if detail and detail.get('merged_at'):
-            detail['state'] = 'merged'
+        if detail and detail.get("merged_at"):
+            detail["state"] = "merged"
         return detail
 
     @staticmethod
@@ -120,18 +120,18 @@ To use higher limit generate personal auth token, see https://developer.github.c
         """Get all needed issue/PR details"""
         idx, item = idx_item
         # this request is need only for PR, can be skipped for issues
-        if 'pull' in item['html_url'].split('/'):
-            detail = GitHub._request_detail_pr(item['url'], auth_header)
+        if "pull" in item["html_url"].split("/"):
+            detail = GitHub._request_detail_pr(item["url"], auth_header)
             if detail is None:
                 return idx, None
             item.update(detail)
             # pull review comments
-            r_comments = GitHub._request_comments(item['review_comments_url'], auth_header)
+            r_comments = GitHub._request_comments(item["review_comments_url"], auth_header)
         else:
             r_comments = []
         extras = dict(
             # pull all comments
-            comments=GitHub._request_comments(item['comments_url'], auth_header),
+            comments=GitHub._request_comments(item["comments_url"], auth_header),
             review_comments=r_comments,
         )
         if any(dl is None for dl in extras.values()):
@@ -143,8 +143,11 @@ To use higher limit generate personal auth token, see https://developer.github.c
     @staticmethod
     def __update_issues_queue(issues: Dict[str, dict], issues_new: Dict[str, dict]) -> List[str]:
         idxs = [
-            idx for idx in issues_new if (
-                idx not in issues or not issues[idx]['updated_at']
+            idx
+            for idx in issues_new
+            if (
+                idx not in issues
+                or not issues[idx]["updated_at"]
                 or _dt_update(issues_new, idx) > _dt_update(issues, idx)
             )
         ]
@@ -170,7 +173,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 GitHub.API_LIMIT_REACHED = True
                 # drop update date or another way to set that this issue was not fetch completely
                 item = issues.get(idx, issues_new.get(idx))
-                item['updated_at'] = None
+                item["updated_at"] = None
             issues[idx] = item
 
         pool.close()
@@ -180,15 +183,15 @@ To use higher limit generate personal auth token, see https://developer.github.c
 
     @staticmethod
     def __parse_user(field: dict) -> str:
-        return field['user']['login']
+        return field["user"]["login"]
 
     def __filer_commenter(self, comment: dict, in_period: bool) -> int:
         """Filter valid commenter by name and content."""
         if self._is_user_bot(self.__parse_user(comment)):
             return 1
-        if in_period and not self._is_in_time_period(comment['updated_at']):
+        if in_period and not self._is_in_time_period(comment["updated_at"]):
             return 2
-        if self._is_spam_message(comment['body']):
+        if self._is_spam_message(comment["body"]):
             return 3
         return 0
 
@@ -196,30 +199,39 @@ To use higher limit generate personal auth token, see https://developer.github.c
         """Aggregate issue/PR affiliations."""
 
         def _get_commenters(issue) -> list:
-            return _unique_list([
-                self.__parse_user(com) for com in issue['comments'] + issue['review_comments']
-                if self.__filer_commenter(com, in_period=True) == 0
-            ])
+            return _unique_list(
+                [
+                    self.__parse_user(com)
+                    for com in issue["comments"] + issue["review_comments"]
+                    if self.__filer_commenter(com, in_period=True) == 0
+                ]
+            )
 
         # init collections of items from issues
         items = [
             dict(
-                type='PR' if 'pull' in issue['html_url'] else 'issue',
-                state=issue['state'],
+                type="PR" if "pull" in issue["html_url"] else "issue",
+                state=issue["state"],
                 author=self.__parse_user(issue),
-                created_at=issue['created_at'],
-                closed_at=issue.get('closed_at'),
+                created_at=issue["created_at"],
+                closed_at=issue.get("closed_at"),
                 commenters=_get_commenters(issue),
-            ) for issue in tqdm(issues, desc='Parsing simplified tickets')
+            )
+            for issue in tqdm(issues, desc="Parsing simplified tickets")
             # if fetch fails `comments` is int and `review_comments` is missing
-            if isinstance(issue['comments'], list) and isinstance(issue.get('review_comments'), list)
+            if isinstance(issue["comments"], list) and isinstance(issue.get("review_comments"), list)
         ]
         # update the counting time according item type
         [
-            it.update({
-                # use latest updated for issue and merged time for PRs
-                'count_at': it.get('updated_at', it['created_at']) if it['type'] == 'issue' else it['closed_at']
-            }) for it in tqdm(items, desc='Update simplified tickets')
+            it.update(
+                {
+                    # use latest updated for issue and merged time for PRs
+                    "count_at": it.get("updated_at", it["created_at"])
+                    if it["type"] == "issue"
+                    else it["closed_at"]
+                }
+            )
+            for it in tqdm(items, desc="Update simplified tickets")
         ]
         return items
 
@@ -227,22 +239,24 @@ To use higher limit generate personal auth token, see https://developer.github.c
         """Aggregate comments for all issue/PR affiliations."""
 
         comments = []
-        for item in tqdm(issues, desc='Parsing comments from all repo'):
-            item_comments = item['comments'] if isinstance(item['comments'], list) else []
-            item_comments += item.get('review_comments', [])
+        for item in tqdm(issues, desc="Parsing comments from all repo"):
+            item_comments = item["comments"] if isinstance(item["comments"], list) else []
+            item_comments += item.get("review_comments", [])
             if not isinstance(item_comments, list):
                 continue
             comments += [
                 dict(
-                    parent_type='PR' if 'pull' in item['html_url'] else 'issue',
-                    parent_idx=int(item['number']),
+                    parent_type="PR" if "pull" in item["html_url"] else "issue",
+                    parent_idx=int(item["number"]),
                     author=self.__parse_user(cmt),
-                    created_at=cmt['created_at'],
-                    count_at=cmt.get('updated_at', cmt['created_at']),
-                ) for cmt in item_comments if self.__filer_commenter(cmt, in_period=False) == 0
+                    created_at=cmt["created_at"],
+                    count_at=cmt.get("updated_at", cmt["created_at"]),
+                )
+                for cmt in item_comments
+                if self.__filer_commenter(cmt, in_period=False) == 0
             ]
         # filter within given time frame
-        comments = [cmt for cmt in comments if self._is_in_time_period(cmt['count_at'])]
+        comments = [cmt for cmt in comments if self._is_in_time_period(cmt["count_at"])]
         return comments
 
 
@@ -251,4 +265,4 @@ def _unique_list(arr) -> list:
 
 
 def _dt_update(arr, i):
-    return pd.to_datetime(arr[i]['updated_at'])
+    return pd.to_datetime(arr[i]["updated_at"])
