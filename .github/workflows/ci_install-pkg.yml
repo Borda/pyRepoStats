@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@master
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.8
 
       - name: Check package
         run: |
@@ -39,7 +39,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04, macOS-10.15 , windows-2019]
-        python-version: [3.7]
+        python-version: [3.9]
 
     steps:
       - uses: actions/checkout@v2
@@ -56,12 +56,6 @@ jobs:
           check-manifest
           # python setup.py check --metadata --strict
           python setup.py sdist bdist_wheel
-
-      - name: Setup Windows
-        if: runner.os == 'windows'
-        run: |
-          # this is just a hotfix because of Win cannot install it directly
-          pip install -r requirements.txt
 
       - name: Install | Uninstall package - archive
         run: |
