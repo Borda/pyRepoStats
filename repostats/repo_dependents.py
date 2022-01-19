@@ -7,7 +7,9 @@ from bs4 import BeautifulSoup
 from tqdm.auto import tqdm
 
 repo = "PyTorchLightning/pytorch-lightning"
-url = f'https://github.com/{repo}/network/dependents?dependent_type=REPOSITORY'
+scope = "REPOSITORY"
+# scope = "PACKAGE"
+url = f'https://github.com/{repo}/network/dependents?dependent_type={scope}'
 fetching = []
 
 pbar = tqdm(desc="fetching...")
@@ -24,8 +26,8 @@ while True:
             repo=box.find('a', {
                 "data-hovercard-type": "repository"
             }).text,
-            stars=int(box.find_all('span', {"class": "color-text-tertiary"})[1].text.replace(",", "")),
-            forks=int(box.find_all('span', {"class": "color-text-tertiary"})[2].text.replace(",", "")),
+            stars=int(box.find_all('span', {"class": "pl-3"})[0].text.replace(",", "")),
+            forks=int(box.find_all('span', {"class": "pl-3"})[1].text.replace(",", "")),
         ) for box in soup.findAll("div", {"class": "Box-row"})
     ]
     pagination = soup.find("div", {"class": "paginate-container"})
@@ -44,4 +46,4 @@ while True:
 pprint(len(fetching))
 
 stats = pd.DataFrame(fetching).sort_values("stars", ascending=False)
-stats.drop_duplicates().to_csv("dependents.csv", index=None)
+stats.drop_duplicates().to_csv(f"dependents-{scope}.csv", index=None)
