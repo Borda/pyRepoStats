@@ -10,7 +10,7 @@ from tqdm.auto import tqdm
 repo = "PyTorchLightning/pytorch-lightning"
 scope = "REPOSITORY"
 # scope = "PACKAGE"
-url = f'https://github.com/{repo}/network/dependents?dependent_type={scope}'
+url = f"https://github.com/{repo}/network/dependents?dependent_type={scope}"
 fetching = []
 
 pbar = tqdm(desc="fetching...")
@@ -21,15 +21,12 @@ while True:
 
     page = [
         dict(
-            org=box.find('a', {
-                "data-repository-hovercards-enabled": ""
-            }).text,
-            repo=box.find('a', {
-                "data-hovercard-type": "repository"
-            }).text,
-            stars=int(box.find_all('span', {"class": "pl-3"})[0].text.replace(",", "")),
-            forks=int(box.find_all('span', {"class": "pl-3"})[1].text.replace(",", "")),
-        ) for box in soup.findAll("div", {"class": "Box-row"})
+            org=box.find("a", {"data-repository-hovercards-enabled": ""}).text,
+            repo=box.find("a", {"data-hovercard-type": "repository"}).text,
+            stars=int(box.find_all("span", {"class": "pl-3"})[0].text.replace(",", "")),
+            forks=int(box.find_all("span", {"class": "pl-3"})[1].text.replace(",", "")),
+        )
+        for box in soup.findAll("div", {"class": "Box-row"})
     ]
     pagination = soup.find("div", {"class": "paginate-container"})
     if not pagination:
@@ -37,7 +34,7 @@ while True:
         time.sleep(9)
         continue
     fetching += page
-    nav_hrefs = pagination.find_all('a')
+    nav_hrefs = pagination.find_all("a")
     if "next" not in [href.text.lower() for href in nav_hrefs]:
         break
     url = nav_hrefs[-1]["href"]
