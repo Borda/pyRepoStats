@@ -6,6 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 from tqdm.auto import tqdm
 
+# repo = "PyTorch/pytorch"
 repo = "PyTorchLightning/pytorch-lightning"
 scope = "REPOSITORY"
 # scope = "PACKAGE"
@@ -46,4 +47,5 @@ while True:
 pprint(len(fetching))
 
 stats = pd.DataFrame(fetching).sort_values("stars", ascending=False)
-stats.drop_duplicates().to_csv(f"dependents-{scope}.csv", index=None)
+stats["URL"] = [f"https://github.com/{row['org']}/{row['repo']}" for _, row in stats.iterrows()]
+stats.drop_duplicates().to_csv(f"dependents{repo.replace('/', '-')}-{scope}.csv", index=None)
