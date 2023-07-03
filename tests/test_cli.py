@@ -18,6 +18,5 @@ from repostats.cli import cli_main
     ],
 )
 def test_online_github(cli_args):
-
     with mock.patch("argparse._sys.argv", ["any.py"] + cli_args.strip().split()):
         cli_main()
