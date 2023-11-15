@@ -5,6 +5,5 @@ pytest-cov
 pytest-xdist
 codacy-coverage
 
-flake8
 check-manifest
 twine>=3.2
