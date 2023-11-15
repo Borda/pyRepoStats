@@ -61,7 +61,7 @@ def compute_users_summary(items: List[dict], datetime_from: str = None, datetime
                     f"merged {tp}s": sum(df_merged["closed"]),
                     # in this time all comments shall be already filtered and we need all issues
                     #  as they can be created before time window and commented in given period...
-                    f"commented {tp}s": sum(df_not_author["commenters"].apply(lambda l: user in l)),
+                    f"commented {tp}s": sum(df_not_author["commenters"].apply(lambda ls: user in ls)),
                 }
             )
         users_stat.append(user_stat)
