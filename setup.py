@@ -5,7 +5,7 @@ See:
 * https://packaging.python.org/en/latest/distributing.html
 * https://github.com/pypa/sampleproject
 
-Copyright (C) 2020-2021 Jiri Borovec <jiri.borovec@fel.cvut.cz>
+Copyright (C) 2020-2021 Jiri Borovec <...>
 """
 
 # Always prefer setuptools over distutils
@@ -60,9 +60,10 @@ setup(
         "Operating System :: OS Independent",
         # Specify the Python versions you support here.
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
     # entry point from command line
     entry_points={
