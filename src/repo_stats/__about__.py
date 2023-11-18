@@ -5,9 +5,7 @@ __license__ = "MIT"
 __homepage__ = "https://borda.github.io/pyRepoStats"
 __copyright__ = f"Copyright (c) 2020-2023, {__author__}."
 __docs__ = "Repository Statistics"
-__long_doc__ = (
-    f"# {__docs__}"
-    + """
+__long_doc__ = f"""# {__docs__}
 
 This simple tool aims on open-source projects providing simple repository stats
  which are a bit out of scope of base Git and need some more information about issues and PRs.
@@ -17,7 +15,6 @@ This simple tool aims on open-source projects providing simple repository stats
 - collection of overall user contributions to issues/PRs
 - visualization of aggregated timeline of past contributions
 """
-)
 
 __all__ = [
     "__author__",
