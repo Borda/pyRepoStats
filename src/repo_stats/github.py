@@ -129,11 +129,11 @@ To use higher limit generate personal auth token, see https://developer.github.c
             r_comments = GitHub._request_comments(item["review_comments_url"], auth_header)
         else:
             r_comments = []
-        extras = dict(
+        extras = {
             # pull all comments
-            comments=GitHub._request_comments(item["comments_url"], auth_header),
-            review_comments=r_comments,
-        )
+            "comments": GitHub._request_comments(item["comments_url"], auth_header),
+            "review_comments": r_comments,
+        }
         if any(dl is None for dl in extras.values()):
             return idx, None
         # update info
@@ -142,7 +142,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
 
     @staticmethod
     def __update_issues_queue(issues: Dict[str, dict], issues_new: Dict[str, dict]) -> List[str]:
-        idxs = [
+        return [
             idx
             for idx in issues_new
             if (
@@ -151,7 +151,6 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 or _dt_update(issues_new, idx) > _dt_update(issues, idx)
             )
         ]
-        return idxs
 
     def _update_details(self, issues: Dict[str, dict], issues_new: Dict[str, dict]) -> Dict[str, dict]:
         """Pull all exiting details to particular issues."""
@@ -209,14 +208,14 @@ To use higher limit generate personal auth token, see https://developer.github.c
 
         # init collections of items from issues
         items = [
-            dict(
-                type="PR" if "pull" in issue["html_url"] else "issue",
-                state=issue["state"],
-                author=self.__parse_user(issue),
-                created_at=issue["created_at"],
-                closed_at=issue.get("closed_at"),
-                commenters=_get_commenters(issue),
-            )
+            {
+                "type": "PR" if "pull" in issue["html_url"] else "issue",
+                "state": issue["state"],
+                "author": self.__parse_user(issue),
+                "created_at": issue["created_at"],
+                "closed_at": issue.get("closed_at"),
+                "commenters": _get_commenters(issue),
+            }
             for issue in tqdm(issues, desc="Parsing simplified tickets")
             # if fetch fails `comments` is int and `review_comments` is missing
             if isinstance(issue["comments"], list) and isinstance(issue.get("review_comments"), list)
@@ -245,19 +244,18 @@ To use higher limit generate personal auth token, see https://developer.github.c
             if not isinstance(item_comments, list):
                 continue
             comments += [
-                dict(
-                    parent_type="PR" if "pull" in item["html_url"] else "issue",
-                    parent_idx=int(item["number"]),
-                    author=self.__parse_user(cmt),
-                    created_at=cmt["created_at"],
-                    count_at=cmt.get("updated_at", cmt["created_at"]),
-                )
+                {
+                    "parent_type": "PR" if "pull" in item["html_url"] else "issue",
+                    "parent_idx": int(item["number"]),
+                    "author": self.__parse_user(cmt),
+                    "created_at": cmt["created_at"],
+                    "count_at": cmt.get("updated_at", cmt["created_at"]),
+                }
                 for cmt in item_comments
                 if self.__filer_commenter(cmt, in_period=False) == 0
             ]
         # filter within given time frame
-        comments = [cmt for cmt in comments if self._is_in_time_period(cmt["count_at"])]
-        return comments
+        return [cmt for cmt in comments if self._is_in_time_period(cmt["count_at"])]
 
 
 def _unique_list(arr) -> list:

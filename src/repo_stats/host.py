@@ -40,7 +40,7 @@ class Host:
     #: timeline of all comments in the repo
     DATA_KEY_COMMENTS = "comments_timeline"
     #: define bot users as name pattern
-    USER_BOTS = tuple()
+    USER_BOTS = []
     #: OS env. variable for getting Token
     OS_ENV_AUTH_TOKEN = "AUTH_API_TOKEN"
     #: common spam messages, no special value to give credit for it...
@@ -62,9 +62,9 @@ class Host:
     ):
         """
         Args:
-            repo_name: Repository name, need to  ne unique
+            repo_name: Repository name, need to new unique
             output_path: Path to saving dumped cache, csw tables, pdf figures
-            auth_token: authentication token fro API access
+            auth_token: authentication token for API access
             min_contribution: minimal nb contributions for visualization
         """
         self.repo_name = repo_name
@@ -190,7 +190,7 @@ class Host:
 
         if not self.data.get(self.DATA_KEY_SIMPLE):
             logging.warning("No data to process/show.")
-            return
+            return None
 
         df_users = compute_users_summary(
             self.data[self.DATA_KEY_SIMPLE],
@@ -203,7 +203,7 @@ class Host:
         miss_columns = [c for c in columns if c not in avail_columns]
         if miss_columns:
             logging.warning(
-                f"You fave requested following columns {miss_columns} which are missing in the table,"
+                f"You save requested following columns {miss_columns} which are missing in the table,"
                 f" these columns are available: {avail_columns}"
             )
         columns = [c for c in columns if c in avail_columns]
@@ -243,7 +243,7 @@ class Host:
 
         if not self.data.get(self.DATA_KEY_COMMENTS):
             logging.warning("No data to process/show.")
-            return
+            return None
 
         df_comments = compute_user_comment_timeline(
             self.data[self.DATA_KEY_COMMENTS],

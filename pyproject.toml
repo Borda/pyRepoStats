@@ -1,8 +1,58 @@
+[metadata]
+license_file = "LICENSE"
+description-file = "README.md"
+
 [build-system]
 requires = [
     "setuptools",
     "wheel",
 ]
+
+[tool.pytest.ini_options]
+norecursedirs = [
+    ".git",
+    ".github",
+    "dist",
+    "build",
+    "docs",
+]
+addopts = [
+    "--strict-markers",
+    "--doctest-modules",
+    "--durations=25",
+    "--color=yes",
+    "--disable-pytest-warnings",
+]
+#filterwarnings = ["error::FutureWarning", "error::DeprecationWarning"]
+xfail_strict = false  # TODO: true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "pass",
+]
+[tool.coverage.run]
+parallel = true
+#concurrency = "thread"
+relative_files = true
+
+
+[tool.codespell]
+#skip = '*.py'
+quiet-level = 3
+# comma separated list of words; waiting for:
+#  https://github.com/codespell-project/codespell/issues/2839#issuecomment-1731601603
+# also adding links until they ignored by its: nature
+#  https://github.com/codespell-project/codespell/issues/2243#issuecomment-1732019960
+#ignore-words-list = ""
+
+
+[tool.docformatter]
+recursive = true
+# this need to be shorter as some docstings are r"""...
+wrap-summaries = 119
+wrap-descriptions = 120
+blank = true
 
 
 [tool.black]
@@ -22,13 +72,13 @@ select = [
 #    "N",  # see: https://pypi.org/project/pep8-naming
 #    "S",  # see: https://pypi.org/project/flake8-bandit
 ]
-#extend-select = [
-#    "C4",  # see: https://pypi.org/project/flake8-comprehensions
-#    "PT",  # see: https://pypi.org/project/flake8-pytest-style
-#    "RET",  # see: https://pypi.org/project/flake8-return
-#    "SIM",  # see: https://pypi.org/project/flake8-simplify
-#    "YTT",  # see: https://pypi.org/project/flake8-2020
+extend-select = [
+    "C4",  # see: https://pypi.org/project/flake8-comprehensions
+    "PT",  # see: https://pypi.org/project/flake8-pytest-style
+    "RET",  # see: https://pypi.org/project/flake8-return
+    "SIM",  # see: https://pypi.org/project/flake8-simplify
+    "YTT",  # see: https://pypi.org/project/flake8-2020
 #    "ANN",  # see: https://pypi.org/project/flake8-annotations
-#]
+]
 ignore-init-module-imports = true
 unfixable = ["F401"]

@@ -81,16 +81,12 @@ def get_arguments():
 
 
 def init_host(args: Namespace) -> Host:
-    default_params = dict(
-        output_path=args.output_path,
-        auth_token=args.auth_token,
-        min_contribution=args.min_contribution,
-    )
-    if args.github_repo:
-        host = GitHub(args.github_repo, **default_params)
-    else:
-        host = None
-    return host
+    default_params = {
+        "output_path": args.output_path,
+        "auth_token": args.auth_token,
+        "min_contribution": args.min_contribution,
+    }
+    return GitHub(args.github_repo, **default_params) if args.github_repo else None
 
 
 def main(args: Namespace):
@@ -118,7 +114,7 @@ def main(args: Namespace):
                 f"You have requested {args.user_comments} but not of them is time aggregation: {DATETIME_FREQ.keys()}"
             )
         # if none set, use all
-        types = ["all"] if not types else types
+        types = types or ["all"]
         for freq in freqs:
             for tp in types:
                 tp = "" if tp.lower() == "all" else tp
