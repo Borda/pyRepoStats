@@ -55,7 +55,7 @@ For GitHub users we recommend using your personal GitHub token which significant
 
 ### Extra options
 
-The calls above just pull the data, to get/show some results check available options `python -m repostats.cli --help`
+The calls above just pull the data, to get/show some results check available options `python -m repo_stats.cli --help`
 
 - To see following summary table use `--users_summary "merged PRs" "commented PRs" "opened issues" "commented issues"` where the fist column is used for sorting rows with users:
 

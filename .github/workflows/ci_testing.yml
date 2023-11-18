@@ -58,7 +58,7 @@ jobs:
         # suppress showing figures as it may bail on server without display
         SHOW_FIGURE: 0
       run: |
-        python -m pytest repostats tests -v --cov=repostats --durations=25
+        python -m pytest repo_stats tests -v --cov=repo_stats --durations=25
 
     - name: Statistics
       run: |
@@ -77,7 +77,7 @@ jobs:
         SHOW_FIGURE: 0
       run: |
         mkdir results
-        python repostats/cli.py -gh borda/pyRepoStats -o results -t ${{ secrets.API_TOKEN }}
+        python repo_stats/cli.py -gh borda/pyrepo_stats -o results -t ${{ secrets.API_TOKEN }}
         ls -l results
 
 
