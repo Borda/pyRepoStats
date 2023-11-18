@@ -11,9 +11,8 @@ Copyright (C) 2020-2021 Jiri Borovec <...>
 # Always prefer setuptools over distutils
 from os import path
 
-from setuptools import find_packages, setup
-
 import repo_stats
+from setuptools import find_packages, setup
 
 _PATH_HERE = path.abspath(path.dirname(__file__))
 

@@ -1,7 +1,6 @@
 from unittest import mock
 
 import pytest
-
 from repo_stats.cli import cli_main
 
 
