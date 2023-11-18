@@ -1,9 +1,8 @@
 # Repository Stats
 
-![CI testing](https://github.com/Borda/pyRepoStats/workflows/CI%20testing/badge.svg?event=push)
+[![CI testing](https://github.com/Borda/pyRepoStats/actions/workflows/ci_testing.yml/badge.svg?event=push)](https://github.com/Borda/pyRepoStats/actions/workflows/ci_testing.yml)
 [![codecov](https://codecov.io/gh/Borda/pyRepoStats/branch/main/graph/badge.svg?token=09H9MDJMXG)](https://codecov.io/gh/Borda/pyRepoStats)
 [![CodeFactor](https://www.codefactor.io/repository/github/borda/pyrepostats/badge)](https://www.codefactor.io/repository/github/borda/pyrepostats)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Borda/pyRepoStats.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Borda/pyRepoStats/context:python)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Borda/pyRepoStats/main.svg)](https://results.pre-commit.ci/latest/github/Borda/pyRepoStats/main)
 
 This simple tool aims on open-source projects providing simple repository stats which are a bit out of scope of base Git and need some more information about issues and PRs.
