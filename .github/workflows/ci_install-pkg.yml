@@ -39,6 +39,7 @@ jobs:
           path: dist/
 
   pkg-install:
+    needs: pkg-check
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
