@@ -7,6 +7,10 @@ on:  # Trigger the workflow on push or pull request, but only for the master bra
   pull_request:
     branches: [main]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   pytester:
     runs-on: ${{ matrix.os }}

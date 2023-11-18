@@ -6,6 +6,10 @@ on:  # Trigger the workflow on push or pull request, but only for the master bra
   pull_request:
     branches: [main]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   pkg-check:
     runs-on: ubuntu-22.04
@@ -65,7 +69,7 @@ jobs:
 
       - name: Install package
         run: |
-          pip install dist/${PKG_FILE}
+          pip install "dist/${PKG_FILE}"
           python -c "import repo_stats ; print(repo_stats.__version__)"
 
 
