@@ -35,7 +35,7 @@ Let's show how to pull data from Github repository, use of the following calls
 - if you just clone this repo without installation, you need to install dependencies and call script
   ```bash
   pip install -r requirements.txt
-  python repostats/cli.py -gh PyTorchLightning/pytorch-lightning-bolts
+  python src/repo_stats/__main__.py -gh PyTorchLightning/pytorch-lightning-bolts
   ```
 - if you have already installed the package with `pip` or with `setup.py` you can call executable
   ```bash
@@ -43,7 +43,7 @@ Let's show how to pull data from Github repository, use of the following calls
   ```
   or package with a pythonic way
   ```bash
-  python -m repostats.cli -gh PyTorchLightning/pytorch-lightning-bolts
+  python -m repo_stats -gh PyTorchLightning/pytorch-lightning-bolts
   ```
   just note that with this way usage should also consider passing `-o` argument for output path, otherwise all caches and results will be saved in installation folder, most likely _site-packages_
 
@@ -55,7 +55,7 @@ For GitHub users we recommend using your personal GitHub token which significant
 
 ### Extra options
 
-The calls above just pull the data, to get/show some results check available options `python -m repostats.cli --help`
+The calls above just pull the data, to get/show some results check available options `python -m repo_stats.cli --help`
 
 - To see following summary table use `--users_summary "merged PRs" "commented PRs" "opened issues" "commented issues"` where the fist column is used for sorting rows with users:
 
