@@ -14,7 +14,7 @@ import pandas as pd
 import requests
 from tqdm import tqdm
 
-from repostats.host import Host
+from repo_stats.host import Host
 
 
 class GitHub(Host):

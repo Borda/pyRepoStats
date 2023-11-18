@@ -13,7 +13,7 @@ from warnings import warn
 import pandas as pd
 from pandas.errors import ParserError
 
-from repostats import __version__
+from repo_stats import __version__
 
 JSON_CACHE_NAME = "dump-%s_%s.json"
 
@@ -36,8 +36,8 @@ def load_data(path_dir: str, repo_name: str, host: str = "") -> dict:
 
     Example:
         >>> data = {'item': 123}
-        >>> pj = save_data(data, path_dir='.', repo_name='my/repo')
-        >>> data2 = load_data(path_dir='.', repo_name='my/repo')
+        >>> pj = save_data(data, path_dir='', repo_name='my/repo')
+        >>> data2 = load_data(path_dir='', repo_name='my/repo')
         >>> from pprint import pprint
         >>> pprint(data2)  # doctest: +ELLIPSIS
         {'host-name': '',

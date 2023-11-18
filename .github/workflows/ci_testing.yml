@@ -8,8 +8,7 @@ on:  # Trigger the workflow on push or pull request, but only for the master bra
     branches: [main]
 
 jobs:
-  pytest:
-
+  pytester:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -38,8 +37,7 @@ jobs:
     # https://github.com/actions/cache/blob/master/examples.md#multiple-oss-in-a-workflow
     - name: Get pip cache
       id: pip-cache
-      run: |
-        python -c "from pip._internal.locations import USER_CACHE_DIR; print('::set-output name=dir::' + USER_CACHE_DIR)"
+      run: echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
 
     - name: Cache pip
       uses: actions/cache@v2
@@ -51,12 +49,9 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install --requirement requirements.txt --upgrade
-        pip install --requirement tests/requirements.txt --upgrade
-        python --version
         pip --version
+        pip install -r requirements.txt -r tests/requirements.txt --upgrade
         pip list
-      shell: bash
 
     - name: Tests and coverage
       env:
@@ -64,25 +59,15 @@ jobs:
         # suppress showing figures as it may bail on server without display
         SHOW_FIGURE: 0
       run: |
-        python -m pytest repostats tests -v --cov=repostats --durations=25 --junitxml=junit/test-results-${{ runner.os }}-${{ matrix.python-version }}-${{ matrix.requires }}.xml
-
-    - name: Upload pytest test results
-      uses: actions/upload-artifact@master
-      with:
-        name: pytest-results-${{ runner.os }}-${{ matrix.python-version }}-${{ matrix.requires }}
-        path: junit/test-results-${{ runner.os }}-${{ matrix.python-version }}-${{ matrix.requires }}.xml
-      # Use always() to always run this step to publish test results when there are test failures
-      if: always()
+        python -m pytest repostats tests -v --cov=repostats --durations=25
 
     - name: Statistics
-      if: success()
       run: |
         coverage report
         coverage xml
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
-      if: success()
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: coverage.xml
@@ -95,4 +80,18 @@ jobs:
         mkdir results
         python repostats/cli.py -gh borda/pyRepoStats -o results -t ${{ secrets.API_TOKEN }}
         ls -l results
-      shell: bash
+
+
+  testing-guardian:
+    runs-on: ubuntu-latest
+    needs: pytester
+    if: always()
+    steps:
+    - run: echo "${{ needs.pytester.result }}"
+    - name: failing...
+      if: needs.pytester.result == 'failure'
+      run: exit 1
+    - name: cancelled or skipped...
+      if: contains(fromJSON('["cancelled", "skipped"]'), needs.pytester.result)
+      timeout-minutes: 1
+      run: sleep 90
