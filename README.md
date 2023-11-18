@@ -35,7 +35,7 @@ Let's show how to pull data from Github repository, use of the following calls
 - if you just clone this repo without installation, you need to install dependencies and call script
   ```bash
   pip install -r requirements.txt
-  python repo_stats/cli.py -gh PyTorchLightning/pytorch-lightning-bolts
+  python repo_stats/__main__.py -gh PyTorchLightning/pytorch-lightning-bolts
   ```
 - if you have already installed the package with `pip` or with `setup.py` you can call executable
   ```bash

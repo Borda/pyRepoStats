@@ -7,23 +7,33 @@ See:
 
 Copyright (C) 2020-2021 Jiri Borovec <...>
 """
+from importlib.util import module_from_spec, spec_from_file_location
 
 # Always prefer setuptools over distutils
 from os import path
 
 from setuptools import find_packages, setup
 
-import repo_stats
-
-_PATH_HERE = path.abspath(path.dirname(__file__))
+_PATH_ROOT = path.abspath(path.dirname(__file__))
+_PATH_SOURCE = path.join(_PATH_ROOT, "src")
 
 
 def _load_requirements(fname="requirements.txt"):
-    with open(path.join(_PATH_HERE, fname), encoding="utf-8") as fp:
+    with open(path.join(_PATH_ROOT, fname), encoding="utf-8") as fp:
         reqs = [rq.rstrip() for rq in fp.readlines()]
     reqs = [ln[: ln.index("#")] if "#" in ln else ln for ln in reqs]
     reqs = [ln for ln in reqs if ln]
     return reqs
+
+
+def _load_py_module(fname: str, pkg: str = "lightning_utilities"):
+    spec = spec_from_file_location(path.join(pkg, fname), path.join(_PATH_SOURCE, pkg, fname))
+    py = module_from_spec(spec)
+    spec.loader.exec_module(py)
+    return py
+
+
+about = _load_py_module("__about__.py")
 
 
 # Get the long description from the README file
@@ -34,13 +44,13 @@ def _load_requirements(fname="requirements.txt"):
 # Fields marked as "Optional" may be commented out.
 setup(
     name="repo-stats",
-    version=repo_stats.__version__,
-    url=repo_stats.__homepage__,
-    author=repo_stats.__author__,
-    author_email=repo_stats.__author_email__,
-    license=repo_stats.__license__,
-    description=repo_stats.__doc__,
-    long_description=repo_stats.__long_doc__,
+    version=about.__version__,
+    url=about.__homepage__,
+    author=about.__author__,
+    author_email=about.__author_email__,
+    license=about.__license__,
+    description=about.__doc__,
+    long_description=about.__long_doc__,
     long_description_content_type="text/markdown",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
@@ -69,7 +79,7 @@ setup(
     # entry point from command line
     entry_points={
         "console_scripts": [
-            "repostat = repo_stats.cli:cli_main",
+            "repostat = repo_stats.__main__:cli_main",
         ],
     },
 )
