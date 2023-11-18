@@ -62,9 +62,9 @@ class Host:
     ):
         """
         Args:
-            repo_name: Repository name, need to  ne unique
+            repo_name: Repository name, need to new unique
             output_path: Path to saving dumped cache, csw tables, pdf figures
-            auth_token: authentication token fro API access
+            auth_token: authentication token for API access
             min_contribution: minimal nb contributions for visualization
         """
         self.repo_name = repo_name
@@ -203,7 +203,7 @@ class Host:
         miss_columns = [c for c in columns if c not in avail_columns]
         if miss_columns:
             logging.warning(
-                f"You fave requested following columns {miss_columns} which are missing in the table,"
+                f"You save requested following columns {miss_columns} which are missing in the table,"
                 f" these columns are available: {avail_columns}"
             )
         columns = [c for c in columns if c in avail_columns]
