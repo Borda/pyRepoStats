@@ -109,7 +109,7 @@ def compute_user_comment_timeline(
 
     df_comments["count"] = 1
     # compute cross table with uniques dates as index and uniques users as columns
-    df_counts = pd.pivot_table(
+    return pd.pivot_table(
         df_comments,
         index="created_at",
         columns="author",
@@ -117,5 +117,3 @@ def compute_user_comment_timeline(
         aggfunc=sum,
         fill_value=0,
     )
-
-    return df_counts

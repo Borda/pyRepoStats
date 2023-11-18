@@ -18,12 +18,11 @@ _PATH_ROOT = path.abspath(path.dirname(__file__))
 _PATH_SOURCE = path.join(_PATH_ROOT, "src")
 
 
-def _load_requirements(fname="requirements.txt"):
+def _load_requirements(fname="requirements.txt") -> list:
     with open(path.join(_PATH_ROOT, fname), encoding="utf-8") as fp:
         reqs = [rq.rstrip() for rq in fp.readlines()]
     reqs = [ln[: ln.index("#")] if "#" in ln else ln for ln in reqs]
-    reqs = [ln for ln in reqs if ln]
-    return reqs
+    return [ln for ln in reqs if ln]
 
 
 def _load_py_module(fname: str, pkg: str = "repo_stats"):

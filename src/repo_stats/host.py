@@ -40,7 +40,7 @@ class Host:
     #: timeline of all comments in the repo
     DATA_KEY_COMMENTS = "comments_timeline"
     #: define bot users as name pattern
-    USER_BOTS = tuple()
+    USER_BOTS = []
     #: OS env. variable for getting Token
     OS_ENV_AUTH_TOKEN = "AUTH_API_TOKEN"
     #: common spam messages, no special value to give credit for it...
@@ -190,7 +190,7 @@ class Host:
 
         if not self.data.get(self.DATA_KEY_SIMPLE):
             logging.warning("No data to process/show.")
-            return
+            return None
 
         df_users = compute_users_summary(
             self.data[self.DATA_KEY_SIMPLE],
@@ -243,7 +243,7 @@ class Host:
 
         if not self.data.get(self.DATA_KEY_COMMENTS):
             logging.warning("No data to process/show.")
-            return
+            return None
 
         df_comments = compute_user_comment_timeline(
             self.data[self.DATA_KEY_COMMENTS],
