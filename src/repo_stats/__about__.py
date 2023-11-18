@@ -3,10 +3,10 @@ __author__ = "Jiri Borovec"
 __author_email__ = "j.borovec@...com"
 __license__ = "MIT"
 __homepage__ = "https://borda.github.io/pyRepoStats"
-__copyright__ = "Copyright (c) 2020-2023, %s." % __author__
+__copyright__ = f"Copyright (c) 2020-2023, {__author__}."
 __docs__ = "Repository Statistics"
 __long_doc__ = (
-    "# %s" % __docs__
+    f"# {__docs__}"
     + """
 
 This simple tool aims on open-source projects providing simple repository stats
