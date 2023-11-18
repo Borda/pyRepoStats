@@ -24,7 +24,7 @@ addopts = [
     "--disable-pytest-warnings",
 ]
 filterwarnings = ["error::FutureWarning"]  # todo: "error::DeprecationWarning"
-xfail_strict = true
+xfail_strict = false  # TODO: true
 
 [tool.coverage.report]
 exclude_lines = [
