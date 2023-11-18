@@ -17,6 +17,9 @@ jobs:
         python-version: ["3.8", "3.10"]
         requires: ['latest']  # 'minimal',
 
+    env:
+      # suppress showing figures as it may bail on server without display
+      SHOW_FIGURE: 0
     # Timeout: https://stackoverflow.com/a/59076067/4521646
     timeout-minutes: 15
 
@@ -55,10 +58,7 @@ jobs:
     - name: Tests and coverage
       env:
         GH_API_TOKEN: ${{ secrets.API_TOKEN }}
-        # suppress showing figures as it may bail on server without display
-        SHOW_FIGURE: 0
-      run: |
-        python -m pytest repo_stats tests -v --cov=repo_stats --durations=25
+      run: python -m pytest src/ tests/ -v --cov=repo_stats --durations=25
 
     - name: Statistics
       run: |
@@ -73,8 +73,6 @@ jobs:
         fail_ci_if_error: false
 
     - name: Run sample
-      env:
-        SHOW_FIGURE: 0
       run: |
         mkdir results
         python repo_stats/cli.py -gh borda/pyrepo_stats -o results -t ${{ secrets.API_TOKEN }}

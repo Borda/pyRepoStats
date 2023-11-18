@@ -26,7 +26,7 @@ def _load_requirements(fname="requirements.txt"):
     return reqs
 
 
-def _load_py_module(fname: str, pkg: str = "lightning_utilities"):
+def _load_py_module(fname: str, pkg: str = "repo_stats"):
     spec = spec_from_file_location(path.join(pkg, fname), path.join(_PATH_SOURCE, pkg, fname))
     py = module_from_spec(spec)
     spec.loader.exec_module(py)
