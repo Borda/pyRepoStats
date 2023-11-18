@@ -59,12 +59,13 @@ jobs:
         with:
           name: dist-packages-${{ github.sha }}
           path: dist/
+      - name: show packages
+        working-directory: dist/
+        run: echo "PKG_FILE=$(ls *${{ matrix.pkg-dist }} | head -n1)" >> $GITHUB_ENV
 
-      - name: Install | Uninstall package
+      - name: Install package
         run: |
-          # install as archive
-          pip install dist/*${{ matrix.pkg-dist }}
-          cd ..
+          pip install dist/${PKG_FILE}
           python -c "import repo_stats ; print(repo_stats.__version__)"
 
 

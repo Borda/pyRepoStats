@@ -52,7 +52,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip --version
-        pip install -r requirements.txt -r tests/requirements.txt --upgrade
+        pip install -e . -r tests/requirements.txt
         pip list
 
     - name: Tests and coverage
@@ -75,7 +75,7 @@ jobs:
     - name: Run sample
       run: |
         mkdir results
-        python repo_stats/cli.py -gh borda/pyrepo_stats -o results -t ${{ secrets.API_TOKEN }}
+        python -m repo_stats -gh borda/pyrepo_stats -o results -t ${{ secrets.API_TOKEN }}
         ls -l results
 
 
