@@ -1,6 +1,7 @@
 """
 Copyright (C) 2020-2021 Jiri Borovec <...>
 """
+
 import logging
 from typing import Tuple
 

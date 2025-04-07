@@ -69,7 +69,7 @@ The calls above just pull the data, to get/show some results check available opt
   | [nateraw](https://github.com/nateraw)             |          9 |             1 |             6 |                8 |
   | [teddykoker](https://github.com/teddykoker)       |          3 |             2 |             0 |                0 |
 
-- With `--min_contribution N` you can a simple filter what is the minimal number of contribution to  show users in Table or Figures.
+- With `--min_contribution N` you can a simple filter what is the minimal number of contribution to show users in Table or Figures.
 
 - You can also define a time frame with `--date_from` and `--date_to` for filtering events - created issues, merged PRs and comments/reviews.
 

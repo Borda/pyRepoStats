@@ -1,6 +1,7 @@
 """
 Copyright (C) 2020-2021 Jiri Borovec <...>
 """
+
 from typing import List, Optional
 
 import pandas as pd

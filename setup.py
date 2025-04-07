@@ -7,6 +7,7 @@ See:
 
 Copyright (C) 2020-2021 Jiri Borovec <...>
 """
+
 from importlib.util import module_from_spec, spec_from_file_location
 
 # Always prefer setuptools over distutils

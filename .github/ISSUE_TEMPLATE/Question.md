@@ -27,5 +27,5 @@ assignees: ''
 
 #### What's your environment?
 
-- OS: \[e.g. iOS, Linux, Win\]
-- Version \[e.g. 0.2.1\]
+- OS: [e.g. iOS, Linux, Win]
+- Version [e.g. 0.2.1]
