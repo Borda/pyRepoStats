@@ -225,9 +225,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
             it.update(
                 {
                     # use latest updated for issue and merged time for PRs
-                    "count_at": it.get("updated_at", it["created_at"])
-                    if it["type"] == "issue"
-                    else it["closed_at"]
+                    "count_at": it.get("updated_at", it["created_at"]) if it["type"] == "issue" else it["closed_at"]
                 }
             )
             for it in tqdm(items, desc="Update simplified tickets")
