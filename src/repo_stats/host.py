@@ -6,7 +6,7 @@ import logging
 import os
 import re
 from abc import abstractmethod
-from typing import Dict, List, Optional, Tuple
+from typing import Optional
 
 import matplotlib.pyplot as plt
 from tabulate import tabulate
@@ -106,19 +106,19 @@ class Host:
         return ratio >= thr
 
     @abstractmethod
-    def _convert_to_simple(self, collection: List[dict]) -> List[dict]:
+    def _convert_to_simple(self, collection: list[dict]) -> list[dict]:
         """Aggregate issue/PR affiliations."""
 
     @abstractmethod
-    def _convert_comments_timeline(self, issues: List[dict]) -> List[dict]:
+    def _convert_comments_timeline(self, issues: list[dict]) -> list[dict]:
         """Aggregate comments for all issue/PR affiliations."""
 
     @abstractmethod
-    def _fetch_info(self) -> List[dict]:
+    def _fetch_info(self) -> list[dict]:
         """Download general package info."""
 
     @abstractmethod
-    def _fetch_overview(self) -> List[dict]:
+    def _fetch_overview(self) -> list[dict]:
         """Download all info from repository screening."""
 
     def _is_user_bot(self, user: str) -> bool:
@@ -126,7 +126,7 @@ class Host:
         return any(u in user for u in self.USER_BOTS)
 
     @abstractmethod
-    def _update_details(self, collection: Dict[str, dict], collect_new: Dict[str, dict]) -> Dict[str, dict]:
+    def _update_details(self, collection: dict[str, dict], collect_new: dict[str, dict]) -> dict[str, dict]:
         """Download all info if from screening."""
 
     def fetch_data(self, offline: bool = False) -> None:
@@ -176,7 +176,7 @@ class Host:
         """Check if particular date is in in range"""
         return is_in_time_period(dt, datetime_from=self.datetime_from, datetime_to=self.datetime_to)
 
-    def print_users_summary(self, columns: List[str]) -> str:
+    def print_users_summary(self, columns: list[str]) -> str:
         """Show user contribution overview and print table to terminal with selected `columns`.
 
         Args:
@@ -227,7 +227,7 @@ class Host:
         )
         return csv_path
 
-    def show_user_comments(self, freq: str = "W", parent_type: str = "", show_fig: bool = True) -> Tuple[str, str]:
+    def show_user_comments(self, freq: str = "W", parent_type: str = "", show_fig: bool = True) -> tuple[str, str]:
         """Show aggregated user contribution statistics in a table and a double chart
 
         Args:
@@ -259,7 +259,7 @@ class Host:
         select_users = list(cum_sum[cum_sum >= self.min_contribution_count].index)
         fig, extras = draw_comments_timeline(
             df_comments[select_users],
-            title=f'User comments aggregation @{self.timestamp} - Freq: {freq}, Type:{parent_type or "all"}',
+            title=f"User comments aggregation @{self.timestamp} - Freq: {freq}, Type:{parent_type or 'all'}",
         )
         fig_path = os.path.join(
             self.output_path, self.PDF_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type or "all")

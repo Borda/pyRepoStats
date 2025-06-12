@@ -8,7 +8,7 @@ import traceback
 import warnings
 from functools import partial
 from multiprocessing import Pool
-from typing import Dict, List, Optional, Tuple
+from typing import Optional
 
 import pandas as pd
 import requests
@@ -63,7 +63,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         )
         self.auth_header = {"Authorization": f"token {auth_token}"} if auth_token else {}
 
-    def _fetch_overview(self) -> List[dict]:
+    def _fetch_overview(self) -> list[dict]:
         """Fetch all issues from a given repo using listing per pages."""
         items, items_new, min_idx, page = [], [None], float("inf"), 1
         # get items
@@ -116,7 +116,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         return detail
 
     @staticmethod
-    def _update_detail(idx_item: Tuple[int, dict], auth_header: dict) -> tuple:
+    def _update_detail(idx_item: tuple[int, dict], auth_header: dict) -> tuple:
         """Get all needed issue/PR details"""
         idx, item = idx_item
         # this request is need only for PR, can be skipped for issues
@@ -141,7 +141,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         return idx, item
 
     @staticmethod
-    def __update_issues_queue(issues: Dict[str, dict], issues_new: Dict[str, dict]) -> List[str]:
+    def __update_issues_queue(issues: dict[str, dict], issues_new: dict[str, dict]) -> list[str]:
         return [
             idx
             for idx in issues_new
@@ -152,7 +152,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
             )
         ]
 
-    def _update_details(self, issues: Dict[str, dict], issues_new: Dict[str, dict]) -> Dict[str, dict]:
+    def _update_details(self, issues: dict[str, dict], issues_new: dict[str, dict]) -> dict[str, dict]:
         """Pull all exiting details to particular issues."""
         # filter missing issue or issues which was updated since last time
         queue = self.__update_issues_queue(issues, issues_new)
@@ -194,7 +194,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
             return 3
         return 0
 
-    def _convert_to_simple(self, issues: List[dict]) -> List[dict]:
+    def _convert_to_simple(self, issues: list[dict]) -> list[dict]:
         """Aggregate issue/PR affiliations."""
 
         def _get_commenters(issue) -> list:
@@ -232,7 +232,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         ]
         return items
 
-    def _convert_comments_timeline(self, issues: List[dict]) -> List[dict]:
+    def _convert_comments_timeline(self, issues: list[dict]) -> list[dict]:
         """Aggregate comments for all issue/PR affiliations."""
 
         comments = []
