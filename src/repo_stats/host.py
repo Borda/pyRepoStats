@@ -259,7 +259,7 @@ class Host:
         select_users = list(cum_sum[cum_sum >= self.min_contribution_count].index)
         fig, extras = draw_comments_timeline(
             df_comments[select_users],
-            title=f'User comments aggregation @{self.timestamp} - Freq: {freq}, Type:{parent_type or "all"}',
+            title=f"User comments aggregation @{self.timestamp} - Freq: {freq}, Type:{parent_type or 'all'}",
         )
         fig_path = os.path.join(
             self.output_path, self.PDF_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type or "all")
