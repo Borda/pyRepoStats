@@ -2,7 +2,7 @@
 Copyright (C) 2020-2021 Jiri Borovec <...>
 """
 
-from typing import List, Optional
+from typing import Optional
 
 import pandas as pd
 from tqdm import tqdm
@@ -19,7 +19,7 @@ DATETIME_FREQ = {
 }
 
 
-def compute_users_summary(items: List[dict], datetime_from: str = None, datetime_to: str = None) -> pd.DataFrame:
+def compute_users_summary(items: list[dict], datetime_from: str = None, datetime_to: str = None) -> pd.DataFrame:
     """Aggregate issue/PR affiliations and summary counts.
 
     >>> items = [dict(type='PR', state='closed', author='me', commenters=['me', 'you']),
@@ -76,7 +76,7 @@ def compute_users_summary(items: List[dict], datetime_from: str = None, datetime
 
 
 def compute_user_comment_timeline(
-    items: List[dict],
+    items: list[dict],
     freq: str = "W",
     parent_type: Optional[str] = None,
 ) -> pd.DataFrame:
@@ -93,7 +93,7 @@ def compute_user_comment_timeline(
     2020-10      2    0
     2020-11      0    1
     """
-    assert freq in DATETIME_FREQ, "unsupported freq format, allowed: %r" % DATETIME_FREQ.keys()
+    assert freq in DATETIME_FREQ, f"unsupported freq format, allowed: {DATETIME_FREQ.keys()!r}"
 
     def _reformat(dt):
         return pd.to_datetime(dt).strftime(DATETIME_FREQ[freq])

@@ -3,7 +3,6 @@ Copyright (C) 2020-2021 Jiri Borovec <...>
 """
 
 import logging
-from typing import Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,7 +12,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 def draw_comments_timeline(
     df_comments: pd.DataFrame, title: str = "User contribution aggregation"
-) -> Tuple[plt.Figure, dict]:
+) -> tuple[plt.Figure, dict]:
     """Draw a figure with two charts, one as cumulative date/contribution and user/time heatmap
 
     Args:
