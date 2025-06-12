@@ -1,4 +1,5 @@
-## Before submitting
+<details>
+  <summary><b>Before submitting</b></summary>
 
 - [ ] Was this discussed/approved via a Github issue? (no need for typos, doc improvements)
 - [ ] I have performed a self-review of my own code
@@ -7,9 +8,15 @@
 - [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] New and existing unit tests pass locally with my changes
 
+</details>
+
 ## What does this PR do?
 
-<!-- Please include a summary of the change and which issue is fixed. Please also include relevant motivation and context. List any dependencies that are required for this change. -->
+<!--
+Please include a summary of the change and which issue is fixed.
+Please also include relevant motivation and context.
+List any dependencies that are required for this change.
+-->
 
 Fixes # (issue).
 
