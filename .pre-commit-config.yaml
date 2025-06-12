@@ -22,25 +22,12 @@ repos:
       - id: check-docstring-first
       - id: detect-private-key
 
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.19.1
-    hooks:
-      - id: pyupgrade
-        args: ["--py38-plus"]
-        name: Upgrade code
-
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
     hooks:
       - id: codespell
         additional_dependencies: [tomli]
         #args: ["--write-changes"] # uncomment if you want to get automatic fixing
-
-  - repo: https://github.com/psf/black
-    rev: 25.1.0
-    hooks:
-      - id: black
-        name: Format code
 
   - repo: https://github.com/executablebooks/mdformat
     rev: 0.7.22
@@ -51,16 +38,12 @@ repos:
           - mdformat-black
           - mdformat_frontmatter
 
-  - repo: https://github.com/asottile/yesqa
-    rev: v1.5.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.4
     hooks:
-      - id: yesqa
-        additional_dependencies:
-          - pep8-naming
-          - flake8-pytest-style
-          - flake8-bandit
-          - flake8-builtins
-          - flake8-bugbear
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
 
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v3.1.0
@@ -69,9 +52,3 @@ repos:
         files: \.(json|yml|yaml|toml)
         # https://prettier.io/docs/en/options.html#print-width
         args: ["--print-width=120"]
-
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.4
-    hooks:
-      - id: ruff
-        args: ["--fix"]
