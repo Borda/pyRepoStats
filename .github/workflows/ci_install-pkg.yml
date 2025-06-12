@@ -33,7 +33,7 @@ jobs:
 
       - name: Verify package
         run: |
-          pip install twine==3.2
+          pip install twine==6.1.0
           twine check dist/*
 
       - name: Upload the share store
