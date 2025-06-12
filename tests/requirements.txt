@@ -1,9 +1,9 @@
 coverage
 codecov
-pytest>4.0
+pytest >4.0
 pytest-cov
 pytest-xdist
 codacy-coverage
 
 check-manifest
-twine>=3.2
+twine >=3.2
