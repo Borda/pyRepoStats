@@ -12,9 +12,9 @@ from repo_stats.__main__ import cli_main
 def temp_output_with_cache(tmp_path):
     """Create a temporary output directory with cached test data."""
     # Copy the fixture data to the temp directory
-    fixture_file = Path(__file__).parent / "fixtures" / "dump-github_borda-pyRepoStats.json"
+    fixture_file = Path(__file__).parent / "fixtures" / "dump-github_Borda-pyRepoStats.json"
     if fixture_file.exists():
-        shutil.copy(fixture_file, tmp_path / "dump-github_borda-pyRepoStats.json")
+        shutil.copy(fixture_file, tmp_path / "dump-github_Borda-pyRepoStats.json")
     return str(tmp_path)
 
 
