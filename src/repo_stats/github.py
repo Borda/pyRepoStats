@@ -71,14 +71,16 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 self.repo = self.github_client.get_repo(self.repo_name)
 
             # Return basic repository information as list to match base class interface
-            return [{
-                'name': self.repo.name,
-                'full_name': self.repo.full_name,
-                'description': self.repo.description,
-                'stargazers_count': self.repo.stargazers_count,
-                'forks_count': self.repo.forks_count,
-                'open_issues_count': self.repo.open_issues_count,
-            }]
+            return [
+                {
+                    "name": self.repo.name,
+                    "full_name": self.repo.full_name,
+                    "description": self.repo.description,
+                    "stargazers_count": self.repo.stargazers_count,
+                    "forks_count": self.repo.forks_count,
+                    "open_issues_count": self.repo.open_issues_count,
+                }
+            ]
         except GithubException as e:
             logging.error(f"Failed to fetch repo info: {e}")
             return []
@@ -91,31 +93,31 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 self.repo = self.github_client.get_repo(self.repo_name)
 
             # Get all issues (includes PRs)
-            issues = self.repo.get_issues(state='all')
+            issues = self.repo.get_issues(state="all")
             total = issues.totalCount
 
             with tqdm(desc="Requesting issue/PR overview", total=total) as pbar:
                 for issue in issues:
                     # Convert PyGithub Issue object to dict format
                     item = {
-                        'number': issue.number,
-                        'html_url': issue.html_url,
-                        'url': issue.url,
-                        'state': issue.state,
-                        'title': issue.title,
-                        'user': {'login': issue.user.login} if issue.user else {'login': 'unknown'},
-                        'created_at': issue.created_at.isoformat() if issue.created_at else None,
-                        'updated_at': issue.updated_at.isoformat() if issue.updated_at else None,
-                        'closed_at': issue.closed_at.isoformat() if issue.closed_at else None,
-                        'comments': issue.comments,  # This is just the count initially
-                        'comments_url': issue.comments_url,
+                        "number": issue.number,
+                        "html_url": issue.html_url,
+                        "url": issue.url,
+                        "state": issue.state,
+                        "title": issue.title,
+                        "user": {"login": issue.user.login} if issue.user else {"login": "unknown"},
+                        "created_at": issue.created_at.isoformat() if issue.created_at else None,
+                        "updated_at": issue.updated_at.isoformat() if issue.updated_at else None,
+                        "closed_at": issue.closed_at.isoformat() if issue.closed_at else None,
+                        "comments": issue.comments,  # This is just the count initially
+                        "comments_url": issue.comments_url,
                     }
 
                     # Add PR-specific fields if it's a pull request
                     if issue.pull_request:
-                        item['pull_request'] = {
-                            'url': issue.pull_request.url,
-                            'html_url': issue.pull_request.html_url,
+                        item["pull_request"] = {
+                            "url": issue.pull_request.url,
+                            "html_url": issue.pull_request.html_url,
                         }
 
                     items.append(item)
@@ -140,12 +142,14 @@ To use higher limit generate personal auth token, see https://developer.github.c
             issue = self.repo.get_issue(issue_number)
             comments = []
             for comment in issue.get_comments():
-                comments.append({
-                    'user': {'login': comment.user.login} if comment.user else {'login': 'unknown'},
-                    'body': comment.body,
-                    'created_at': comment.created_at.isoformat() if comment.created_at else None,
-                    'updated_at': comment.updated_at.isoformat() if comment.updated_at else None,
-                })
+                comments.append(
+                    {
+                        "user": {"login": comment.user.login} if comment.user else {"login": "unknown"},
+                        "body": comment.body,
+                        "created_at": comment.created_at.isoformat() if comment.created_at else None,
+                        "updated_at": comment.updated_at.isoformat() if comment.updated_at else None,
+                    }
+                )
             return comments
         except GithubException as e:
             if e.status == 403:
@@ -162,10 +166,10 @@ To use higher limit generate personal auth token, see https://developer.github.c
 
             pr = self.repo.get_pull(pr_number)
             return {
-                'state': 'merged' if pr.merged else pr.state,
-                'merged_at': pr.merged_at.isoformat() if pr.merged_at else None,
-                'url': pr.url,
-                'html_url': pr.html_url,
+                "state": "merged" if pr.merged else pr.state,
+                "merged_at": pr.merged_at.isoformat() if pr.merged_at else None,
+                "url": pr.url,
+                "html_url": pr.html_url,
             }
         except GithubException as e:
             if e.status == 403:
@@ -207,12 +211,14 @@ To use higher limit generate personal auth token, see https://developer.github.c
             pr = self.repo.get_pull(pr_number)
             review_comments = []
             for comment in pr.get_review_comments():
-                review_comments.append({
-                    'user': {'login': comment.user.login} if comment.user else {'login': 'unknown'},
-                    'body': comment.body,
-                    'created_at': comment.created_at.isoformat() if comment.created_at else None,
-                    'updated_at': comment.updated_at.isoformat() if comment.updated_at else None,
-                })
+                review_comments.append(
+                    {
+                        "user": {"login": comment.user.login} if comment.user else {"login": "unknown"},
+                        "body": comment.body,
+                        "created_at": comment.created_at.isoformat() if comment.created_at else None,
+                        "updated_at": comment.updated_at.isoformat() if comment.updated_at else None,
+                    }
+                )
             return review_comments
         except GithubException as e:
             if e.status == 403:
