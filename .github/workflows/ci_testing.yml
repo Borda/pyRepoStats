@@ -113,8 +113,10 @@ jobs:
         if: |
           github.event_name == 'push' ||
           contains(fromJSON('["MEMBER", "OWNER"]'), github.event.pull_request.author_association)
+        env:
+          GH_API_TOKEN: ${{ secrets.API_TOKEN }}
         run: |
-          python -m repo_stats scrape Borda/pyRepoStats --output_path results --auth_token ${{ secrets.API_TOKEN }}
+          python -m repo_stats scrape Borda/pyRepoStats --output_path results
           ls -l results
 
   testing-guardian:
