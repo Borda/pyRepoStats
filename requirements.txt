@@ -5,3 +5,5 @@ tabulate
 matplotlib
 tqdm
 jsonargparse
+requests
+beautifulsoup4

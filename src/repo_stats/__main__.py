@@ -4,12 +4,13 @@ Copyright (C) 2020-2021 Jiri Borovec <...>
 
 import logging
 
-from repo_stats.cli import analyze, scrape
+from repo_stats.cli import analyze, scrape, stars
 
 # Command structure for jsonargparse
 commands = {
     "scrape": scrape,
     "analyze": analyze,
+    "stars": stars,
 }
 
 

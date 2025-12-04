@@ -9,6 +9,7 @@ from typing import Optional
 import matplotlib.pyplot as plt
 
 from repo_stats.github import GitHub
+from repo_stats.stars import collect_dependents_stars
 from repo_stats.stats import DATETIME_FREQ
 
 PATH_ROOT = os.path.dirname(os.path.dirname(__file__))
@@ -105,3 +106,26 @@ def analyze(
     # at the end show all figures
     if SHOW_FIGURES:
         plt.show()
+
+
+def stars(
+    github_repo: str,
+    scope: str = "REPOSITORY",
+    output_path: str = PATH_ROOT,
+    output_filename: Optional[str] = None,
+):
+    """Collect star information about repositories that depend on the given repository.
+
+    Args:
+        github_repo: GitHub repository in format <owner>/<name>.
+        scope: Type of dependents to collect. Either "REPOSITORY" or "PACKAGE".
+        output_path: Path to output directory.
+        output_filename: Optional custom filename for the output CSV.
+
+    """
+    collect_dependents_stars(
+        github_repo=github_repo,
+        scope=scope,
+        output_path=output_path,
+        output_filename=output_filename,
+    )
