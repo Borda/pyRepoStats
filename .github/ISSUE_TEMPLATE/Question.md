@@ -1,8 +1,8 @@
 ---
 name: Ask a question
 about: Ask a question about the project
-title: "[QUESTION] "
-labels: "question"
+title: '[QUESTION] '
+labels: question
 ---
 
 ### Question
