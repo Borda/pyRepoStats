@@ -30,7 +30,7 @@ def temp_output_with_cache(tmp_path):
 )
 def test_offline_github(cli_args, temp_output_with_cache):
     """Test CLI with offline mode using cached data."""
-    full_args = f"-gh borda/pyRepoStats -o {temp_output_with_cache} {cli_args}"
+    full_args = f"-gh Borda/pyRepoStats -o {temp_output_with_cache} {cli_args}"
     with mock.patch("argparse._sys.argv", ["any.py"] + full_args.strip().split()):
         cli_main()
 
