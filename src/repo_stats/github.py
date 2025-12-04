@@ -58,7 +58,10 @@ To use higher limit generate personal auth token, see https://developer.github.c
             min_contribution=min_contribution,
         )
         # Initialize PyGithub client
-        self.github_client = Github(auth_token, timeout=self.REQUEST_TIMEOUT) if auth_token else Github(timeout=self.REQUEST_TIMEOUT)
+        if auth_token:
+            self.github_client = Github(auth_token, timeout=self.REQUEST_TIMEOUT)
+        else:
+            self.github_client = Github(timeout=self.REQUEST_TIMEOUT)
         self.repo = None
 
     def _fetch_info(self) -> dict:
@@ -66,7 +69,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         try:
             if self.repo is None:
                 self.repo = self.github_client.get_repo(self.repo_name)
-            
+
             # Return basic repository information
             return {
                 'name': self.repo.name,
@@ -86,11 +89,11 @@ To use higher limit generate personal auth token, see https://developer.github.c
         try:
             if self.repo is None:
                 self.repo = self.github_client.get_repo(self.repo_name)
-            
+
             # Get all issues (includes PRs)
             issues = self.repo.get_issues(state='all')
             total = issues.totalCount
-            
+
             with tqdm(desc="Requesting issue/PR overview", total=total) as pbar:
                 for issue in issues:
                     # Convert PyGithub Issue object to dict format
@@ -107,7 +110,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
                         'comments': issue.comments,  # This is just the count initially
                         'comments_url': issue.comments_url,
                     }
-                    
+
                     # Add PR-specific fields if it's a pull request
                     if issue.pull_request:
                         item['pull_request'] = {
@@ -116,16 +119,16 @@ To use higher limit generate personal auth token, see https://developer.github.c
                         }
                         # Will need to fetch review comments URL later
                         item['review_comments_url'] = issue.pull_request.url.replace('pulls', 'issues') + '/comments'
-                    
+
                     items.append(item)
                     pbar.update(1)
-                    
+
         except GithubException as e:
             if e.status == 403:
                 logging.error(self.API_LIMIT_MESSAGE)
                 exit(self.API_LIMIT_MESSAGE)
             raise
-        
+
         return items
 
     def _request_comments(self, issue_number: int) -> Optional[list]:
@@ -135,7 +138,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         try:
             if self.repo is None:
                 self.repo = self.github_client.get_repo(self.repo_name)
-            
+
             issue = self.repo.get_issue(issue_number)
             comments = []
             for comment in issue.get_comments():
@@ -158,15 +161,14 @@ To use higher limit generate personal auth token, see https://developer.github.c
         try:
             if self.repo is None:
                 self.repo = self.github_client.get_repo(self.repo_name)
-            
+
             pr = self.repo.get_pull(pr_number)
-            detail = {
+            return {
                 'state': 'merged' if pr.merged else pr.state,
                 'merged_at': pr.merged_at.isoformat() if pr.merged_at else None,
                 'url': pr.url,
                 'html_url': pr.html_url,
             }
-            return detail
         except GithubException as e:
             if e.status == 403:
                 GitHub.API_LIMIT_REACHED = True
@@ -203,7 +205,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         try:
             if self.repo is None:
                 self.repo = self.github_client.get_repo(self.repo_name)
-            
+
             pr = self.repo.get_pull(pr_number)
             review_comments = []
             for comment in pr.get_review_comments():
@@ -240,7 +242,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
             return issues
 
         _queue = [(i, issues_new[i]) for i in queue]
-        
+
         # Process items sequentially with PyGithub (avoid multiprocessing complexity with instance methods)
         for idx_item in tqdm(_queue, desc="Fetching/update details"):
             idx, item = self._update_detail(idx_item)
