@@ -31,7 +31,10 @@ def temp_output_with_cache(tmp_path):
 def test_offline_github(cli_args, temp_output_with_cache):
     """Test CLI with offline mode using cached data."""
     full_args = f"-gh Borda/pyRepoStats -o {temp_output_with_cache} {cli_args}"
-    with mock.patch("argparse._sys.argv", ["any.py"] + full_args.strip().split()):
+    with (
+        mock.patch("argparse._sys.argv", ["any.py"] + full_args.strip().split()),
+        mock.patch("repo_stats.__main__.SHOW_FIGURES", False),
+    ):
         cli_main()
 
 
@@ -48,5 +51,8 @@ def test_offline_github(cli_args, temp_output_with_cache):
 def test_online_github(cli_args, tmp_path):
     """Test CLI with online mode (requires token)."""
     full_args = f"{cli_args} -o {tmp_path}"
-    with mock.patch("argparse._sys.argv", ["any.py"] + full_args.strip().split()):
+    with (
+        mock.patch("argparse._sys.argv", ["any.py"] + full_args.strip().split()),
+        mock.patch("repo_stats.__main__.SHOW_FIGURES", False),
+    ):
         cli_main()
