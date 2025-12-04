@@ -106,13 +106,13 @@ jobs:
           mkdir results
           # Copy fixture data to results directory for offline testing
           cp tests/fixtures/dump-github_borda-pyRepoStats.json results/
-          python -m repo_stats -gh borda/pyRepoStats -o results --offline --min_contribution 1 --users_summary "all"
+          python -m repo_stats -gh Borda/pyRepoStats -o results --offline --min_contribution 1 --users_summary "all"
           ls -l results
 
       - name: Run sample online (if token available)
         if: ${{ secrets.API_TOKEN != '' }}
         run: |
-          python -m repo_stats -gh borda/pyRepoStats -o results -t ${{ secrets.API_TOKEN }}
+          python -m repo_stats -gh Borda/pyRepoStats -o results -t ${{ secrets.API_TOKEN }}
           ls -l results
 
   testing-guardian:
