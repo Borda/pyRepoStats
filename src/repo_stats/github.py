@@ -2,16 +2,12 @@
 Copyright (C) 2020-2021 Jiri Borovec <...>
 """
 
-import json
 import logging
-import traceback
 import warnings
-from functools import partial
-from multiprocessing import Pool
 from typing import Optional
 
 import pandas as pd
-import requests
+from github import Github, GithubException
 from tqdm import tqdm
 
 from repo_stats.host import Host
@@ -61,77 +57,137 @@ To use higher limit generate personal auth token, see https://developer.github.c
             auth_token=auth_token,
             min_contribution=min_contribution,
         )
-        self.auth_header = {"Authorization": f"token {auth_token}"} if auth_token else {}
+        # Initialize PyGithub client
+        self.github_client = Github(auth_token, timeout=self.REQUEST_TIMEOUT) if auth_token else Github(timeout=self.REQUEST_TIMEOUT)
+        self.repo = None
+
+    def _fetch_info(self) -> dict:
+        """Download general package info."""
+        try:
+            if self.repo is None:
+                self.repo = self.github_client.get_repo(self.repo_name)
+            
+            # Return basic repository information
+            return {
+                'name': self.repo.name,
+                'full_name': self.repo.full_name,
+                'description': self.repo.description,
+                'stargazers_count': self.repo.stargazers_count,
+                'forks_count': self.repo.forks_count,
+                'open_issues_count': self.repo.open_issues_count,
+            }
+        except GithubException as e:
+            logging.error(f"Failed to fetch repo info: {e}")
+            return {}
 
     def _fetch_overview(self) -> list[dict]:
         """Fetch all issues from a given repo using listing per pages."""
-        items, items_new, min_idx, page = [], [None], float("inf"), 1
-        # get items
-        with tqdm(desc="Requesting issue/PR overview") as pbar:
-            while min_idx > 1 and items_new:
-                req_url = f"{self.URL_API}/{self.repo_name}/issues?state=all&page={page}&per_page=100"
-                items_new = GitHub._request_url(req_url, self.auth_header)
-                if items_new is None:
-                    exit(self.API_LIMIT_MESSAGE)
-
-                items += items_new
-                if page == 1:
-                    # in case there is no issue/pr
-                    if sum(isinstance(i, dict) for i in items) == 0:
-                        return []
-                    min_idx = items[0]["number"]
-                    pbar.reset(total=min_idx)
-                pbar.update(min_idx - items[-1]["number"])
-                min_idx = items[-1]["number"]
-                page += 1
+        items = []
+        try:
+            if self.repo is None:
+                self.repo = self.github_client.get_repo(self.repo_name)
+            
+            # Get all issues (includes PRs)
+            issues = self.repo.get_issues(state='all')
+            total = issues.totalCount
+            
+            with tqdm(desc="Requesting issue/PR overview", total=total) as pbar:
+                for issue in issues:
+                    # Convert PyGithub Issue object to dict format
+                    item = {
+                        'number': issue.number,
+                        'html_url': issue.html_url,
+                        'url': issue.url,
+                        'state': issue.state,
+                        'title': issue.title,
+                        'user': {'login': issue.user.login} if issue.user else {'login': 'unknown'},
+                        'created_at': issue.created_at.isoformat() if issue.created_at else None,
+                        'updated_at': issue.updated_at.isoformat() if issue.updated_at else None,
+                        'closed_at': issue.closed_at.isoformat() if issue.closed_at else None,
+                        'comments': issue.comments,  # This is just the count initially
+                        'comments_url': issue.comments_url,
+                    }
+                    
+                    # Add PR-specific fields if it's a pull request
+                    if issue.pull_request:
+                        item['pull_request'] = {
+                            'url': issue.pull_request.url,
+                            'html_url': issue.pull_request.html_url,
+                        }
+                        # Will need to fetch review comments URL later
+                        item['review_comments_url'] = issue.pull_request.url.replace('pulls', 'issues') + '/comments'
+                    
+                    items.append(item)
+                    pbar.update(1)
+                    
+        except GithubException as e:
+            if e.status == 403:
+                logging.error(self.API_LIMIT_MESSAGE)
+                exit(self.API_LIMIT_MESSAGE)
+            raise
+        
         return items
 
-    @staticmethod
-    def _request_url(url: str, auth_header: dict) -> Optional[dict]:
-        """General request with checking if request limit was reached."""
+    def _request_comments(self, issue_number: int) -> Optional[list]:
+        """Request all comments from the issue life-time."""
         if GitHub.API_LIMIT_REACHED:
             return None
         try:
-            req = requests.get(url, headers=auth_header, timeout=GitHub.REQUEST_TIMEOUT)
-        except requests.exceptions.Timeout:
-            traceback.print_exc()
+            if self.repo is None:
+                self.repo = self.github_client.get_repo(self.repo_name)
+            
+            issue = self.repo.get_issue(issue_number)
+            comments = []
+            for comment in issue.get_comments():
+                comments.append({
+                    'user': {'login': comment.user.login} if comment.user else {'login': 'unknown'},
+                    'body': comment.body,
+                    'created_at': comment.created_at.isoformat() if comment.created_at else None,
+                    'updated_at': comment.updated_at.isoformat() if comment.updated_at else None,
+                })
+            return comments
+        except GithubException as e:
+            if e.status == 403:
+                GitHub.API_LIMIT_REACHED = True
             return None
-        if req.status_code == 403:
-            return None
-        return json.loads(req.content.decode(req.encoding))
 
-    @staticmethod
-    def _request_comments(comments_url: str, auth_header: dict) -> Optional[list]:
-        """Request all comments from the issue life-time."""
-        # https://api.github.com/repos/PyTorchLightning/pytorch-lightning/issues/37/comments
-        return GitHub._request_url(comments_url, auth_header)
-
-    @staticmethod
-    def _request_detail_pr(pr_url: str, auth_header: dict) -> Optional[dict]:
+    def _request_detail_pr(self, pr_number: int) -> Optional[dict]:
         """Request PR status, in particular we want to distinguish between closed and merged ones."""
-        pr_url = pr_url.replace("issues", "pulls")
-        detail = GitHub._request_url(pr_url, auth_header)
-        if detail and detail.get("merged_at"):
-            detail["state"] = "merged"
-        return detail
+        if GitHub.API_LIMIT_REACHED:
+            return None
+        try:
+            if self.repo is None:
+                self.repo = self.github_client.get_repo(self.repo_name)
+            
+            pr = self.repo.get_pull(pr_number)
+            detail = {
+                'state': 'merged' if pr.merged else pr.state,
+                'merged_at': pr.merged_at.isoformat() if pr.merged_at else None,
+                'url': pr.url,
+                'html_url': pr.html_url,
+            }
+            return detail
+        except GithubException as e:
+            if e.status == 403:
+                GitHub.API_LIMIT_REACHED = True
+            return None
 
-    @staticmethod
-    def _update_detail(idx_item: tuple[int, dict], auth_header: dict) -> tuple:
+    def _update_detail(self, idx_item: tuple[int, dict]) -> tuple:
         """Get all needed issue/PR details"""
         idx, item = idx_item
         # this request is need only for PR, can be skipped for issues
         if "pull" in item["html_url"].split("/"):
-            detail = GitHub._request_detail_pr(item["url"], auth_header)
+            detail = self._request_detail_pr(item["number"])
             if detail is None:
                 return idx, None
             item.update(detail)
-            # pull review comments
-            r_comments = GitHub._request_comments(item["review_comments_url"], auth_header)
+            # pull review comments for PRs
+            r_comments = self._request_review_comments(item["number"])
         else:
             r_comments = []
         extras = {
             # pull all comments
-            "comments": GitHub._request_comments(item["comments_url"], auth_header),
+            "comments": self._request_comments(item["number"]),
             "review_comments": r_comments,
         }
         if any(dl is None for dl in extras.values()):
@@ -139,6 +195,29 @@ To use higher limit generate personal auth token, see https://developer.github.c
         # update info
         item.update(extras)
         return idx, item
+
+    def _request_review_comments(self, pr_number: int) -> Optional[list]:
+        """Request all review comments from a pull request."""
+        if GitHub.API_LIMIT_REACHED:
+            return None
+        try:
+            if self.repo is None:
+                self.repo = self.github_client.get_repo(self.repo_name)
+            
+            pr = self.repo.get_pull(pr_number)
+            review_comments = []
+            for comment in pr.get_review_comments():
+                review_comments.append({
+                    'user': {'login': comment.user.login} if comment.user else {'login': 'unknown'},
+                    'body': comment.body,
+                    'created_at': comment.created_at.isoformat() if comment.created_at else None,
+                    'updated_at': comment.updated_at.isoformat() if comment.updated_at else None,
+                })
+            return review_comments
+        except GithubException as e:
+            if e.status == 403:
+                GitHub.API_LIMIT_REACHED = True
+            return None
 
     @staticmethod
     def __update_issues_queue(issues: dict[str, dict], issues_new: dict[str, dict]) -> list[str]:
@@ -161,10 +240,10 @@ To use higher limit generate personal auth token, see https://developer.github.c
             return issues
 
         _queue = [(i, issues_new[i]) for i in queue]
-        _update = partial(GitHub._update_detail, auth_header=self.auth_header)
-        pool = Pool(self.NB_PARALLEL_REQUESTS)
-
-        for idx, item in tqdm(pool.imap(_update, _queue), total=len(_queue), desc="Fetching/update details"):
+        
+        # Process items sequentially with PyGithub (avoid multiprocessing complexity with instance methods)
+        for idx_item in tqdm(_queue, desc="Fetching/update details"):
+            idx, item = self._update_detail(idx_item)
             if item is None:
                 if not GitHub.API_LIMIT_REACHED:
                     # show this warning only once
@@ -175,8 +254,6 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 item["updated_at"] = None
             issues[idx] = item
 
-        pool.close()
-        pool.join()
         self.outdated = len(self.__update_issues_queue(issues, issues_new))
         return issues
 
