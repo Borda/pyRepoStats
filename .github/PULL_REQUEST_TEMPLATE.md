@@ -2,11 +2,11 @@
 
 Fixes # (issue)
 
-Brief description of what this PR does.
+<!-- Brief description of what this PR does. -->
 
 ### Changes
 
-List the main changes made.
+<!-- List the main changes made. -->
 
 ### Checklist
 

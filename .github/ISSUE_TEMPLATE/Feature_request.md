@@ -7,12 +7,12 @@ labels: "enhancement"
 
 ### Problem
 
-Describe the problem this solves (optional).
+<!-- Describe the problem this solves (optional). -->
 
 ### Proposal
 
-A clear and concise description of what you want to happen.
+<!-- A clear and concise description of what you want to happen. -->
 
 ### Additional context
 
-Any other context or examples (optional).
+<!-- Any other context or examples (optional). -->

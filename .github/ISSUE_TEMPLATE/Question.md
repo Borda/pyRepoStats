@@ -7,8 +7,8 @@ labels: "question"
 
 ### Question
 
-Describe your question clearly.
+<!-- Describe your question clearly. -->
 
 ### Additional context
 
-Any additional information or code examples (optional).
+<!-- Any additional information or code examples (optional). -->
