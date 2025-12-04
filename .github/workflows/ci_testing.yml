@@ -109,8 +109,10 @@ jobs:
           python -m repo_stats -gh Borda/pyRepoStats -o results --offline --min_contribution 1 --users_summary "all"
           ls -l results
 
-      - name: Run sample online (if token available)
-        if: ${{ secrets.API_TOKEN != '' }}
+      - name: Run sample online (if authorized)
+        if: |
+          github.event_name == 'push' ||
+          contains(fromJSON('["MEMBER", "CONTRIBUTOR", "OWNER"]'), github.event.pull_request.author_association)
         run: |
           python -m repo_stats -gh Borda/pyRepoStats -o results -t ${{ secrets.API_TOKEN }}
           ls -l results
