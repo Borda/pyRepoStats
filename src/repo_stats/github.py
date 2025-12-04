@@ -7,7 +7,8 @@ import warnings
 from typing import Optional
 
 import pandas as pd
-from github import Github, GithubException
+from github import Github as GithubAPI
+from github import GithubException
 from tqdm import tqdm
 
 from repo_stats.host import Host
@@ -59,14 +60,15 @@ To use higher limit generate personal auth token, see https://developer.github.c
         )
         # Initialize PyGithub client
         if auth_token:
-            self.github_client = Github(auth_token, timeout=self.REQUEST_TIMEOUT)
+            self.github_client = GithubAPI(auth_token, timeout=self.REQUEST_TIMEOUT)
         else:
-            self.github_client = Github(timeout=self.REQUEST_TIMEOUT)
+            self.github_client = GithubAPI(timeout=self.REQUEST_TIMEOUT)
         self.repo = None
 
     def _fetch_info(self) -> list[dict]:
         """Download general package info."""
         try:
+            # Lazily initialize repo if needed
             if self.repo is None:
                 self.repo = self.github_client.get_repo(self.repo_name)
 
@@ -89,6 +91,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         """Fetch all issues from a given repo using listing per pages."""
         items = []
         try:
+            # Lazily initialize repo if needed
             if self.repo is None:
                 self.repo = self.github_client.get_repo(self.repo_name)
 
@@ -136,6 +139,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         if GitHub.API_LIMIT_REACHED:
             return None
         try:
+            # Lazily initialize repo if needed
             if self.repo is None:
                 self.repo = self.github_client.get_repo(self.repo_name)
 
@@ -161,6 +165,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         if GitHub.API_LIMIT_REACHED:
             return None
         try:
+            # Lazily initialize repo if needed
             if self.repo is None:
                 self.repo = self.github_client.get_repo(self.repo_name)
 
@@ -205,6 +210,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         if GitHub.API_LIMIT_REACHED:
             return None
         try:
+            # Lazily initialize repo if needed
             if self.repo is None:
                 self.repo = self.github_client.get_repo(self.repo_name)
 
