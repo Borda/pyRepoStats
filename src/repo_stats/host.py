@@ -28,9 +28,9 @@ class Host:
     #: template name for exporting CSV with users overview
     CSV_USERS_SUMMARY = "%s_%s_users-summary.csv"
     #: template name for exporting CSV with comment's contributions
-    CSV_USER_COMMENTS = "%s_%s_user-comments_freq:%s_type:%s.csv"
+    CSV_USER_COMMENTS = "%s_%s_user-comments_freq_%s_type_%s.csv"
     #: template name for exporting Figure/PDF with comment's contributions
-    PDF_USER_COMMENTS = "%s_%s_user-comments_freq:%s_type:%s.pdf"
+    PDF_USER_COMMENTS = "%s_%s_user-comments_freq_%s_type_%s.pdf"
     #: kay to the raw fetch data from host
     DATA_KEY_RAW_INFO = "raw_info"
     #: key to the raw fetch data from host
