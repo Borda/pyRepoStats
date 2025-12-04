@@ -82,86 +82,18 @@ def main(
         plt.show()
 
 
-def create_parser():
-    """Create and configure the argument parser.
-
-    Returns:
-        ArgumentParser: Configured argument parser.
-
-    """
-    from jsonargparse import ActionConfigFile, ArgumentParser
-
-    parser = ArgumentParser(description="Parse Repository details")
-    parser.add_argument("--config", action=ActionConfigFile)
-    parser.add_argument(
-        "-gh",
-        "--github_repo",
-        type=Optional[str],
-        default=None,
-        help="GitHub repository in format <owner>/<name>.",
-    )
-    parser.add_argument(
-        "-t",
-        "--auth_token",
-        type=Optional[str],
-        default=None,
-        help="Personal Auth token needed for higher API request limit.",
-    )
-    parser.add_argument("--offline", action="store_true", help="Skip updating all information from web.")
-    parser.add_argument(
-        "-o",
-        "--output_path",
-        type=str,
-        default=PATH_ROOT,
-        help="Path to output directory.",
-    )
-    parser.add_argument(
-        "-n",
-        "--min_contribution",
-        type=int,
-        default=3,
-        help="Specify minimal user contribution for visualisations.",
-    )
-    parser.add_argument(
-        "--users_summary",
-        default=None,
-        nargs="*",
-        help="Show the summary stats for each user, the first one is used for sorting.",
-    )
-    parser.add_argument(
-        "--user_comments",
-        default=None,
-        nargs="*",
-        help="Select combination of granularity of timeline - [D]ay, [W]eek, [M]onth and [Y]ear, "
-        "and item type - issue or PR. Valid values: D, W, M, Y, issue, pr, all.",
-    )
-    parser.add_argument(
-        "--date_from",
-        type=Optional[str],
-        default=None,
-        help="Define beginning time period.",
-    )
-    parser.add_argument(
-        "--date_to",
-        type=Optional[str],
-        default=None,
-        help="Define ending time period.",
-    )
-    return parser
-
-
 def cli_main():
     """CLI entry point for backward compatibility."""
     logging.basicConfig(level=logging.INFO)
     logging.info("running...")
-    parser = create_parser()
-    args = parser.parse_args()
-    # Remove config argument before passing to main
-    args_dict = vars(args)
-    args_dict.pop("config", None)
-    main(**args_dict)
+    from jsonargparse import auto_cli
+
+    auto_cli(main)
     logging.info("Done :]")
 
 
 if __name__ == "__main__":
-    cli_main()
+    logging.basicConfig(level=logging.INFO)
+    from jsonargparse import auto_cli
+
+    auto_cli(main)
