@@ -4,3 +4,4 @@ pandas
 tabulate
 matplotlib
 tqdm
+jsonargparse

@@ -106,7 +106,7 @@ jobs:
           mkdir results
           # Copy fixture data to results directory for offline testing
           cp tests/fixtures/dump-github_Borda-pyRepoStats.json results/
-          python -m repo_stats -gh Borda/pyRepoStats -o results --offline --min_contribution 1 --users_summary "all"
+          python -m repo_stats analyze Borda/pyRepoStats --output_path results --min_contribution 1 --users_summary+ "all"
           ls -l results
 
       - name: Run sample online (if authorized)
@@ -114,7 +114,7 @@ jobs:
           github.event_name == 'push' ||
           contains(fromJSON('["MEMBER", "OWNER"]'), github.event.pull_request.author_association)
         run: |
-          python -m repo_stats -gh Borda/pyRepoStats -o results -t ${{ secrets.API_TOKEN }}
+          python -m repo_stats scrape Borda/pyRepoStats --output_path results --auth_token ${{ secrets.API_TOKEN }}
           ls -l results
 
   testing-guardian:
