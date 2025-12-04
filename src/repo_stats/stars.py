@@ -6,7 +6,6 @@ Module for collecting star information about dependent repositories.
 
 import logging
 import os
-import time
 from typing import Optional
 
 import pandas as pd
@@ -78,18 +77,27 @@ def collect_dependents_stars(
         # Check for pagination
         pagination = soup.find("div", {"class": "paginate-container"})
         if not pagination:
-            logging.warning(f"No pagination found on page: {url}")
-            time.sleep(9)
-            continue
+            # No pagination means this is likely the last/only page
+            fetching += page
+            logging.info("No pagination found, this is the last page")
+            break
 
         fetching += page
         nav_hrefs = pagination.find_all("a")
 
         # Check if there's a "next" link
-        if "next" not in [href.text.lower() for href in nav_hrefs]:
+        if not nav_hrefs or "next" not in [href.text.lower() for href in nav_hrefs]:
             break
 
-        url = nav_hrefs[-1]["href"]
+        # Get the next page URL (GitHub uses relative URLs)
+        next_href = nav_hrefs[-1].get("href")
+        if not next_href:
+            logging.warning("Next link found but no href attribute")
+            break
+
+        # Convert relative URL to absolute URL
+        url = f"https://github.com{next_href}" if next_href.startswith("/") else next_href
+
         pbar.update()
 
     pbar.close()
