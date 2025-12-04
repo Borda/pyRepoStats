@@ -64,24 +64,24 @@ To use higher limit generate personal auth token, see https://developer.github.c
             self.github_client = Github(timeout=self.REQUEST_TIMEOUT)
         self.repo = None
 
-    def _fetch_info(self) -> dict:
+    def _fetch_info(self) -> list[dict]:
         """Download general package info."""
         try:
             if self.repo is None:
                 self.repo = self.github_client.get_repo(self.repo_name)
 
-            # Return basic repository information
-            return {
+            # Return basic repository information as list to match base class interface
+            return [{
                 'name': self.repo.name,
                 'full_name': self.repo.full_name,
                 'description': self.repo.description,
                 'stargazers_count': self.repo.stargazers_count,
                 'forks_count': self.repo.forks_count,
                 'open_issues_count': self.repo.open_issues_count,
-            }
+            }]
         except GithubException as e:
             logging.error(f"Failed to fetch repo info: {e}")
-            return {}
+            return []
 
     def _fetch_overview(self) -> list[dict]:
         """Fetch all issues from a given repo using listing per pages."""
@@ -117,8 +117,6 @@ To use higher limit generate personal auth token, see https://developer.github.c
                             'url': issue.pull_request.url,
                             'html_url': issue.pull_request.html_url,
                         }
-                        # Will need to fetch review comments URL later
-                        item['review_comments_url'] = issue.pull_request.url.replace('pulls', 'issues') + '/comments'
 
                     items.append(item)
                     pbar.update(1)
