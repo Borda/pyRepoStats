@@ -29,22 +29,50 @@ python setup.py install
 
 ## Sample usage
 
-Let's show how to pull data from Github repository, use of the following calls
+The CLI provides two commands: **`scrape`** (fetch data from GitHub) and **`analyze`** (analyze cached data).
 
-- if you just clone this repo without installation, you need to install dependencies and call script
+### Basic command structure
+
+```bash
+# General format
+repostat <command> <repository> [options]
+
+# Or using python -m
+python -m repo_stats <command> <repository> [options]
+```
+
+### Available commands
+
+1. **`scrape`** - Fetch repository data from GitHub (always requires internet connection)
+2. **`analyze`** - Analyze previously fetched data (works offline by default)
+
+### Examples
+
+- If you just clone this repo without installation, you need to install dependencies and call script:
   ```bash
   pip install -r requirements.txt
   python src/repo_stats/__main__.py scrape PyTorchLightning/pytorch-lightning-bolts
   ```
-- if you have already installed the package with `pip` or with `setup.py` you can call executable
+  
+- If you have already installed the package with `pip` or with `setup.py` you can call the executable:
   ```bash
+  # Scrape (fetch) data from GitHub
   repostat scrape PyTorchLightning/pytorch-lightning-bolts --auth_token <your-personal-token>
+  
+  # Analyze the scraped data
+  repostat analyze PyTorchLightning/pytorch-lightning-bolts --users_summary+ "all"
   ```
-  or package with a pythonic way
+  
+- Or use package with a pythonic way:
   ```bash
+  # Scrape data
   python -m repo_stats scrape PyTorchLightning/pytorch-lightning-bolts
+  
+  # Analyze data
+  python -m repo_stats analyze PyTorchLightning/pytorch-lightning-bolts --min_contribution 5
   ```
-  just note that with this way usage should also consider passing `--output_path` argument for output path, otherwise all caches and results will be saved in installation folder, most likely _site-packages_
+  
+**Note:** When using `python -m repo_stats`, consider passing `--output_path` argument for output path, otherwise all caches and results will be saved in installation folder, most likely _site-packages_
 
 To simplify the token passing in each call, you can export the token to environment variables `export GH_API_TOKEN=<your-personal-token>` for Github.
 
@@ -52,11 +80,30 @@ To simplify the token passing in each call, you can export the token to environm
 
 For GitHub users we recommend using your personal GitHub token which significantly increases [request limit](https://developer.github.com/v3/#rate-limiting) per hour.
 
-### Extra options
+### Command-specific options
 
-The CLI has two commands: `scrape` (fetch data from GitHub) and `analyze` (analyze cached data). To see all available options check `python -m repo_stats --help` or `python -m repo_stats analyze --help`
+Use `--help` to see all available options for each command:
+```bash
+# See all commands
+python -m repo_stats --help
 
-- To see following summary table use `--users_summary+ "merged PRs" --users_summary+ "commented PRs" --users_summary+ "opened issues" --users_summary+ "commented issues"` where the first column is used for sorting rows with users:
+# See options for scrape command
+python -m repo_stats scrape --help
+
+# See options for analyze command  
+python -m repo_stats analyze --help
+```
+
+#### Analyze command options
+
+The `analyze` command provides various options for visualizing and summarizing repository data:
+
+- **User summary table**: Use `--users_summary+ "merged PRs" --users_summary+ "commented PRs" --users_summary+ "opened issues" --users_summary+ "commented issues"` where the first column is used for sorting rows with users:
+
+  Example command:
+  ```bash
+  repostat analyze Borda/pyRepoStats --users_summary+ "merged PRs" --users_summary+ "opened issues"
+  ```
 
   | user                                              | merged PRs | commented PRs | opened issues | commented issues |
   | :------------------------------------------------ | ---------: | ------------: | ------------: | ---------------: |
@@ -69,13 +116,29 @@ The CLI has two commands: `scrape` (fetch data from GitHub) and `analyze` (analy
   | [nateraw](https://github.com/nateraw)             |          9 |             1 |             6 |                8 |
   | [teddykoker](https://github.com/teddykoker)       |          3 |             2 |             0 |                0 |
 
-- With `--min_contribution N` you can apply a simple filter for the minimal number of contributions to show users in Table or Figures.
+- **Contribution filter**: Use `--min_contribution N` to filter users by minimum number of contributions:
+  ```bash
+  repostat analyze Borda/pyRepoStats --min_contribution 10 --users_summary+ "all"
+  ```
 
-- You can also define a time frame with `--date_from` and `--date_to` for filtering events - created issues, merged PRs and comments/reviews.
+- **Time frame filtering**: Define a time frame with `--date_from` and `--date_to` for filtering events - created issues, merged PRs and comments/reviews:
+  ```bash
+  repostat analyze Borda/pyRepoStats --date_from "2023-01-01" --date_to "2023-12-31"
+  ```
 
-- We also offer showing some contribution aggregation over time such as Day/Week/Month/Year, to do so use option `--user_comments+ W` which draws the following double chart: (a) cumulative aggregation over all users and (b) heatmap like image with time in Y and user in X axis.
-  Moreover, you can also specify type such as issue or PR; so with `--user_comments+ W --user_comments+ issue --user_comments+ pr` you can simply get two figures - one with weekly aggregation for issues and another for PRs.
-  The very same way you can specify multiple time sampling `--user_comments+ W --user_comments+ M` for weekly and monthly aggregations.
+- **Contribution aggregation over time**: Use `--user_comments+` with time granularity (D=Day, W=Week, M=Month, Y=Year) to visualize contribution patterns:
+  ```bash
+  # Weekly aggregation
+  repostat analyze Borda/pyRepoStats --user_comments+ W
+  
+  # Weekly aggregation for issues and PRs separately
+  repostat analyze Borda/pyRepoStats --user_comments+ W --user_comments+ issue --user_comments+ pr
+  
+  # Multiple time sampling (weekly and monthly)
+  repostat analyze Borda/pyRepoStats --user_comments+ W --user_comments+ M
+  ```
+  
+  This draws double charts: (a) cumulative aggregation over all users and (b) heatmap-like image with time on Y-axis and users on X-axis.
 
   ![User-comments-aggregation](./assets/user-comments-aggregation.png)
 
