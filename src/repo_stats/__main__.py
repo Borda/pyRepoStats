@@ -164,10 +164,4 @@ def cli_main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    parser = create_parser()
-    args = parser.parse_args()
-    # Remove config argument before passing to main
-    args_dict = vars(args)
-    args_dict.pop("config", None)
-    main(**args_dict)
+    cli_main()
