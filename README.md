@@ -90,7 +90,7 @@ python -m repo_stats --help
 # See options for scrape command
 python -m repo_stats scrape --help
 
-# See options for analyze command  
+# See options for analyze command
 python -m repo_stats analyze --help
 ```
 
