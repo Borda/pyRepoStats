@@ -105,7 +105,7 @@ jobs:
         run: |
           mkdir results
           # Copy fixture data to results directory for offline testing
-          cp tests/fixtures/dump-github_borda-pyRepoStats.json results/
+          cp tests/fixtures/dump-github_Borda-pyRepoStats.json results/
           python -m repo_stats -gh Borda/pyRepoStats -o results --offline --min_contribution 1 --users_summary "all"
           ls -l results
 
