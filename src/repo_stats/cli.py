@@ -16,33 +16,31 @@ PATH_ROOT = os.path.dirname(os.path.dirname(__file__))
 SHOW_FIGURES = bool(int(os.getenv("SHOW_FIGURE", default=1)))
 
 
-def fetch(
+def scrape(
     github_repo: str,
     auth_token: Optional[str] = None,
     output_path: str = PATH_ROOT,
-    offline: bool = False,
 ):
-    """Fetch repository data from GitHub.
+    """Scrape repository data from GitHub.
 
     Args:
         github_repo: GitHub repository in format <owner>/<name>.
         auth_token: Personal Auth token needed for higher API request limit.
         output_path: Path to output directory.
-        offline: Skip updating all information from web.
 
     """
-    default_params = {
-        "output_path": output_path,
-        "auth_token": auth_token,
-        "min_contribution": 1,  # Default value, not relevant for fetching
-    }
-    host = GitHub(github_repo, **default_params)
+    host = GitHub(
+        repo_name=github_repo,
+        output_path=output_path,
+        auth_token=auth_token,
+        min_contribution=1,  # Default value, not relevant for scraping
+    )
 
-    host.fetch_data(offline)
-    if not offline and host.outdated > 0:
+    host.fetch_data(offline=False)
+    if host.outdated > 0:
         exit("The update failed to complete, pls try it again or run offline.")
 
-    logging.info("Data fetched successfully.")
+    logging.info("Data scraped successfully.")
 
 
 def analyze(
@@ -50,6 +48,7 @@ def analyze(
     auth_token: Optional[str] = None,
     output_path: str = PATH_ROOT,
     min_contribution: int = 3,
+    offline: bool = True,
     users_summary: Optional[list[str]] = None,
     user_comments: Optional[list[str]] = None,
     date_from: Optional[str] = None,
@@ -62,6 +61,7 @@ def analyze(
         auth_token: Personal Auth token needed for higher API request limit.
         output_path: Path to output directory.
         min_contribution: Specify minimal user contribution for visualisations.
+        offline: Skip updating data from web (default: True, uses cached data).
         users_summary: Show the summary stats for each user, the first one is used for sorting.
         user_comments: Select combination of granularity of timeline - [D]ay, [W]eek, [M]onth and [Y]ear,
             and item type - issue or PR. Valid values: D, W, M, Y, issue, pr, all.
@@ -69,15 +69,17 @@ def analyze(
         date_to: Define ending time period.
 
     """
-    default_params = {
-        "output_path": output_path,
-        "auth_token": auth_token,
-        "min_contribution": min_contribution,
-    }
-    host = GitHub(github_repo, **default_params)
+    host = GitHub(
+        repo_name=github_repo,
+        output_path=output_path,
+        auth_token=auth_token,
+        min_contribution=min_contribution,
+    )
 
-    # Load existing data (offline mode)
-    host.fetch_data(offline=True)
+    # Load data (offline by default, can fetch fresh data if offline=False)
+    host.fetch_data(offline=offline)
+    if not offline and host.outdated > 0:
+        exit("The update failed to complete, pls try it again or run offline.")
 
     host.set_time_period(date_from=date_from, date_to=date_to)
     host.preprocess_data()

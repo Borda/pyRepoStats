@@ -21,6 +21,9 @@ def temp_output_with_cache(tmp_path):
 @pytest.mark.parametrize(
     "cli_args",
     [
+        # The + suffix (e.g., --users_summary+, --user_comments+) is jsonargparse syntax
+        # for appending to list arguments. It allows passing multiple values:
+        # --user_comments+ D --user_comments+ W (creates list ["D", "W"])
         '--min_contribution 2 --users_summary+ "all"',
         "--min_contribution 2 --user_comments+ D",
         "--min_contribution 1 --user_comments+ W",
@@ -50,7 +53,7 @@ def test_offline_github(cli_args, temp_output_with_cache):
 )
 def test_online_github(cli_args, tmp_path):
     """Test CLI with online mode (requires token)."""
-    full_args = f"fetch {cli_args} --output_path {tmp_path}"
+    full_args = f"scrape {cli_args} --output_path {tmp_path}"
     with (
         mock.patch("argparse._sys.argv", ["any.py"] + full_args.strip().split()),
         mock.patch("repo_stats.cli.SHOW_FIGURES", False),
