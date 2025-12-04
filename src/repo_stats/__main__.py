@@ -24,7 +24,4 @@ def cli_main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    from jsonargparse import auto_cli
-
-    auto_cli(commands)
+    cli_main()

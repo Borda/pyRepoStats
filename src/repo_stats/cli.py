@@ -34,7 +34,7 @@ def fetch(
     default_params = {
         "output_path": output_path,
         "auth_token": auth_token,
-        "min_contribution": 3,  # Default value, not used in fetch
+        "min_contribution": 1,  # Default value, not relevant for fetching
     }
     host = GitHub(github_repo, **default_params)
 
