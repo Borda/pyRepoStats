@@ -36,7 +36,7 @@ jobs:
           twine check dist/*
 
       - name: Upload the share store
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dist-packages-${{ github.sha }}
           path: dist/
@@ -57,7 +57,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Fetch the share store
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: dist-packages-${{ github.sha }}
           path: dist/
