@@ -34,17 +34,17 @@ Let's show how to pull data from Github repository, use of the following calls
 - if you just clone this repo without installation, you need to install dependencies and call script
   ```bash
   pip install -r requirements.txt
-  python src/repo_stats/__main__.py -gh PyTorchLightning/pytorch-lightning-bolts
+  python src/repo_stats/__main__.py scrape PyTorchLightning/pytorch-lightning-bolts
   ```
 - if you have already installed the package with `pip` or with `setup.py` you can call executable
   ```bash
-  repostat -gh PyTorchLightning/pytorch-lightning-bolts -t <your-personal-token>
+  repostat scrape PyTorchLightning/pytorch-lightning-bolts --auth_token <your-personal-token>
   ```
   or package with a pythonic way
   ```bash
-  python -m repo_stats -gh PyTorchLightning/pytorch-lightning-bolts
+  python -m repo_stats scrape PyTorchLightning/pytorch-lightning-bolts
   ```
-  just note that with this way usage should also consider passing `-o` argument for output path, otherwise all caches and results will be saved in installation folder, most likely _site-packages_
+  just note that with this way usage should also consider passing `--output_path` argument for output path, otherwise all caches and results will be saved in installation folder, most likely _site-packages_
 
 To simplify the token passing in each call, you can export the token to environment variables `export GH_API_TOKEN=<your-personal-token>` for Github.
 
@@ -54,9 +54,9 @@ For GitHub users we recommend using your personal GitHub token which significant
 
 ### Extra options
 
-The calls above just pull the data, to get/show some results check available options `python -m repo_stats.cli --help`
+The CLI has two commands: `scrape` (fetch data from GitHub) and `analyze` (analyze cached data). To see all available options check `python -m repo_stats --help` or `python -m repo_stats analyze --help`
 
-- To see following summary table use `--users_summary "merged PRs" "commented PRs" "opened issues" "commented issues"` where the fist column is used for sorting rows with users:
+- To see following summary table use `--users_summary+ "merged PRs" --users_summary+ "commented PRs" --users_summary+ "opened issues" --users_summary+ "commented issues"` where the first column is used for sorting rows with users:
 
   | user                                              | merged PRs | commented PRs | opened issues | commented issues |
   | :------------------------------------------------ | ---------: | ------------: | ------------: | ---------------: |
@@ -69,13 +69,13 @@ The calls above just pull the data, to get/show some results check available opt
   | [nateraw](https://github.com/nateraw)             |          9 |             1 |             6 |                8 |
   | [teddykoker](https://github.com/teddykoker)       |          3 |             2 |             0 |                0 |
 
-- With `--min_contribution N` you can a simple filter what is the minimal number of contribution to show users in Table or Figures.
+- With `--min_contribution N` you can apply a simple filter for the minimal number of contributions to show users in Table or Figures.
 
 - You can also define a time frame with `--date_from` and `--date_to` for filtering events - created issues, merged PRs and comments/reviews.
 
-- We also offer showing some contribution aggregation over time such as Day/Week/Month/Year, to do you use option `--user_comments W` which draw following double chart: (a) cumulative aggregation over all users and (b) heatmap like image with time in Y and user in X axis.
-  Moreover, you can also specify type such as issue or PR; so with `--user_comments W issue pr` you can simply get two figures - one with weekly aggregation for issue and another for PRs.
-  The very same way you can specify multiple time sampling `--user_comments W M` for weekly and monthly aggregations.
+- We also offer showing some contribution aggregation over time such as Day/Week/Month/Year, to do so use option `--user_comments+ W` which draws the following double chart: (a) cumulative aggregation over all users and (b) heatmap like image with time in Y and user in X axis.
+  Moreover, you can also specify type such as issue or PR; so with `--user_comments+ W --user_comments+ issue --user_comments+ pr` you can simply get two figures - one with weekly aggregation for issues and another for PRs.
+  The very same way you can specify multiple time sampling `--user_comments+ W --user_comments+ M` for weekly and monthly aggregations.
 
   ![User-comments-aggregation](./assets/user-comments-aggregation.png)
 
