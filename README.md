@@ -12,6 +12,7 @@ This simple tool aims on open-source projects providing simple repository stats 
 - cumulative **caching** (no need to full download, just incremental/needed update)
 - collection of **overall user contributions** to issues/PRs
 - visualization of **aggregated timeline** of past contributions
+- collection of **repository dependents** (projects that depend on this repository) with stars and forks information
 
 ## Installation
 
@@ -29,7 +30,7 @@ python setup.py install
 
 ## Sample usage
 
-The CLI provides two commands: **`scrape`** (fetch data from GitHub) and **`analyze`** (analyze cached data).
+The CLI provides three commands: **`scrape`** (fetch data from GitHub), **`analyze`** (analyze cached data), and **`fetch_repo_dependents`** (fetch repositories that depend on this repository).
 
 ### Basic command structure
 
@@ -45,6 +46,7 @@ python -m repo_stats <command> <repository> [options]
 
 1. **`scrape`** - Fetch repository data from GitHub (always requires internet connection)
 1. **`analyze`** - Analyze previously fetched data (works offline by default)
+1. **`fetch_repo_dependents`** - Fetch repositories/packages that depend on this repository
 
 ### Examples
 
@@ -150,7 +152,45 @@ The `analyze` command provides various options for visualizing and summarizing r
 
   ![User-comments-aggregation](./assets/user-comments-aggregation.png)
 
+- **Repository dependents**: Use `--dependents` to show repositories or packages that depend on this repository:
+
+  ```bash
+  # Show repository dependents with default settings
+  repostat analyze Borda/pyRepoStats --dependents repository
+
+  # Show both repository and package dependents
+  repostat analyze Borda/pyRepoStats --dependents all
+
+  # Filter by minimum stars
+  repostat analyze Borda/pyRepoStats --dependents repository --min_stars 10
+  ```
+
+  Note: Dependents data must be fetched first using the `fetch_dependents` command (see below).
+
 To deny showing figures set environment variable `export SHOW_FIGURES=0`.
+
+#### Fetch dependents command
+
+The `fetch_repo_dependents` command scrapes GitHub's dependents page to collect information about repositories or packages that depend on your project:
+
+```bash
+# Fetch repository dependents
+python -m repo_stats fetch_repo_dependents owner/repo --output_path ./data
+
+# Fetch package dependents
+python -m repo_stats fetch_repo_dependents owner/repo --dependent_type package
+
+# Fetch both repository and package dependents
+python -m repo_stats fetch_repo_dependents owner/repo --dependent_type all
+```
+
+This command:
+- Scrapes GitHub's dependents page (no API token required)
+- Collects repository/package name, stars, and forks
+- Caches the data for later analysis
+- Can be run separately from the main scrape/analyze workflow
+
+After fetching, use the `analyze` command with `--dependents` option to view the results.
 
 ## Contribution
 

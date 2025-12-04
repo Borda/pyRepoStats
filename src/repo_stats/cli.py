@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 
 from repo_stats.github import GitHub
 from repo_stats.stats import DATETIME_FREQ
+from repo_stats.types import parse_dependent_type
 
 PATH_ROOT = os.path.dirname(os.path.dirname(__file__))
 #: take global setting from OS env
@@ -53,6 +54,8 @@ def analyze(
     user_comments: Optional[list[str]] = None,
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
+    dependents: Optional[str] = None,
+    min_stars: int = 0,
 ):
     """Analyze repository data.
 
@@ -67,6 +70,8 @@ def analyze(
             and item type - issue or PR. Valid values: D, W, M, Y, issue, pr, all.
         date_from: Define beginning time period.
         date_to: Define ending time period.
+        dependents: Show dependents - 'repository' or 'package' or 'all' for both.
+        min_stars: Minimum number of stars for dependents to display (default: 0).
 
     """
     host = GitHub(
@@ -102,6 +107,63 @@ def analyze(
                 tp = "" if tp.lower() == "all" else tp
                 host.show_user_comments(freq=freq, parent_type=tp, show_fig=SHOW_FIGURES)
 
+    if dependents:
+        dep_types = parse_dependent_type(dependents)
+        if not dep_types:
+            logging.warning(f"Unknown dependents type: {dependents}. Use 'repository', 'package', or 'all'.")
+        else:
+            for dep_type in dep_types:
+                host.show_dependents(dependent_type=dep_type.value, min_stars=min_stars)
+
     # at the end show all figures
     if SHOW_FIGURES:
         plt.show()
+
+
+def fetch_repo_dependents(
+    github_repo: str,
+    auth_token: Optional[str] = None,
+    output_path: str = PATH_ROOT,
+    dependent_type: str = "repository",
+):
+    """Fetch dependents for a repository (projects that depend on this repository).
+
+    Args:
+        github_repo: GitHub repository in format <owner>/<name>.
+        auth_token: Personal Auth token (optional, not used for web scraping but kept for consistency).
+        output_path: Path to output directory.
+        dependent_type: Type of dependents - 'repository' or 'package' or 'all' for both.
+
+    """
+    host = GitHub(
+        repo_name=github_repo,
+        output_path=output_path,
+        auth_token=auth_token,
+        min_contribution=1,
+    )
+
+    # Load existing data
+    host.fetch_data(offline=True)
+
+    # Determine which types to fetch
+    dep_types = parse_dependent_type(dependent_type)
+    if not dep_types:
+        logging.error(f"Unknown dependents type: {dependent_type}. Use 'repository', 'package', or 'all'.")
+        return
+
+    # Fetch dependents for each type
+    if host.DATA_KEY_DEPENDENTS not in host.data:
+        host.data[host.DATA_KEY_DEPENDENTS] = {}
+
+    for dtype in dep_types:
+        logging.info(f"Fetching {dtype.value.lower()} dependents...")
+        dependents = host.fetch_dependents(dependent_type=dtype.value)
+        host.data[host.DATA_KEY_DEPENDENTS][dtype.value.lower()] = dependents
+        logging.info(f"Fetched {len(dependents)} {dtype.value.lower()} dependents")
+
+    # Save the updated data
+    from repo_stats.data_io import save_data
+
+    save_data(host.data, path_dir=host.output_path, repo_name=host.repo_name, host=host.HOST_NAME)
+    logging.info("Dependents data saved successfully.")
+
