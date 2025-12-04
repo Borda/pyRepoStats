@@ -38,7 +38,7 @@ def scrape(
 
     host.fetch_data(offline=False)
     if host.outdated > 0:
-        exit("The update failed to complete, please try it again or run offline.")
+        exit("The update failed to complete, please try again.")
 
     logging.info("Data scraped successfully.")
 
