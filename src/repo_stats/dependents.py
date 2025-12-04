@@ -96,15 +96,19 @@ def fetch_dependents(
                 fetching += page
                 pbar.update(len(page))
 
-                # Check for next page
+                # Check for next page - find the anchor with "next" text
                 nav_hrefs = pagination.find_all("a")
-                if not nav_hrefs or "next" not in [href.text.lower() for href in nav_hrefs]:
+                next_link = None
+                for href in nav_hrefs:
+                    if href.text.lower().strip() == "next":
+                        next_link = href.get("href")
+                        break
+
+                if not next_link:
                     break
 
-                # Get next page URL
-                url = nav_hrefs[-1].get("href")
-                if not url:
-                    break
+                # Convert relative URL to absolute URL if needed
+                url = f"https://github.com{next_link}" if next_link.startswith("/") else next_link
 
                 # Reset retries on successful page fetch
                 retries = 0
