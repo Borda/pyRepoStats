@@ -60,8 +60,6 @@ jobs:
           pip list
 
       - name: Tests and coverage
-        env:
-          GH_API_TOKEN: ${{ secrets.API_TOKEN }}
         run: python -m pytest src/ tests/ -v --cov=repo_stats --durations=25
 
       - name: Statistics
@@ -103,10 +101,20 @@ jobs:
           pip install -e . -r tests/requirements.txt
           pip list
 
-      - name: Run sample
+      - name: Run sample offline
         run: |
           mkdir results
-          python -m repo_stats -gh borda/pyRepoStats -o results -t ${{ secrets.API_TOKEN }}
+          # Copy fixture data to results directory for offline testing
+          cp tests/fixtures/dump-github_Borda-pyRepoStats.json results/
+          python -m repo_stats -gh Borda/pyRepoStats -o results --offline --min_contribution 1 --users_summary "all"
+          ls -l results
+
+      - name: Run sample online (if authorized)
+        if: |
+          github.event_name == 'push' ||
+          contains(fromJSON('["MEMBER", "CONTRIBUTOR", "OWNER"]'), github.event.pull_request.author_association)
+        run: |
+          python -m repo_stats -gh Borda/pyRepoStats -o results -t ${{ secrets.API_TOKEN }}
           ls -l results
 
   testing-guardian:
