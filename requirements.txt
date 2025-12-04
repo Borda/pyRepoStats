@@ -1,6 +1,7 @@
 numpy >= 1.14
-requests
+PyGithub >= 2.0
 pandas
 tabulate
 matplotlib
 tqdm
+jsonargparse

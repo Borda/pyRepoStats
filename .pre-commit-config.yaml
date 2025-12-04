@@ -1,61 +1,53 @@
 default_language_version:
-  python: python3.8
+  python: python3
 
 ci:
   autofix_prs: true
-  autoupdate_commit_msg: '[pre-commit.ci] pre-commit suggestions'
+  autoupdate_commit_msg: "[pre-commit.ci] pre-commit suggestions"
   autoupdate_schedule: quarterly
   # submodules: true
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v6.0.0
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
       - id: check-case-conflict
       - id: check-yaml
       - id: check-toml
-      - id: pretty-format-json
+      - id: check-json
       - id: check-added-large-files
-        exclude: .*\.ipynb
       - id: check-docstring-first
       - id: detect-private-key
 
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v2.23.1
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
     hooks:
-      - id: pyupgrade
-        args: [--py36-plus]
-        name: Upgrade code
-
-  - repo: https://github.com/PyCQA/isort
-    rev: 5.9.3
-    hooks:
-      - id: isort
-        name: imports
-
-  - repo: https://github.com/pre-commit/mirrors-yapf
-    rev: v0.31.0
-    hooks:
-      - id: yapf
-        name: formatting
+      - id: codespell
+        additional_dependencies: [tomli]
+        #args: ["--write-changes"] # uncomment if you want to get automatic fixing
 
   - repo: https://github.com/executablebooks/mdformat
-    rev: 0.7.7
+    rev: 0.7.22
     hooks:
       - id: mdformat
         additional_dependencies:
           - mdformat-gfm
+          - mdformat-black
           - mdformat_frontmatter
 
-  - repo: https://github.com/asottile/yesqa
-    rev: v1.2.3
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.13.3
     hooks:
-      - id: yesqa
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
 
-  - repo: https://github.com/PyCQA/flake8
-    rev: 3.9.2
+  - repo: https://github.com/JoC0de/pre-commit-prettier
+    rev: v3.6.2
     hooks:
-      - id: flake8
-        name: PEP8
+      - id: prettier
+        files: \.(json|yml|yaml|toml)$
+        # https://prettier.io/docs/en/options.html#print-width
+        args: ["--print-width=120"]

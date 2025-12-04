@@ -1,12 +1,9 @@
 coverage
 codecov
-pytest>4.0
+pytest >4.0
 pytest-cov
 pytest-xdist
 codacy-coverage
 
-flake8
 check-manifest
-twine>=3.2
-isort>=5.0
-yapf>=0.29.0
+twine >=3.2

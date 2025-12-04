@@ -1,31 +1,14 @@
 ---
 name: Ask a question
-about: Asking a questions about...
-title: ''
+about: Ask a question about the project
+title: '[QUESTION] '
 labels: question
-assignees: ''
 ---
 
-## ❓ Questions and Help
+### Question
 
-### Before asking:
+<!-- Describe your question clearly. -->
 
-<!--
-1. search the issues.
-2. search the docs.
--->
+### Additional context
 
-<!-- If you still can't find what you need: -->
-
-#### What is your question?
-
-#### Code
-
-<!-- Please paste a code snippet if your question requires it! -->
-
-#### What have you tried?
-
-#### What's your environment?
-
-- OS: \[e.g. iOS, Linux, Win\]
-- Version \[e.g. 0.2.1\]
+<!-- Any additional information or code examples (optional). -->
