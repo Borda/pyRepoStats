@@ -15,7 +15,7 @@ labels: bug
 
 ### Environment
 
-<!-- 
+<!--
 - OS: [e.g. Linux, Windows]
 - Python version:
 - `pyRepoStats` version:
