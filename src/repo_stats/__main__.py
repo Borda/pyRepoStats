@@ -4,13 +4,11 @@ Copyright (C) 2020-2021 Jiri Borovec <...>
 
 import logging
 import os
-from argparse import ArgumentParser, Namespace
-from pprint import pformat
+from typing import Optional
 
 import matplotlib.pyplot as plt
 
 from repo_stats.github import GitHub
-from repo_stats.host import Host
 from repo_stats.stats import DATETIME_FREQ
 
 PATH_ROOT = os.path.dirname(os.path.dirname(__file__))
@@ -18,100 +16,59 @@ PATH_ROOT = os.path.dirname(os.path.dirname(__file__))
 SHOW_FIGURES = bool(int(os.getenv("SHOW_FIGURE", default=1)))
 
 
-def get_arguments():
-    parser = ArgumentParser("Parse Repository details")
-    parser.add_argument(
-        "-gh",
-        "--github_repo",
-        type=str,
-        required=False,
-        default=None,
-        help="GitHub repository in format <owner>/<name>.",
-    )
-    parser.add_argument(
-        "-t",
-        "--auth_token",
-        type=str,
-        required=False,
-        default=None,
-        help="Personal Auth token needed for higher API request limit",
-    )
-    parser.add_argument("--offline", action="store_true", help="Skip updating all information from web.")
-    # todo: probably use some other temp folder
-    parser.add_argument(
-        "-o",
-        "--output_path",
-        type=str,
-        required=False,
-        default=PATH_ROOT,
-        help="Personal Auth token needed for higher API request limit.",
-    )
-    parser.add_argument(
-        "-n",
-        "--min_contribution",
-        type=int,
-        required=False,
-        default=3,
-        help="Specify minimal user contribution for visualisations.",
-    )
-    # todo: consider use groups for options
-    parser.add_argument(
-        "--users_summary",
-        type=str,
-        nargs="*",
-        required=False,
-        help="Show the summary stats for each user, the fist one is used for sorting.",
-    )
-    parser.add_argument(
-        "--user_comments",
-        type=str,
-        required=False,
-        default=None,
-        nargs="*",
-        choices=["D", "W", "M", "Y", "issue", "pr", "all"],
-        help="Select combination of granularity of timeline - [D]ay, [W]eek, [M]onth and [Y]ear,"
-        " and item type - issue or PR (if you not specify, all will be used).",
-    )
-    parser.add_argument("--date_from", type=str, required=False, help="Define beginning time period.", default=None)
-    parser.add_argument("--date_to", type=str, required=False, help="Define ending time period.", default=None)
+def main(
+    github_repo: Optional[str] = None,
+    auth_token: Optional[str] = None,
+    offline: bool = False,
+    output_path: str = PATH_ROOT,
+    min_contribution: int = 3,
+    users_summary: Optional[list[str]] = None,
+    user_comments: Optional[list[str]] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+):
+    """Parse Repository details.
 
-    args = parser.parse_args()
-    logging.info("Parsed arguments: \n%s", pformat(vars(args)))
-    return args
+    Args:
+        github_repo: GitHub repository in format <owner>/<name>.
+        auth_token: Personal Auth token needed for higher API request limit.
+        offline: Skip updating all information from web.
+        output_path: Path to output directory.
+        min_contribution: Specify minimal user contribution for visualisations.
+        users_summary: Show the summary stats for each user, the first one is used for sorting.
+        user_comments: Select combination of granularity of timeline - [D]ay, [W]eek, [M]onth and [Y]ear,
+            and item type - issue or PR. Valid values: D, W, M, Y, issue, pr, all.
+        date_from: Define beginning time period.
+        date_to: Define ending time period.
 
-
-def init_host(args: Namespace) -> Host:
-    default_params = {
-        "output_path": args.output_path,
-        "auth_token": args.auth_token,
-        "min_contribution": args.min_contribution,
-    }
-    return GitHub(args.github_repo, **default_params) if args.github_repo else None
-
-
-def main(args: Namespace):
-    """Main entry point."""
-    host = init_host(args)
-    if not host:
+    """
+    if not github_repo:
         exit("No repository specified.")
 
-    host.fetch_data(args.offline)
-    if not args.offline and host.outdated > 0:
+    default_params = {
+        "output_path": output_path,
+        "auth_token": auth_token,
+        "min_contribution": min_contribution,
+    }
+    host = GitHub(github_repo, **default_params)
+
+    host.fetch_data(offline)
+    if not offline and host.outdated > 0:
         exit("The update failed to complete, pls try it again or run offline.")
 
-    host.set_time_period(date_from=args.date_from, date_to=args.date_to)
+    host.set_time_period(date_from=date_from, date_to=date_to)
     host.preprocess_data()
 
     logging.info("Process requested stats...")
-    if args.users_summary:
-        host.print_users_summary(columns=args.users_summary)
+    if users_summary:
+        host.print_users_summary(columns=users_summary)
 
-    if args.user_comments:
-        freqs = [f for f in args.user_comments if f in DATETIME_FREQ]
-        types = [t for t in args.user_comments if t not in DATETIME_FREQ]
+    if user_comments:
+        freqs = [f for f in user_comments if f in DATETIME_FREQ]
+        types = [t for t in user_comments if t not in DATETIME_FREQ]
         if not freqs:
             logging.warning(
-                f"You have requested {args.user_comments} but not of them is time aggregation: {DATETIME_FREQ.keys()}"
+                f"You have requested {user_comments} but not of them is time aggregation: {DATETIME_FREQ.keys()}"
             )
         # if none set, use all
         types = types or ["all"]
@@ -126,11 +83,137 @@ def main(args: Namespace):
 
 
 def cli_main():
+    """CLI entry point for backward compatibility."""
     logging.basicConfig(level=logging.INFO)
     logging.info("running...")
-    main(get_arguments())
+    from jsonargparse import ActionConfigFile, ArgumentParser
+
+    parser = ArgumentParser(description="Parse Repository details")
+    parser.add_argument("--config", action=ActionConfigFile)
+    parser.add_argument(
+        "-gh",
+        "--github_repo",
+        type=Optional[str],
+        default=None,
+        help="GitHub repository in format <owner>/<name>.",
+    )
+    parser.add_argument(
+        "-t",
+        "--auth_token",
+        type=Optional[str],
+        default=None,
+        help="Personal Auth token needed for higher API request limit.",
+    )
+    parser.add_argument("--offline", action="store_true", help="Skip updating all information from web.")
+    parser.add_argument(
+        "-o",
+        "--output_path",
+        type=str,
+        default=PATH_ROOT,
+        help="Path to output directory.",
+    )
+    parser.add_argument(
+        "-n",
+        "--min_contribution",
+        type=int,
+        default=3,
+        help="Specify minimal user contribution for visualisations.",
+    )
+    parser.add_argument(
+        "--users_summary",
+        default=None,
+        nargs="*",
+        help="Show the summary stats for each user, the first one is used for sorting.",
+    )
+    parser.add_argument(
+        "--user_comments",
+        default=None,
+        nargs="*",
+        help="Select combination of granularity of timeline - [D]ay, [W]eek, [M]onth and [Y]ear, "
+        "and item type - issue or PR. Valid values: D, W, M, Y, issue, pr, all.",
+    )
+    parser.add_argument(
+        "--date_from",
+        type=Optional[str],
+        default=None,
+        help="Define beginning time period.",
+    )
+    parser.add_argument(
+        "--date_to",
+        type=Optional[str],
+        default=None,
+        help="Define ending time period.",
+    )
+    args = parser.parse_args()
+    # Remove config argument before passing to main
+    args_dict = vars(args)
+    args_dict.pop("config", None)
+    main(**args_dict)
     logging.info("Done :]")
 
 
 if __name__ == "__main__":
-    cli_main()
+    logging.basicConfig(level=logging.INFO)
+    from jsonargparse import ActionConfigFile, ArgumentParser
+
+    parser = ArgumentParser(description="Parse Repository details")
+    parser.add_argument("--config", action=ActionConfigFile)
+    parser.add_argument(
+        "-gh",
+        "--github_repo",
+        type=Optional[str],
+        default=None,
+        help="GitHub repository in format <owner>/<name>.",
+    )
+    parser.add_argument(
+        "-t",
+        "--auth_token",
+        type=Optional[str],
+        default=None,
+        help="Personal Auth token needed for higher API request limit.",
+    )
+    parser.add_argument("--offline", action="store_true", help="Skip updating all information from web.")
+    parser.add_argument(
+        "-o",
+        "--output_path",
+        type=str,
+        default=PATH_ROOT,
+        help="Path to output directory.",
+    )
+    parser.add_argument(
+        "-n",
+        "--min_contribution",
+        type=int,
+        default=3,
+        help="Specify minimal user contribution for visualisations.",
+    )
+    parser.add_argument(
+        "--users_summary",
+        default=None,
+        nargs="*",
+        help="Show the summary stats for each user, the first one is used for sorting.",
+    )
+    parser.add_argument(
+        "--user_comments",
+        default=None,
+        nargs="*",
+        help="Select combination of granularity of timeline - [D]ay, [W]eek, [M]onth and [Y]ear, "
+        "and item type - issue or PR. Valid values: D, W, M, Y, issue, pr, all.",
+    )
+    parser.add_argument(
+        "--date_from",
+        type=Optional[str],
+        default=None,
+        help="Define beginning time period.",
+    )
+    parser.add_argument(
+        "--date_to",
+        type=Optional[str],
+        default=None,
+        help="Define ending time period.",
+    )
+    args = parser.parse_args()
+    # Remove config argument before passing to main
+    args_dict = vars(args)
+    args_dict.pop("config", None)
+    main(**args_dict)
