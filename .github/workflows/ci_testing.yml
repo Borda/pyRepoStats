@@ -112,7 +112,7 @@ jobs:
       - name: Run sample online (if authorized)
         if: |
           github.event_name == 'push' ||
-          contains(fromJSON('["MEMBER", "CONTRIBUTOR", "OWNER"]'), github.event.pull_request.author_association)
+          contains(fromJSON('["MEMBER", "OWNER"]'), github.event.pull_request.author_association)
         run: |
           python -m repo_stats -gh Borda/pyRepoStats -o results -t ${{ secrets.API_TOKEN }}
           ls -l results
