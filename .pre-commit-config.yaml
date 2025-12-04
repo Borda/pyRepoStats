@@ -16,9 +16,8 @@ repos:
       - id: check-case-conflict
       - id: check-yaml
       - id: check-toml
-      - id: pretty-format-json
+      - id: check-json
       - id: check-added-large-files
-        exclude: .*\.ipynb
       - id: check-docstring-first
       - id: detect-private-key
 
@@ -49,6 +48,6 @@ repos:
     rev: v3.6.2
     hooks:
       - id: prettier
-        files: \.(json|yml|yaml|toml)
+        files: \.(json|yml|yaml|toml)$
         # https://prettier.io/docs/en/options.html#print-width
         args: ["--print-width=120"]
