@@ -1,28 +1,20 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
-labels: bug
-assignees: ''
+title: '[BUG] '
+labels: 'bug'
 ---
-
-## 🐛 Bug
 
 ### Description
 
-<!-- Please provide a general introduction to the issue/proposal. -->
+A clear and concise description of what the bug is.
 
-<!--
-If reporting a bug, attach the entire traceback from Python.
-If proposing an enhancement/new feature, provide links to related articles, reference examples, etc.
--->
+### To Reproduce
 
-### Way to reproduce
+Steps to reproduce the behavior.
 
-If reporting a bug, please include the following important information:
+### Environment
 
-- [ ] Code example
-- [ ] Relevant images (if any)
-- Operating system and version: ...
-- Python version: ...
-- [ ] packages version (see requirements.txt)
+- OS: [e.g. Linux, Windows]
+- Python version:
+- `pyRepoStats` version:

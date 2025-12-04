@@ -1,27 +1,18 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: ''
-labels: enhancement, help wanted
-assignees: ''
+title: "[FEAT] "
+labels: "enhancement"
 ---
 
-## 🚀 Feature
+### Problem
 
-<!-- A clear and concise description of the feature proposal -->
+Describe the problem this solves (optional).
 
-### Motivation
+### Proposal
 
-<!--
-Please outline the motivation for the proposal.
-Is your feature request related to a problem? e.g., I'm always frustrated when [...].
-If this is related to another GitHub issue, please link here too
--->
-
-### Alternatives
-
-<!-- A clear and concise description of any alternative solutions or features you've considered, if any. -->
+A clear and concise description of what you want to happen.
 
 ### Additional context
 
-<!-- Add any other context or screenshots about the feature request here. -->
+Any other context or examples (optional).
