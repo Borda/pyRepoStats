@@ -83,8 +83,8 @@ def test_fetch_dependents_with_mock(mock_dependents_html, dependent_type):
 
 def test_fetch_dependents_handles_errors():
     """Test that fetch_dependents handles request errors gracefully."""
-    with mock.patch("repo_stats.dependents.requests.get") as mock_get:
-        mock_get.side_effect = Exception("Network error")
+    with mock.patch("repo_stats.dependents._fetch_page") as mock_fetch:
+        mock_fetch.return_value = None
 
         result = fetch_dependents("owner/repo", max_retries=1, retry_delay=0)
 

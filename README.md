@@ -30,7 +30,7 @@ python setup.py install
 
 ## Sample usage
 
-The CLI provides three commands: **`scrape`** (fetch data from GitHub), **`analyze`** (analyze cached data), and **`fetch_dependents`** (fetch repositories that depend on this repository).
+The CLI provides three commands: **`scrape`** (fetch data from GitHub), **`analyze`** (analyze cached data), and **`fetch_repo_dependents`** (fetch repositories that depend on this repository).
 
 ### Basic command structure
 
@@ -46,7 +46,7 @@ python -m repo_stats <command> <repository> [options]
 
 1. **`scrape`** - Fetch repository data from GitHub (always requires internet connection)
 1. **`analyze`** - Analyze previously fetched data (works offline by default)
-1. **`fetch_dependents`** - Fetch repositories/packages that depend on this repository
+1. **`fetch_repo_dependents`** - Fetch repositories/packages that depend on this repository
 
 ### Examples
 
@@ -171,17 +171,17 @@ To deny showing figures set environment variable `export SHOW_FIGURES=0`.
 
 #### Fetch dependents command
 
-The `fetch_dependents` command scrapes GitHub's dependents page to collect information about repositories or packages that depend on your project:
+The `fetch_repo_dependents` command scrapes GitHub's dependents page to collect information about repositories or packages that depend on your project:
 
 ```bash
 # Fetch repository dependents
-python -m repo_stats fetch_dependents owner/repo --output_path ./data
+python -m repo_stats fetch_repo_dependents owner/repo --output_path ./data
 
 # Fetch package dependents
-python -m repo_stats fetch_dependents owner/repo --dependent_type package
+python -m repo_stats fetch_repo_dependents owner/repo --dependent_type package
 
 # Fetch both repository and package dependents
-python -m repo_stats fetch_dependents owner/repo --dependent_type all
+python -m repo_stats fetch_repo_dependents owner/repo --dependent_type all
 ```
 
 This command:

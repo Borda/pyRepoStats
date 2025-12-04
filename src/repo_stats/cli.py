@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 
 from repo_stats.github import GitHub
 from repo_stats.stats import DATETIME_FREQ
+from repo_stats.types import parse_dependent_type
 
 PATH_ROOT = os.path.dirname(os.path.dirname(__file__))
 #: take global setting from OS env
@@ -107,26 +108,19 @@ def analyze(
                 host.show_user_comments(freq=freq, parent_type=tp, show_fig=SHOW_FIGURES)
 
     if dependents:
-        dep_types = []
-        dep_val = dependents.lower()
-        if dep_val in ("all", "both"):
-            dep_types = ["REPOSITORY", "PACKAGE"]
-        elif dep_val in ("repository", "repo", "repositories", "repos"):
-            dep_types = ["REPOSITORY"]
-        elif dep_val in ("package", "packages", "pkg"):
-            dep_types = ["PACKAGE"]
-        else:
+        dep_types = parse_dependent_type(dependents)
+        if not dep_types:
             logging.warning(f"Unknown dependents type: {dependents}. Use 'repository', 'package', or 'all'.")
-
-        for dep_type in dep_types:
-            host.show_dependents(dependent_type=dep_type, min_stars=min_stars)
+        else:
+            for dep_type in dep_types:
+                host.show_dependents(dependent_type=dep_type.value, min_stars=min_stars)
 
     # at the end show all figures
     if SHOW_FIGURES:
         plt.show()
 
 
-def fetch_dependents(
+def fetch_repo_dependents(
     github_repo: str,
     auth_token: Optional[str] = None,
     output_path: str = PATH_ROOT,
@@ -152,15 +146,8 @@ def fetch_dependents(
     host.fetch_data(offline=True)
 
     # Determine which types to fetch
-    dep_types = []
-    dep_val = dependent_type.lower()
-    if dep_val in ("all", "both"):
-        dep_types = ["REPOSITORY", "PACKAGE"]
-    elif dep_val in ("repository", "repo", "repositories", "repos"):
-        dep_types = ["REPOSITORY"]
-    elif dep_val in ("package", "packages", "pkg"):
-        dep_types = ["PACKAGE"]
-    else:
+    dep_types = parse_dependent_type(dependent_type)
+    if not dep_types:
         logging.error(f"Unknown dependents type: {dependent_type}. Use 'repository', 'package', or 'all'.")
         return
 
@@ -169,10 +156,10 @@ def fetch_dependents(
         host.data[host.DATA_KEY_DEPENDENTS] = {}
 
     for dtype in dep_types:
-        logging.info(f"Fetching {dtype.lower()} dependents...")
-        dependents = host.fetch_dependents(dependent_type=dtype)
-        host.data[host.DATA_KEY_DEPENDENTS][dtype.lower()] = dependents
-        logging.info(f"Fetched {len(dependents)} {dtype.lower()} dependents")
+        logging.info(f"Fetching {dtype.value.lower()} dependents...")
+        dependents = host.fetch_dependents(dependent_type=dtype.value)
+        host.data[host.DATA_KEY_DEPENDENTS][dtype.value.lower()] = dependents
+        logging.info(f"Fetched {len(dependents)} {dtype.value.lower()} dependents")
 
     # Save the updated data
     from repo_stats.data_io import save_data

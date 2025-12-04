@@ -313,11 +313,11 @@ class Host:
         )
         df_dependents.to_csv(csv_path, index=False)
 
-        # Print summary table
-        print(f"\nTop {dependent_type.lower()} dependents (min {min_stars} stars):")
-        print(tabulate(df_dependents.head(20), tablefmt="pipe", headers="keys", showindex=False))
-        print(f"\nTotal: {len(df_dependents)} {dependent_type.lower()} dependents")
-        print(f"Exported to: {csv_path}")
+        # Log summary
+        logging.info(f"\nTop {dependent_type.lower()} dependents (min {min_stars} stars):")
+        logging.info("\n" + tabulate(df_dependents.head(20), tablefmt="pipe", headers="keys", showindex=False))
+        logging.info(f"\nTotal: {len(df_dependents)} {dependent_type.lower()} dependents")
+        logging.info(f"Exported to: {csv_path}")
 
         return csv_path
 

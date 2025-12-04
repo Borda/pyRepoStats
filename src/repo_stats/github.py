@@ -11,6 +11,7 @@ from github import Github as GithubAPI
 from github import GithubException
 from tqdm import tqdm
 
+from repo_stats.dependents import fetch_dependents as fetch_dependents_impl
 from repo_stats.host import Host
 
 
@@ -353,9 +354,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         Returns:
             List of dependent repositories with stars and forks information
         """
-        from repo_stats.dependents import fetch_dependents
-
-        return fetch_dependents(self.repo_name, dependent_type=dependent_type, timeout=self.REQUEST_TIMEOUT)
+        return fetch_dependents_impl(self.repo_name, dependent_type=dependent_type, timeout=self.REQUEST_TIMEOUT)
 
 
 def _unique_list(arr) -> list:
