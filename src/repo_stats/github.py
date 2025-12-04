@@ -58,9 +58,9 @@ To use higher limit generate personal auth token, see https://developer.github.c
             auth_token=auth_token,
             min_contribution=min_contribution,
         )
-        # Initialize PyGithub client
-        if auth_token:
-            self.github_client = GithubAPI(auth_token, timeout=self.REQUEST_TIMEOUT)
+        # Initialize PyGithub client with the auth token from instance (which may have been populated from env)
+        if self.auth_token:
+            self.github_client = GithubAPI(self.auth_token, timeout=self.REQUEST_TIMEOUT)
         else:
             self.github_client = GithubAPI(timeout=self.REQUEST_TIMEOUT)
         self.repo = None
