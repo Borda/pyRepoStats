@@ -36,7 +36,7 @@ jobs:
           twine check dist/*
 
       - name: Upload the share store
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: dist-packages-${{ github.sha }}
           path: dist/
