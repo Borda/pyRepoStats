@@ -31,6 +31,8 @@ class Host:
     CSV_USER_COMMENTS = "%s_%s_user-comments_freq_%s_type_%s.csv"
     #: template name for exporting Figure/PDF with comment's contributions
     PDF_USER_COMMENTS = "%s_%s_user-comments_freq_%s_type_%s.pdf"
+    #: template name for exporting CSV with dependents
+    CSV_DEPENDENTS = "%s_%s_dependents_%s.csv"
     #: kay to the raw fetch data from host
     DATA_KEY_RAW_INFO = "raw_info"
     #: key to the raw fetch data from host
@@ -39,6 +41,8 @@ class Host:
     DATA_KEY_SIMPLE = "simple_tickets"
     #: timeline of all comments in the repo
     DATA_KEY_COMMENTS = "comments_timeline"
+    #: repository dependents (projects that depend on this repository)
+    DATA_KEY_DEPENDENTS = "dependents"
     #: define bot users as name pattern
     USER_BOTS = []
     #: OS env. variable for getting Token
@@ -269,3 +273,51 @@ class Host:
             plt.close(fig)
 
         return csv_path, fig_path
+
+    def show_dependents(self, dependent_type: str = "REPOSITORY", min_stars: int = 0) -> Optional[str]:
+        """Show repositories/packages that depend on this repository.
+
+        Args:
+            dependent_type: Type of dependents - 'REPOSITORY' or 'PACKAGE'
+            min_stars: Minimum number of stars to include in the output
+
+        Returns:
+            path to the exported CSV file
+        """
+        from repo_stats.dependents import process_dependents
+
+        logging.info(f"Show {dependent_type.lower()} dependents with min {min_stars} stars")
+
+        if self.DATA_KEY_DEPENDENTS not in self.data or not self.data[self.DATA_KEY_DEPENDENTS]:
+            logging.warning("No dependents data available. Please fetch dependents first.")
+            return None
+
+        # Filter by dependent type
+        all_dependents = self.data[self.DATA_KEY_DEPENDENTS].get(dependent_type.lower(), [])
+        if not all_dependents:
+            logging.warning(f"No {dependent_type.lower()} dependents found.")
+            return None
+
+        # Process and filter by stars
+        df_dependents = process_dependents(all_dependents)
+        if min_stars > 0:
+            df_dependents = df_dependents[df_dependents["stars"] >= min_stars]
+
+        if df_dependents.empty:
+            logging.warning(f"No {dependent_type.lower()} dependents with at least {min_stars} stars.")
+            return None
+
+        # Export to CSV
+        csv_path = os.path.join(
+            self.output_path, self.CSV_DEPENDENTS % (self.HOST_NAME, self.name, dependent_type.lower())
+        )
+        df_dependents.to_csv(csv_path, index=False)
+
+        # Log summary
+        logging.info(f"\nTop {dependent_type.lower()} dependents (min {min_stars} stars):")
+        logging.info("\n" + tabulate(df_dependents.head(20), tablefmt="pipe", headers="keys", showindex=False))
+        logging.info(f"\nTotal: {len(df_dependents)} {dependent_type.lower()} dependents")
+        logging.info(f"Exported to: {csv_path}")
+
+        return csv_path
+
