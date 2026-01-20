@@ -29,7 +29,7 @@ repos:
         #args: ["--write-changes"] # uncomment if you want to get automatic fixing
 
   - repo: https://github.com/executablebooks/mdformat
-    rev: 0.7.22
+    rev: 1.0.0
     hooks:
       - id: mdformat
         additional_dependencies:
@@ -38,14 +38,14 @@ repos:
           - mdformat_frontmatter
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.13.3
+    rev: v0.14.10
     hooks:
-      - id: ruff
+      - id: ruff-check
         args: ["--fix"]
       - id: ruff-format
 
   - repo: https://github.com/JoC0de/pre-commit-prettier
-    rev: v3.6.2
+    rev: v3.7.4
     hooks:
       - id: prettier
         files: \.(json|yml|yaml|toml)$
