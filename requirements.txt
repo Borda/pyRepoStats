@@ -1,6 +1,6 @@
 numpy >= 1.14
 PyGithub >= 2.0
-pandas
+pandas >= 2.0
 tabulate
 matplotlib
 tqdm
