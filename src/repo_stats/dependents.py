@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 
-@dataclass
+@dataclass(frozen=True)
 class DependentRepo:
     """Information about a dependent repository."""
 
