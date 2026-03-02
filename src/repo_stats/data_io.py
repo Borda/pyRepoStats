@@ -104,16 +104,18 @@ def convert_date(date: Any):
 
     >>> convert_date("2020-08")
     Timestamp('2020-08-01 00:00:00+0000', tz='UTC')
+    >>> convert_date(pd.NaT) is None
+    True
     """
-    if not date:
-        return date
+    if date is None or pd.isnull(date):
+        return None
     try:
         date = pd.to_datetime(date)
     except ParserError:
         warn(f"Unrecognised/invalid date format for input: {date}")
         date = None
-    # need to set TimeZone cor comparison
-    if date and not date.tzname():
+    # need to set TimeZone for comparison
+    if not pd.isnull(date) and not date.tzname():
         date = date.tz_localize(tz="UTC")
     return date
 

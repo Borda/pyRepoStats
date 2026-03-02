@@ -10,8 +10,6 @@ updates:
     pull-request-branch-name:
       separator: "-"
     open-pull-requests-limit: 5
-    reviewers:
-      - "borda"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -21,9 +19,7 @@ updates:
     labels: ["CI"]
     pull-request-branch-name:
       separator: "-"
-    open-pull-requests-limit: 5
-    reviewers:
-      - "borda"
+    open-pull-requests-limit: 1
     groups:
       github-actions:
         patterns:
