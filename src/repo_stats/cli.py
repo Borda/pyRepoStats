@@ -166,4 +166,3 @@ def fetch_repo_dependents(
 
     save_data(host.data, path_dir=host.output_path, repo_name=host.repo_name, host=host.HOST_NAME)
     logging.info("Dependents data saved successfully.")
-

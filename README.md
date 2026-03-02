@@ -185,6 +185,7 @@ python -m repo_stats fetch_repo_dependents owner/repo --dependent_type all
 ```
 
 This command:
+
 - Scrapes GitHub's dependents page (no API token required)
 - Collects repository/package name, stars, and forks
 - Caches the data for later analysis
