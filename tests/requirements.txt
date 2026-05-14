@@ -1,6 +1,6 @@
 coverage
 codecov
-pytest >4.0
+pytest >=9.0.3
 pytest-cov
 pytest-xdist
 codacy-coverage
