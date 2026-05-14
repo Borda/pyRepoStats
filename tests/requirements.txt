@@ -6,4 +6,4 @@ pytest-xdist
 codacy-coverage
 
 check-manifest
-twine >=3.2
+twine >=6.2.0
