@@ -38,14 +38,14 @@ repos:
           - mdformat_frontmatter
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.9
+    rev: v0.15.20
     hooks:
       - id: ruff-check
         args: ["--fix"]
       - id: ruff-format
 
-  - repo: https://github.com/JoC0de/pre-commit-prettier
-    rev: v3.8.1
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.9.4
     hooks:
       - id: prettier
         files: \.(json|yml|yaml|toml)$
