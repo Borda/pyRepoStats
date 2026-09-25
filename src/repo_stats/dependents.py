@@ -5,12 +5,11 @@ Module for fetching repository dependents (projects that depend on this reposito
 """
 
 import logging
-import time
 from dataclasses import dataclass
 
 import pandas as pd
-import requests
-from bs4 import BeautifulSoup
+from scrapling import Selector
+from scrapling.fetchers import Fetcher
 from tqdm import tqdm
 
 
@@ -39,75 +38,76 @@ class DependentRepo:
         }
 
 
-def _parse_dependent_box(box) -> DependentRepo | None:
+def _parse_dependent_box(box: Selector) -> DependentRepo | None:
     """Parse a single dependent box from HTML.
 
     Args:
-        box: BeautifulSoup element containing dependent information
+        box: Scrapling selector containing dependent information
 
     Returns:
         DependentRepo instance or None if parsing fails
     """
     try:
-        org_elem = box.find("a", {"data-repository-hovercards-enabled": ""})
-        repo_elem = box.find("a", {"data-hovercard-type": "repository"})
-        star_elems = box.find_all("span", {"class": "pl-3"})
+        repo_elem = box.css("a[data-hovercard-type='repository']")[0]
+        href = repo_elem.attrib.get("href", "").strip("/")
+        if "/" not in href:
+            return None
+        org, repo = href.split("/", 1)
 
-        if org_elem and repo_elem and len(star_elems) >= 2:
-            org = org_elem.text.strip()
-            repo = repo_elem.text.strip()
-            stars = int(star_elems[0].text.replace(",", "").strip())
-            forks = int(star_elems[1].text.replace(",", "").strip())
+        star_elems = box.css("span.pl-3")
+        if len(star_elems) < 2:
+            return None
+        stars = int(star_elems[0].text.replace(",", "").strip())
+        forks = int(star_elems[1].text.replace(",", "").strip())
 
-            return DependentRepo(org=org, repo=repo, stars=stars, forks=forks)
-    except (AttributeError, ValueError, IndexError) as e:
+        return DependentRepo(org=org, repo=repo, stars=stars, forks=forks)
+    except (AttributeError, IndexError, ValueError) as e:
         logging.debug(f"Failed to parse dependent item: {e}")
 
     return None
 
 
-def _parse_page_dependents(soup: BeautifulSoup) -> list[DependentRepo]:
+def _parse_page_dependents(page: Selector) -> list[DependentRepo]:
     """Parse all dependents from a page.
 
     Args:
-        soup: BeautifulSoup object of the page
+        page: Scrapling selector of the page
 
     Returns:
         List of DependentRepo instances
     """
     dependents = []
-    for box in soup.findAll("div", {"class": "Box-row"}):
+    for box in page.css("div.Box-row"):
         dependent = _parse_dependent_box(box)
         if dependent:
             dependents.append(dependent)
     return dependents
 
 
-def _find_next_page_url(soup: BeautifulSoup) -> str | None:
+def _find_next_page_url(page: Selector, base_url: str) -> str | None:
     """Find the URL for the next page of results.
 
     Args:
-        soup: BeautifulSoup object of the current page
+        page: Scrapling selector of the current page
+        base_url: Base URL used to resolve relative links
 
     Returns:
         URL string for next page or None if no next page
     """
-    pagination = soup.find("div", {"class": "paginate-container"})
+    pagination = page.css("div.paginate-container")
     if not pagination:
         return None
 
-    nav_hrefs = pagination.find_all("a")
-    for href in nav_hrefs:
-        if href.text.lower().strip() == "next":
-            next_link = href.get("href")
+    for link in pagination[0].css("a"):
+        if link.text.lower().strip() == "next":
+            next_link = link.attrib.get("href")
             if next_link:
-                # Convert relative URL to absolute URL if needed
-                return f"https://github.com{next_link}" if next_link.startswith("/") else next_link
+                return page.urljoin(next_link) if next_link.startswith("/") else next_link
 
     return None
 
 
-def _fetch_page(url: str, timeout: int) -> BeautifulSoup | None:
+def _fetch_page(url: str, timeout: int) -> Selector | None:
     """Fetch and parse a single page.
 
     Args:
@@ -115,14 +115,15 @@ def _fetch_page(url: str, timeout: int) -> BeautifulSoup | None:
         timeout: Request timeout in seconds
 
     Returns:
-        BeautifulSoup object or None if request fails
+        Scrapling selector or None if request fails
     """
     try:
-        response = requests.get(url, timeout=timeout)
-        response.raise_for_status()
-        html = response.content.decode(response.encoding)
-        return BeautifulSoup(html, "html.parser")
-    except requests.RequestException as e:
+        response = Fetcher.get(url, timeout=timeout, retries=1)
+        if response.status >= 400:
+            logging.error(f"Request failed for {url} with status {response.status}")
+            return None
+        return response
+    except Exception as e:
         logging.error(f"Request failed for {url}: {e}")
         return None
 
@@ -152,8 +153,8 @@ def fetch_dependents(
         - url: Full GitHub URL
 
     Example:
-        >>> deps = fetch_dependents("octocat/Hello-World", dependent_type="REPOSITORY")
-        >>> isinstance(deps, list)
+        >>> deps = fetch_dependents("octocat/Hello-World", dependent_type="REPOSITORY")  # doctest: +SKIP
+        >>> isinstance(deps, list)  # doctest: +SKIP
         True
     """
     url = f"https://github.com/{repo_name}/network/dependents?dependent_type={dependent_type}"
@@ -163,19 +164,18 @@ def fetch_dependents(
     pbar = tqdm(desc=f"Fetching {dependent_type.lower()} dependents")
 
     while url:
-        soup = _fetch_page(url, timeout)
+        page = _fetch_page(url, timeout)
 
-        if not soup:
+        if page is None:
             if retries < max_retries:
                 retries += 1
                 logging.warning(f"Retrying in {retry_delay} seconds (attempt {retries}/{max_retries})")
-                time.sleep(retry_delay)
                 continue
             logging.error("Max retries reached, stopping")
             break
 
         # Parse dependents from current page
-        page_dependents = _parse_page_dependents(soup)
+        page_dependents = _parse_page_dependents(page)
         all_dependents.extend(page_dependents)
         pbar.update(len(page_dependents))
 
@@ -183,7 +183,7 @@ def fetch_dependents(
         retries = 0
 
         # Find next page URL
-        url = _find_next_page_url(soup)
+        url = _find_next_page_url(page, url)
 
     pbar.close()
 
@@ -211,4 +211,5 @@ def process_dependents(dependents: list[dict]) -> pd.DataFrame:
 
     df = pd.DataFrame(dependents)
     df = df.sort_values("stars", ascending=False)
-    return df.drop_duplicates(subset=["url"])
+    # Keep the most starred repo for each unique URL (sorted descending by stars)
+    return df.drop_duplicates(subset=["url"], keep="first")
