@@ -1,4 +1,4 @@
-numpy >= 1.14
+numpy >= 2.5.3
 PyGithub >= 2.10.0
 pandas >= 2.0
 tabulate
