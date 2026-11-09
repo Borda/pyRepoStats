@@ -5,3 +5,4 @@ tabulate
 matplotlib
 tqdm
 jsonargparse
+scrapling

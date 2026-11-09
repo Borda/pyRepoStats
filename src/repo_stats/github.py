@@ -11,6 +11,7 @@ from github import Github as GithubAPI
 from github import GithubException
 from tqdm import tqdm
 
+from repo_stats.dependents import fetch_dependents as fetch_dependents_impl
 from repo_stats.host import Host
 
 
@@ -343,6 +344,17 @@ To use higher limit generate personal auth token, see https://developer.github.c
             ]
         # filter within given time frame
         return [cmt for cmt in comments if self._is_in_time_period(cmt["count_at"])]
+
+    def fetch_dependents(self, dependent_type: str = "REPOSITORY") -> list[dict]:
+        """Fetch repositories that depend on this repository.
+
+        Args:
+            dependent_type: Type of dependents - 'REPOSITORY' or 'PACKAGE'
+
+        Returns:
+            List of dependent repositories with stars and forks information
+        """
+        return fetch_dependents_impl(self.repo_name, dependent_type=dependent_type, timeout=self.REQUEST_TIMEOUT)
 
 
 def _unique_list(arr) -> list:
