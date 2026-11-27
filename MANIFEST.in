@@ -21,11 +21,8 @@ exclude notebooks
 recursive-exclude docs *
 exclude docs
 
-# Include the Requirements
-include *.txt
-
 # Exclude build configs
-exclude *.yml *.yaml *.toml
+exclude *.yml *.yaml
 
 prune .git
 prune .github

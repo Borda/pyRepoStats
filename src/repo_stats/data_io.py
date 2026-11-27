@@ -7,11 +7,11 @@ import json
 import logging
 import os
 from datetime import datetime
-from distutils.version import LooseVersion
-from typing import Any, Union
+from typing import Any
 from warnings import warn
 
 import pandas as pd
+from packaging.version import Version
 from pandas.errors import ParserError
 
 from repo_stats import __version__
@@ -57,7 +57,7 @@ def load_data(path_dir: str, repo_name: str, host: str = "") -> dict:
             data = json.load(fp)
         data["version"] = data.get("version", "0.0")
 
-        if LooseVersion(data["version"]) < LooseVersion("0.1.4"):
+        if Version(data["version"]) < Version("0.1.4"):
             warn(
                 f"Your last dump was made with {data['version']} which has missing review comments.\n"
                 " We highly recommend to invalidate this cache and fetch all data from the ground..."
@@ -121,9 +121,9 @@ def convert_date(date: Any):
 
 
 def is_in_time_period(
-    dt: Union[datetime, str],
-    datetime_from: Union[datetime, str] = None,
-    datetime_to: Union[datetime, str] = None,
+    dt: datetime | str,
+    datetime_from: datetime | str = None,
+    datetime_to: datetime | str = None,
 ) -> bool:
     """Check if particular date is in range.
 
