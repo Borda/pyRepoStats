@@ -3,12 +3,14 @@ Copyright (C) 2020-2021 Jiri Borovec <...>
 """
 
 import logging
+import shutil
+import subprocess
 import warnings
 from typing import Optional
 
 import pandas as pd
+from github import Auth, GithubException
 from github import Github as GithubAPI
-from github import GithubException
 from tqdm import tqdm
 
 from repo_stats.host import Host
@@ -28,12 +30,15 @@ class GitHub(Host):
     URL_API = "https://api.github.com/repos"
     #: OS env. variable for getting Token
     OS_ENV_AUTH_TOKEN = "GH_API_TOKEN"
+    #: variables used by `gh` and GitHub Actions, tried after `GH_API_TOKEN`
+    OS_ENV_AUTH_TOKEN_FALLBACKS = ("GITHUB_TOKEN", "GH_TOKEN")
     #: if you have reached the number of free/allowed requests
     API_LIMIT_REACHED = False
     #: hint/explanation what happened
     API_LIMIT_MESSAGE = """
 Request failed, probably you have reached free/personal request's limit...
-To use higher limit generate personal auth token, see https://developer.github.com/v3/#rate-limiting
+Log in once with `gh auth login` (picked up automatically) or set `GH_API_TOKEN` / `GITHUB_TOKEN`,
+see https://developer.github.com/v3/#rate-limiting
 """
     #: define bot users as name pattern
     USER_BOTS = (
@@ -58,12 +63,29 @@ To use higher limit generate personal auth token, see https://developer.github.c
             auth_token=auth_token,
             min_contribution=min_contribution,
         )
-        # Initialize PyGithub client with the auth token from instance (which may have been populated from env)
-        if self.auth_token:
-            self.github_client = GithubAPI(self.auth_token, timeout=self.REQUEST_TIMEOUT)
-        else:
-            self.github_client = GithubAPI(timeout=self.REQUEST_TIMEOUT)
+        # Initialize PyGithub client with the token resolved by the base class (argument, env or `gh` CLI)
+        auth = Auth.Token(self.auth_token) if self.auth_token else None
+        self.github_client = GithubAPI(auth=auth, timeout=self.REQUEST_TIMEOUT, per_page=100)
         self.repo = None
+
+    def _token_from_cli(self) -> Optional[str]:
+        """Reuse the session of `gh auth login`; the token is read in-process and never printed, logged or stored."""
+        gh_exe = shutil.which("gh")
+        if not gh_exe:
+            return None
+        try:
+            # list args, no shell: the token goes through a pipe, never through argv, history or a file
+            out = subprocess.run(
+                [gh_exe, "auth", "token", "--hostname", "github.com"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+                stdin=subprocess.DEVNULL,
+                check=False,
+            )
+        except (OSError, subprocess.SubprocessError):
+            return None
+        return out.stdout.strip() or None if out.returncode == 0 else None
 
     def _fetch_info(self) -> list[dict]:
         """Download general package info."""

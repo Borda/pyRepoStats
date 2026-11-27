@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" width="1000" height="300" role="img" aria-labelledby="t d">
+<title id="t">repostat pipeline</title>
+<desc id="d">Animated pipeline: GitHub API data is scraped into a JSON cache, then analyzed into tables, CSV and charts.</desc>
+<style>
+text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:#e6edf3;font-size:14px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.m{fill:#8b949e} .s{font-size:11px} .h{font-size:20px;font-weight:600} .b{font-weight:600}
+.card{fill:#161b22;stroke:#30363d;stroke-width:1.5}
+.mid{text-anchor:middle} .end{text-anchor:end}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+@keyframes lit0{0%{stroke:#30363d}4%{stroke:#30363d}7%{stroke:#58a6ff}18%{stroke:#58a6ff}22%{stroke:#30363d}100%{stroke:#30363d}}
+.c0{animation:lit0 8s linear infinite}
+@keyframes dot0{0%{opacity:0;transform:translateX(0)}8%{opacity:0;transform:translateX(0)}9%{opacity:1}19%{opacity:1;transform:translateX(42px)}20%{opacity:0;transform:translateX(42px)}100%{opacity:0}}
+.d0{animation:dot0 8s linear infinite;opacity:0}
+@keyframes lit1{0%{stroke:#30363d}20%{stroke:#30363d}23%{stroke:#58a6ff}34%{stroke:#58a6ff}38%{stroke:#30363d}100%{stroke:#30363d}}
+.c1{animation:lit1 8s linear infinite}
+@keyframes dot1{0%{opacity:0;transform:translateX(0)}24%{opacity:0;transform:translateX(0)}25%{opacity:1}35%{opacity:1;transform:translateX(42px)}36%{opacity:0;transform:translateX(42px)}100%{opacity:0}}
+.d1{animation:dot1 8s linear infinite;opacity:0}
+@keyframes lit2{0%{stroke:#30363d}36%{stroke:#30363d}39%{stroke:#d29922}50%{stroke:#d29922}54%{stroke:#30363d}100%{stroke:#30363d}}
+.c2{animation:lit2 8s linear infinite}
+@keyframes dot2{0%{opacity:0;transform:translateX(0)}40%{opacity:0;transform:translateX(0)}41%{opacity:1}51%{opacity:1;transform:translateX(42px)}52%{opacity:0;transform:translateX(42px)}100%{opacity:0}}
+.d2{animation:dot2 8s linear infinite;opacity:0}
+@keyframes lit3{0%{stroke:#30363d}52%{stroke:#30363d}55%{stroke:#3fb950}66%{stroke:#3fb950}70%{stroke:#30363d}100%{stroke:#30363d}}
+.c3{animation:lit3 8s linear infinite}
+@keyframes dot3{0%{opacity:0;transform:translateX(0)}56%{opacity:0;transform:translateX(0)}57%{opacity:1}67%{opacity:1;transform:translateX(42px)}68%{opacity:0;transform:translateX(42px)}100%{opacity:0}}
+.d3{animation:dot3 8s linear infinite;opacity:0}
+@keyframes lit4{0%{stroke:#30363d}68%{stroke:#30363d}71%{stroke:#bc8cff}82%{stroke:#bc8cff}86%{stroke:#30363d}100%{stroke:#30363d}}
+.c4{animation:lit4 8s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-24}}
+.loop{animation:dash 1.6s linear infinite}
+</style>
+<rect width="1000" height="300" rx="14" fill="#0d1117"/>
+<rect class="card c0" x="25" y="80" width="150" height="120" rx="10"/><text class="b" x="100.0" y="114" text-anchor="middle" style="font-size:16px">GitHub API</text><rect x="70" y="126" width="60" height="3" rx="1.5" fill="#58a6ff"/><text class="mono s m" x="100.0" y="156" text-anchor="middle">issues · PRs</text><text class="mono s m" x="100.0" y="176" text-anchor="middle">comments · reviews</text><text class="s m" x="35" y="70">1</text>
+<line x1="179" y1="140.0" x2="215" y2="140.0" stroke="#8b949e" stroke-width="2"/><path d="M215 135.0 l8 5 l-8 5z" fill="#8b949e"/>
+<circle class="d0" cx="179" cy="140.0" r="5" fill="#58a6ff"/>
+<rect class="card c1" x="225" y="80" width="150" height="120" rx="10"/><text class="b" x="300.0" y="114" text-anchor="middle" style="font-size:16px">scrape</text><rect x="270" y="126" width="60" height="3" rx="1.5" fill="#58a6ff"/><text class="mono s m" x="300.0" y="156" text-anchor="middle">PyGithub client</text><text class="mono s m" x="300.0" y="176" text-anchor="middle">token: gh login</text><text class="s m" x="235" y="70">2</text>
+<line x1="379" y1="140.0" x2="415" y2="140.0" stroke="#8b949e" stroke-width="2"/><path d="M415 135.0 l8 5 l-8 5z" fill="#8b949e"/>
+<circle class="d1" cx="379" cy="140.0" r="5" fill="#58a6ff"/>
+<rect class="card c2" x="425" y="80" width="150" height="120" rx="10"/><text class="b" x="500.0" y="114" text-anchor="middle" style="font-size:16px">JSON cache</text><rect x="470" y="126" width="60" height="3" rx="1.5" fill="#d29922"/><text class="mono s m" x="500.0" y="156" text-anchor="middle">dump-github_*.json</text><text class="mono s m" x="500.0" y="176" text-anchor="middle">kept between runs</text><text class="s m" x="435" y="70">3</text>
+<line x1="579" y1="140.0" x2="615" y2="140.0" stroke="#8b949e" stroke-width="2"/><path d="M615 135.0 l8 5 l-8 5z" fill="#8b949e"/>
+<circle class="d2" cx="579" cy="140.0" r="5" fill="#d29922"/>
+<rect class="card c3" x="625" y="80" width="150" height="120" rx="10"/><text class="b" x="700.0" y="114" text-anchor="middle" style="font-size:16px">analyze</text><rect x="670" y="126" width="60" height="3" rx="1.5" fill="#3fb950"/><text class="mono s m" x="700.0" y="156" text-anchor="middle">drop bots + spam</text><text class="mono s m" x="700.0" y="176" text-anchor="middle">apply time window</text><text class="s m" x="635" y="70">4</text>
+<line x1="779" y1="140.0" x2="815" y2="140.0" stroke="#8b949e" stroke-width="2"/><path d="M815 135.0 l8 5 l-8 5z" fill="#8b949e"/>
+<circle class="d3" cx="779" cy="140.0" r="5" fill="#3fb950"/>
+<rect class="card c4" x="825" y="80" width="150" height="120" rx="10"/><text class="b" x="900.0" y="114" text-anchor="middle" style="font-size:16px">outputs</text><rect x="870" y="126" width="60" height="3" rx="1.5" fill="#bc8cff"/><text class="mono s m" x="900.0" y="156" text-anchor="middle">table · CSV</text><text class="mono s m" x="900.0" y="176" text-anchor="middle">PDF / PNG / SVG</text><text class="s m" x="835" y="70">5</text>
+<path class="loop" d="M500.0 204 C500.0 270 300.0 270 300.0 210" fill="none" stroke="#d29922" stroke-width="2" stroke-dasharray="6 6"/><path d="M295.0 218 l5 -9 l5 9z" fill="#d29922"/><text class="s m mid" x="400.0" y="282">next run: ask only for what changed</text>
+<text class="h" x="25" y="42">repostat: how it works</text>
+<text class="s m end" x="975" y="42">scrape → cache → analyze · works offline after the first scrape</text>
+</svg>

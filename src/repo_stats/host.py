@@ -72,17 +72,31 @@ class Host:
         self.output_path = os.path.realpath(os.path.expanduser(output_path))
         assert os.path.isdir(self.output_path), f"Wrong folder: {self.output_path}"
         self.min_contribution_count = min_contribution
-        self.auth_token = auth_token
-        os_token = os.getenv(self.OS_ENV_AUTH_TOKEN)
-        if not self.auth_token and os_token:
-            logging.debug(f"Using `{self.OS_ENV_AUTH_TOKEN}` from your OS environment variables...")
-            self.auth_token = os_token
+        self.auth_token = auth_token or self._resolve_token()
 
         self.data = {}
         self.outdated = 0
         self.timestamp = None
         self.datetime_from = None
         self.datetime_to = None
+
+    #: extra OS env. variables tried after `OS_ENV_AUTH_TOKEN`
+    OS_ENV_AUTH_TOKEN_FALLBACKS: tuple = ()
+
+    def _token_from_cli(self) -> Optional[str]:
+        """Last-resort token source, e.g. a logged-in host CLI; no source by default."""
+        return None
+
+    def _resolve_token(self) -> Optional[str]:
+        """Find a token without ever logging its value: OS env. variables first, then the host CLI."""
+        for env_name in (self.OS_ENV_AUTH_TOKEN, *self.OS_ENV_AUTH_TOKEN_FALLBACKS):
+            if os.getenv(env_name):
+                logging.debug(f"Using `{env_name}` from your OS environment variables...")
+                return os.getenv(env_name)
+        token = self._token_from_cli()
+        if token:
+            logging.debug("Using the token of the logged-in host CLI...")
+        return token
 
     @staticmethod
     def _is_spam_message(msg: str, thr: float = 0.2) -> bool:
@@ -227,13 +241,16 @@ class Host:
         )
         return csv_path
 
-    def show_user_comments(self, freq: str = "W", parent_type: str = "", show_fig: bool = True) -> tuple[str, str]:
+    def show_user_comments(
+        self, freq: str = "W", parent_type: str = "", show_fig: bool = True, fig_format: str = "pdf"
+    ) -> tuple[str, str]:
         """Show aggregated user contribution statistics in a table and a double chart
 
         Args:
             freq: aggregation frequency - Day, Week, Month, ...
             parent_type: item kind like issue/PR
             show_fig: show figure after all
+            fig_format: file format of the saved figure, any matplotlib supports - pdf, png, svg, ...
 
         Returns:
             path to CSV table and PDF figure
@@ -261,9 +278,8 @@ class Host:
             df_comments[select_users],
             title=f"User comments aggregation @{self.timestamp} - Freq: {freq}, Type:{parent_type or 'all'}",
         )
-        fig_path = os.path.join(
-            self.output_path, self.PDF_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type or "all")
-        )
+        fig_name = self.PDF_USER_COMMENTS % (self.HOST_NAME, self.name, freq, parent_type or "all")
+        fig_path = os.path.join(self.output_path, f"{os.path.splitext(fig_name)[0]}.{fig_format.lstrip('.').lower()}")
         fig.savefig(fig_path, bbox_extra_artists=(extras["legend"], extras["colorbar"]), bbox_inches="tight")
         if not show_fig:
             plt.close(fig)

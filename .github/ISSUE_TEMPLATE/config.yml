@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask a question
+    url: https://github.com/Borda/pyRepoStats/discussions/categories/q-a
+    about: Questions and usage help go to Discussions (Q&A), issues are for bugs and feature requests.
+  - name: Share an idea or show your results
+    url: https://github.com/Borda/pyRepoStats/discussions
+    about: Open-ended ideas, feedback and "show and tell" also live in Discussions.
