@@ -21,10 +21,7 @@ exclude notebooks
 recursive-exclude docs *
 exclude docs
 
-# Include the build config, it declares metadata and dependencies
-include pyproject.toml
-
-# Exclude other configs
+# Exclude build configs
 exclude *.yml *.yaml
 
 prune .git

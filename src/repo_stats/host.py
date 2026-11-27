@@ -6,7 +6,6 @@ import logging
 import os
 import re
 from abc import abstractmethod
-from typing import Optional
 
 import matplotlib.pyplot as plt
 from tabulate import tabulate
@@ -57,7 +56,7 @@ class Host:
         self,
         repo_name: str,
         output_path: str,
-        auth_token: Optional[str] = None,
+        auth_token: str | None = None,
         min_contribution: int = 3,
     ):
         """
@@ -83,11 +82,11 @@ class Host:
     #: extra OS env. variables tried after `OS_ENV_AUTH_TOKEN`
     OS_ENV_AUTH_TOKEN_FALLBACKS: tuple = ()
 
-    def _token_from_cli(self) -> Optional[str]:
+    def _token_from_cli(self) -> str | None:
         """Last-resort token source, e.g. a logged-in host CLI; no source by default."""
         return None
 
-    def _resolve_token(self) -> Optional[str]:
+    def _resolve_token(self) -> str | None:
         """Find a token without ever logging its value: OS env. variables first, then the host CLI."""
         for env_name in (self.OS_ENV_AUTH_TOKEN, *self.OS_ENV_AUTH_TOKEN_FALLBACKS):
             if os.getenv(env_name):
@@ -228,7 +227,7 @@ class Host:
 
         # filter just some columns
         df_users = df_users[columns]
-        df_users.sort_values(columns[0], ascending=False, inplace=True)
+        df_users = df_users.sort_values(columns[0], ascending=False)
         csv_path = os.path.join(self.output_path, self.CSV_USERS_SUMMARY % (self.HOST_NAME, self.name))
         df_users.to_csv(csv_path)
         df_users.index = df_users.index.map(lambda u: self.USER_URL_TEMPLATE % {"user": u})

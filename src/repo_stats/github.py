@@ -6,7 +6,6 @@ import logging
 import shutil
 import subprocess
 import warnings
-from typing import Optional
 
 import pandas as pd
 from github import Auth, GithubException
@@ -54,7 +53,7 @@ see https://developer.github.com/v3/#rate-limiting
         self,
         repo_name: str,
         output_path: str,
-        auth_token: Optional[str] = None,
+        auth_token: str | None = None,
         min_contribution: int = 3,
     ):
         super().__init__(
@@ -68,7 +67,7 @@ see https://developer.github.com/v3/#rate-limiting
         self.github_client = GithubAPI(auth=auth, timeout=self.REQUEST_TIMEOUT, per_page=100)
         self.repo = None
 
-    def _token_from_cli(self) -> Optional[str]:
+    def _token_from_cli(self) -> str | None:
         """Reuse the session of `gh auth login`; the token is read in-process and never printed, logged or stored."""
         gh_exe = shutil.which("gh")
         if not gh_exe:
@@ -156,7 +155,7 @@ see https://developer.github.com/v3/#rate-limiting
 
         return items
 
-    def _request_comments(self, issue_number: int) -> Optional[list]:
+    def _request_comments(self, issue_number: int) -> list | None:
         """Request all comments from the issue life-time."""
         if GitHub.API_LIMIT_REACHED:
             return None
@@ -182,7 +181,7 @@ see https://developer.github.com/v3/#rate-limiting
                 GitHub.API_LIMIT_REACHED = True
             return None
 
-    def _request_detail_pr(self, pr_number: int) -> Optional[dict]:
+    def _request_detail_pr(self, pr_number: int) -> dict | None:
         """Request PR status, in particular we want to distinguish between closed and merged ones."""
         if GitHub.API_LIMIT_REACHED:
             return None
@@ -227,7 +226,7 @@ see https://developer.github.com/v3/#rate-limiting
         item.update(extras)
         return idx, item
 
-    def _request_review_comments(self, pr_number: int) -> Optional[list]:
+    def _request_review_comments(self, pr_number: int) -> list | None:
         """Request all review comments from a pull request."""
         if GitHub.API_LIMIT_REACHED:
             return None

@@ -4,7 +4,6 @@ Copyright (C) 2020-2021 Jiri Borovec <...>
 
 import logging
 import os
-from typing import Optional
 
 import matplotlib.pyplot as plt
 
@@ -18,7 +17,7 @@ SHOW_FIGURES = bool(int(os.getenv("SHOW_FIGURE", default=1)))
 
 def scrape(
     github_repo: str,
-    auth_token: Optional[str] = None,
+    auth_token: str | None = None,
     output_path: str = PATH_ROOT,
 ):
     """Scrape repository data from GitHub.
@@ -45,14 +44,14 @@ def scrape(
 
 def analyze(
     github_repo: str,
-    auth_token: Optional[str] = None,
+    auth_token: str | None = None,
     output_path: str = PATH_ROOT,
     min_contribution: int = 3,
     offline: bool = True,
-    users_summary: Optional[list[str]] = None,
-    user_comments: Optional[list[str]] = None,
-    date_from: Optional[str] = None,
-    date_to: Optional[str] = None,
+    users_summary: list[str] | None = None,
+    user_comments: list[str] | None = None,
+    date_from: str | None = None,
+    date_to: str | None = None,
     figure_format: str = "pdf",
 ):
     """Analyze repository data.
