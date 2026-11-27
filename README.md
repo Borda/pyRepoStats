@@ -24,7 +24,7 @@ pip install https://github.com/Borda/pyRepoStats/archive/main.zip
 or after cloning the repository
 
 ```bash
-python setup.py install
+pip install .
 ```
 
 ## Sample usage
@@ -48,14 +48,14 @@ python -m repo_stats <command> <repository> [options]
 
 ### Examples
 
-- If you just clone this repo without installation, you need to install dependencies and call script:
+- If you just clone this repo without installation, you need to install it (with dependencies) and call script:
 
   ```bash
-  pip install -r requirements.txt
+  pip install -e .
   python src/repo_stats/__main__.py scrape PyTorchLightning/pytorch-lightning-bolts
   ```
 
-- If you have already installed the package with `pip` or with `setup.py` you can call the executable:
+- If you have already installed the package with `pip` or from the cloned repository you can call the executable:
 
   ```bash
   # Scrape (fetch) data from GitHub

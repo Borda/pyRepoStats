@@ -4,7 +4,6 @@ Copyright (C) 2020-2021 Jiri Borovec <...>
 
 import logging
 import warnings
-from typing import Optional
 
 import pandas as pd
 from github import Github as GithubAPI
@@ -49,7 +48,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         self,
         repo_name: str,
         output_path: str,
-        auth_token: Optional[str] = None,
+        auth_token: str | None = None,
         min_contribution: int = 3,
     ):
         super().__init__(
@@ -134,7 +133,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
 
         return items
 
-    def _request_comments(self, issue_number: int) -> Optional[list]:
+    def _request_comments(self, issue_number: int) -> list | None:
         """Request all comments from the issue life-time."""
         if GitHub.API_LIMIT_REACHED:
             return None
@@ -160,7 +159,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
                 GitHub.API_LIMIT_REACHED = True
             return None
 
-    def _request_detail_pr(self, pr_number: int) -> Optional[dict]:
+    def _request_detail_pr(self, pr_number: int) -> dict | None:
         """Request PR status, in particular we want to distinguish between closed and merged ones."""
         if GitHub.API_LIMIT_REACHED:
             return None
@@ -205,7 +204,7 @@ To use higher limit generate personal auth token, see https://developer.github.c
         item.update(extras)
         return idx, item
 
-    def _request_review_comments(self, pr_number: int) -> Optional[list]:
+    def _request_review_comments(self, pr_number: int) -> list | None:
         """Request all review comments from a pull request."""
         if GitHub.API_LIMIT_REACHED:
             return None

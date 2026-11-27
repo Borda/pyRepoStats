@@ -1,12 +1,56 @@
-[metadata]
-license_file = "LICENSE"
-description-file = "README.md"
-
 [build-system]
-requires = [
-    "setuptools",
-    "wheel",
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "repo-stats"
+dynamic = ["version"]
+description = "Repository Statistics"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Jiri Borovec" }]
+keywords = ["repository", "stats"]
+dependencies = [
+    "numpy >= 2.0",
+    "PyGithub >= 2.10.0",
+    "pandas >= 2.0",
+    "tabulate",
+    "matplotlib",
+    "tqdm",
+    "packaging",
+    "jsonargparse",
 ]
+classifiers = [
+    "Environment :: Console",
+    "Natural Language :: English",
+    # How mature is this project? Common values are
+    #   3 - Alpha, 4 - Beta, 5 - Production/Stable
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Build Tools",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+[project.urls]
+Homepage = "https://borda.github.io/pyRepoStats"
+
+[project.scripts]
+repostat = "repo_stats.__main__:cli_main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "repo_stats.__about__.__version__" }
 
 [tool.pytest.ini_options]
 norecursedirs = [
@@ -67,7 +111,7 @@ exclude = [
   "build",
   "dist",
 ]
-target-version = "py39"
+target-version = "py312"
 # Enable Pyflakes `E` and `F` codes by default.
 lint.select = [
     "E", "W",  # see: https://pypi.org/project/pycodestyle

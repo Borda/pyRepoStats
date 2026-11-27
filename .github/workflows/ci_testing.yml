@@ -18,11 +18,8 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest", "windows-latest", "macOS-latest"]
-        python-version: ["3.10", "3.12"]
+        python-version: ["3.12", "3.15"]
         requires: ["latest"] # 'minimal',
-        exclude:
-          # minimal not supported on Windows due to some packages not having older wheels
-          - { os: windows-latest, python-version: "3.10" }
     env:
       # suppress showing figures as it may bail on server without display
       SHOW_FIGURE: 0
@@ -36,12 +33,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Set min. dependencies
-        if: matrix.requires == 'oldest'
-        run: |
-          python -c "fname = 'requirements.txt' ; req = open(fname).read().replace('>=', '==') ; open(fname, 'w').write(req)"
-          python -c "fname = 'tests/requirements.txt' ; req = open(fname).read().replace('>=', '==') ; open(fname, 'w').write(req)"
-
       # Note: This uses an internal pip API and may not always work
       # https://github.com/actions/cache/blob/master/examples.md#multiple-oss-in-a-workflow
       #- name: Get pip cache
@@ -51,7 +42,7 @@ jobs:
       #  uses: actions/cache@v2
       #  with:
       #    path: ${{ steps.pip-cache.outputs.dir }}
-      #    key: ${{ runner.os }}-pip-py${{ matrix.python-version }}-${{ matrix.requires }}-${{ hashFiles('requirements.txt') }}
+      #    key: ${{ runner.os }}-pip-py${{ matrix.python-version }}-${{ matrix.requires }}-${{ hashFiles('pyproject.toml') }}
       #    restore-keys: |
       #      ${{ runner.os }}-pip-py${{ matrix.python-version }}-${{ matrix.requires }}-
 
@@ -82,7 +73,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest", "windows-latest", "macOS-latest"]
-        python-version: ["3.10"]
+        python-version: ["3.12"]
     env:
       # suppress showing figures as it may bail on server without display
       SHOW_FIGURE: 0
