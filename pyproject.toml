@@ -39,6 +39,8 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://borda.github.io/pyRepoStats"
+Source = "https://github.com/Borda/pyRepoStats"
+Issues = "https://github.com/Borda/pyRepoStats/issues"
 
 [project.scripts]
 repostat = "repo_stats.__main__:cli_main"

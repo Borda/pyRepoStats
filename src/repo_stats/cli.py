@@ -52,6 +52,7 @@ def analyze(
     user_comments: list[str] | None = None,
     date_from: str | None = None,
     date_to: str | None = None,
+    figure_format: str = "pdf",
 ):
     """Analyze repository data.
 
@@ -66,6 +67,7 @@ def analyze(
             and item type - issue or PR. Valid values: D, W, M, Y, issue, pr, all.
         date_from: Define beginning time period.
         date_to: Define ending time period.
+        figure_format: File format of saved figures - pdf, png, svg, ...
 
     """
     host = GitHub(
@@ -73,6 +75,7 @@ def analyze(
         output_path=output_path,
         auth_token=auth_token,
         min_contribution=min_contribution,
+        resolve_auth=not offline,
     )
 
     # Load data (offline by default, can fetch fresh data if offline=False)
@@ -99,7 +102,7 @@ def analyze(
         for freq in freqs:
             for tp in types:
                 tp = "" if tp.lower() == "all" else tp
-                host.show_user_comments(freq=freq, parent_type=tp, show_fig=SHOW_FIGURES)
+                host.show_user_comments(freq=freq, parent_type=tp, show_fig=SHOW_FIGURES, fig_format=figure_format)
 
     # at the end show all figures
     if SHOW_FIGURES:

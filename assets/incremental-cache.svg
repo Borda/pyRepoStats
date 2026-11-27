@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 410" width="900" height="410" role="img" aria-labelledby="t d">
+<title id="t">Incremental caching</title>
+<desc id="d">Animated table: cached and GitHub updated_at are compared per issue; only changed or new items are fetched.</desc>
+<style>
+text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:#e6edf3;font-size:14px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.m{fill:#8b949e} .s{font-size:11px} .h{font-size:20px;font-weight:600} .b{font-weight:600}
+.card{fill:#161b22;stroke:#30363d;stroke-width:1.5}
+.mid{text-anchor:middle} .end{text-anchor:end}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important}
+  .scan{display:none}
+  .a0,.a3,.a4,[style*="animation:f1 "],[style*="animation:f2 "],[style*="animation:f5 "],[style*="animation:sum "]{opacity:1!important}
+}
+@keyframes scan{0%{transform:translateY(0);opacity:1}60%{transform:translateY(200px);opacity:1}64%{transform:translateY(200px);opacity:0}100%{opacity:0}}
+.scan{animation:scan 10s linear infinite}
+@keyframes a0{0%{opacity:0}2.0%{opacity:0}4.0%{opacity:1}93%{opacity:1}97%{opacity:0}100%{opacity:0}}
+@keyframes a1{0%{opacity:0}12.5%{opacity:0}14.5%{opacity:1}22.5%{opacity:1}24.5%{opacity:0}100%{opacity:0}}
+@keyframes f1{0%{opacity:0}23.5%{opacity:0}25.5%{opacity:1}93%{opacity:1}97%{opacity:0}100%{opacity:0}}
+@keyframes a2{0%{opacity:0}23.0%{opacity:0}25.0%{opacity:1}33.0%{opacity:1}35.0%{opacity:0}100%{opacity:0}}
+@keyframes f2{0%{opacity:0}34.0%{opacity:0}36.0%{opacity:1}93%{opacity:1}97%{opacity:0}100%{opacity:0}}
+@keyframes a3{0%{opacity:0}33.5%{opacity:0}35.5%{opacity:1}93%{opacity:1}97%{opacity:0}100%{opacity:0}}
+@keyframes a4{0%{opacity:0}44.0%{opacity:0}46.0%{opacity:1}93%{opacity:1}97%{opacity:0}100%{opacity:0}}
+@keyframes a5{0%{opacity:0}54.5%{opacity:0}56.5%{opacity:1}64.5%{opacity:1}66.5%{opacity:0}100%{opacity:0}}
+@keyframes f5{0%{opacity:0}65.5%{opacity:0}67.5%{opacity:1}93%{opacity:1}97%{opacity:0}100%{opacity:0}}
+@keyframes sum{0%{opacity:0}66%{opacity:0}72%{opacity:1}93%{opacity:1}97%{opacity:0}100%{opacity:0}}
+</style>
+<rect width="900" height="410" rx="14" fill="#0d1117"/>
+<text class="h" x="30" y="40">incremental cache</text>
+<text class="s m" x="30" y="62">one cheap listing call, then details only for items whose updated_at moved</text>
+<rect class="scan" x="22" y="107" width="856" height="30" rx="6" fill="#58a6ff" fill-opacity=".14" stroke="#58a6ff" stroke-opacity=".6"/>
+<text class="s m b" x="30" y="96">item</text>
+<text class="s m b" x="110" y="96">cache updated_at</text>
+<text class="s m b" x="290" y="96">GitHub updated_at</text>
+<text class="s m b" x="490" y="96">decision</text>
+<line x1="30" y1="104" x2="870" y2="104" stroke="#30363d"/>
+<line x1="30" y1="142" x2="870" y2="142" stroke="#30363d" stroke-opacity=".5"/>
+<text class="mono b" x="30" y="124">#12</text>
+<text class="mono m" x="110" y="124">2025-12-01</text>
+<text class="mono" x="290" y="124" fill="#e6edf3">2025-12-01</text>
+<text class="a0 mono" style="animation:a0 10s linear infinite;opacity:0" x="490" y="124" fill="#3fb950">up to date · skip</text>
+<line x1="30" y1="182" x2="870" y2="182" stroke="#30363d" stroke-opacity=".5"/>
+<text class="mono b" x="30" y="164">#13</text>
+<text class="mono m" x="110" y="164">2025-12-03</text>
+<text class="mono" x="290" y="164" fill="#e6edf3">2026-01-10</text>
+<text class="mono" style="animation:a1 10s linear infinite;opacity:0" x="490" y="164" fill="#d29922">changed → refetch</text><text class="mono" style="animation:f1 10s linear infinite;opacity:0" x="490" y="164" fill="#58a6ff">fetched · comments + reviews ✓</text>
+<line x1="30" y1="222" x2="870" y2="222" stroke="#30363d" stroke-opacity=".5"/>
+<text class="mono b" x="30" y="204">#14</text>
+<text class="mono m" x="110" y="204">—</text>
+<text class="mono" x="290" y="204" fill="#e6edf3">2026-02-02</text>
+<text class="mono" style="animation:a2 10s linear infinite;opacity:0" x="490" y="204" fill="#d29922">new → fetch</text><text class="mono" style="animation:f2 10s linear infinite;opacity:0" x="490" y="204" fill="#58a6ff">fetched · comments + reviews ✓</text>
+<line x1="30" y1="262" x2="870" y2="262" stroke="#30363d" stroke-opacity=".5"/>
+<text class="mono b" x="30" y="244">#15</text>
+<text class="mono m" x="110" y="244">2026-03-05</text>
+<text class="mono" x="290" y="244" fill="#e6edf3">2026-03-05</text>
+<text class="a3 mono" style="animation:a3 10s linear infinite;opacity:0" x="490" y="244" fill="#3fb950">up to date · skip</text>
+<line x1="30" y1="302" x2="870" y2="302" stroke="#30363d" stroke-opacity=".5"/>
+<text class="mono b" x="30" y="284">#16</text>
+<text class="mono m" x="110" y="284">2026-04-01</text>
+<text class="mono" x="290" y="284" fill="#e6edf3">2026-04-01</text>
+<text class="a4 mono" style="animation:a4 10s linear infinite;opacity:0" x="490" y="284" fill="#3fb950">up to date · skip</text>
+<line x1="30" y1="342" x2="870" y2="342" stroke="#30363d" stroke-opacity=".5"/>
+<text class="mono b" x="30" y="324">#17</text>
+<text class="mono m" x="110" y="324">—</text>
+<text class="mono" x="290" y="324" fill="#e6edf3">2026-11-20</text>
+<text class="mono" style="animation:a5 10s linear infinite;opacity:0" x="490" y="324" fill="#d29922">new → fetch</text><text class="mono" style="animation:f5 10s linear infinite;opacity:0" x="490" y="324" fill="#58a6ff">fetched · comments + reviews ✓</text>
+<g style="animation:sum 10s linear infinite;opacity:0"><rect x="30" y="356" width="840" height="34" rx="8" class="card"/><text class="mono s" x="44" y="378">3 of 6 items refetched · 3 served from the cache · progress saved to the JSON dump</text></g>
+</svg>

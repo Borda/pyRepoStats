@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400" width="1000" height="400" role="img" aria-labelledby="t d">
+<title id="t">Analyze flow</title>
+<desc id="d">Animated flow: comments pass a bot filter, a spam filter and a time window; kept ones become per-user bars and a heatmap.</desc>
+<style>
+text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:#e6edf3;font-size:14px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.m{fill:#8b949e} .s{font-size:11px} .h{font-size:20px;font-weight:600} .b{font-weight:600}
+.card{fill:#161b22;stroke:#30363d;stroke-width:1.5}
+.mid{text-anchor:middle} .end{text-anchor:end}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important}
+  g[style*="animation:c"],text[style*="animation:x"]{opacity:1!important}
+  [style*="animation:hm00 "],[style*="animation:hm21 "],[style*="animation:hm23 "]{opacity:.32!important}
+  [style*="animation:hm01 "]{opacity:.92!important}
+  [style*="animation:hm02 "]{opacity:.49!important}
+  [style*="animation:hm03 "],[style*="animation:hm10 "]{opacity:.23!important}
+  [style*="animation:hm11 "]{opacity:.57!important}
+  [style*="animation:hm12 "]{opacity:.83!important}
+  [style*="animation:hm13 "]{opacity:.41!important}
+  [style*="animation:hm20 "]{opacity:.15!important}
+  [style*="animation:hm22 "]{opacity:.66!important}
+}
+@keyframes c0{0%{opacity:0;transform:translateX(0)}2%{opacity:0;transform:translateX(0)}4%{opacity:1}28%{opacity:1;transform:translateX(380px)}34%{opacity:.0;transform:translateX(440px)}100%{opacity:0}}
+@keyframes t0{0%{stroke:#30363d}26%{stroke:#30363d}29%{stroke:#3fb950}100%{stroke:#3fb950}}
+@keyframes c1{0%{opacity:0;transform:translateX(0)}8%{opacity:0;transform:translateX(0)}10%{opacity:1}34%{opacity:1;transform:translateX(62px)}36%{opacity:1;transform:translateX(62px)}42%{opacity:0;transform:translateX(62px)}100%{opacity:0}}
+@keyframes t1{0%{stroke:#30363d}32%{stroke:#30363d}35%{stroke:#f85149}100%{stroke:#f85149}}
+@keyframes x1{0%{opacity:0}34%{opacity:0}36%{opacity:1}42%{opacity:0}100%{opacity:0}}
+@keyframes c2{0%{opacity:0;transform:translateX(0)}14%{opacity:0;transform:translateX(0)}16%{opacity:1}40%{opacity:1;transform:translateX(202px)}42%{opacity:1;transform:translateX(202px)}48%{opacity:0;transform:translateX(202px)}100%{opacity:0}}
+@keyframes t2{0%{stroke:#30363d}38%{stroke:#30363d}41%{stroke:#f85149}100%{stroke:#f85149}}
+@keyframes x2{0%{opacity:0}40%{opacity:0}42%{opacity:1}48%{opacity:0}100%{opacity:0}}
+@keyframes c3{0%{opacity:0;transform:translateX(0)}20%{opacity:0;transform:translateX(0)}22%{opacity:1}46%{opacity:1;transform:translateX(380px)}52%{opacity:.0;transform:translateX(440px)}100%{opacity:0}}
+@keyframes t3{0%{stroke:#30363d}44%{stroke:#30363d}47%{stroke:#3fb950}100%{stroke:#3fb950}}
+@keyframes c4{0%{opacity:0;transform:translateX(0)}26%{opacity:0;transform:translateX(0)}28%{opacity:1}52%{opacity:1;transform:translateX(62px)}54%{opacity:1;transform:translateX(62px)}60%{opacity:0;transform:translateX(62px)}100%{opacity:0}}
+@keyframes t4{0%{stroke:#30363d}50%{stroke:#30363d}53%{stroke:#f85149}100%{stroke:#f85149}}
+@keyframes x4{0%{opacity:0}52%{opacity:0}54%{opacity:1}60%{opacity:0}100%{opacity:0}}
+@keyframes c5{0%{opacity:0;transform:translateX(0)}32%{opacity:0;transform:translateX(0)}34%{opacity:1}58%{opacity:1;transform:translateX(380px)}64%{opacity:.0;transform:translateX(440px)}100%{opacity:0}}
+@keyframes t5{0%{stroke:#30363d}56%{stroke:#30363d}59%{stroke:#3fb950}100%{stroke:#3fb950}}
+@keyframes b0{0%{transform:scaleY(0)}34%{transform:scaleY(0)}44%{transform:scaleY(1)}93%{transform:scaleY(1)}97%{transform:scaleY(0)}100%{transform:scaleY(0)}}
+@keyframes b1{0%{transform:scaleY(0)}41%{transform:scaleY(0)}51%{transform:scaleY(1)}93%{transform:scaleY(1)}97%{transform:scaleY(0)}100%{transform:scaleY(0)}}
+@keyframes b2{0%{transform:scaleY(0)}48%{transform:scaleY(0)}58%{transform:scaleY(1)}93%{transform:scaleY(1)}97%{transform:scaleY(0)}100%{transform:scaleY(0)}}
+@keyframes hm00{0%{opacity:0}50%{opacity:0}54%{opacity:0.32}93%{opacity:0.32}97%{opacity:0}100%{opacity:0}}
+@keyframes hm01{0%{opacity:0}52%{opacity:0}56%{opacity:0.92}93%{opacity:0.92}97%{opacity:0}100%{opacity:0}}
+@keyframes hm02{0%{opacity:0}54%{opacity:0}58%{opacity:0.49}93%{opacity:0.49}97%{opacity:0}100%{opacity:0}}
+@keyframes hm03{0%{opacity:0}56%{opacity:0}60%{opacity:0.23}93%{opacity:0.23}97%{opacity:0}100%{opacity:0}}
+@keyframes hm10{0%{opacity:0}52%{opacity:0}56%{opacity:0.23}93%{opacity:0.23}97%{opacity:0}100%{opacity:0}}
+@keyframes hm11{0%{opacity:0}54%{opacity:0}58%{opacity:0.57}93%{opacity:0.57}97%{opacity:0}100%{opacity:0}}
+@keyframes hm12{0%{opacity:0}56%{opacity:0}60%{opacity:0.83}93%{opacity:0.83}97%{opacity:0}100%{opacity:0}}
+@keyframes hm13{0%{opacity:0}58%{opacity:0}62%{opacity:0.41}93%{opacity:0.41}97%{opacity:0}100%{opacity:0}}
+@keyframes hm20{0%{opacity:0}54%{opacity:0}58%{opacity:0.15}93%{opacity:0.15}97%{opacity:0}100%{opacity:0}}
+@keyframes hm21{0%{opacity:0}56%{opacity:0}60%{opacity:0.32}93%{opacity:0.32}97%{opacity:0}100%{opacity:0}}
+@keyframes hm22{0%{opacity:0}58%{opacity:0}62%{opacity:0.66}93%{opacity:0.66}97%{opacity:0}100%{opacity:0}}
+@keyframes hm23{0%{opacity:0}60%{opacity:0}64%{opacity:0.32}93%{opacity:0.32}97%{opacity:0}100%{opacity:0}}
+</style>
+<rect width="1000" height="400" rx="14" fill="#0d1117"/>
+<text class="h" x="30" y="40">analyze: from raw comments to charts</text>
+<text class="s m" x="30" y="62">filters run on the cached data · no network needed</text>
+<line x1="330" y1="82" x2="330" y2="340" stroke="#d29922" stroke-width="2" stroke-dasharray="5 5"/><text class="s b mid" x="330" y="70" fill="#d29922">bot filter</text><text class="s m mid" x="330" y="356" style="font-size:10px">*[bot], codecov…</text>
+<line x1="470" y1="82" x2="470" y2="340" stroke="#d29922" stroke-width="2" stroke-dasharray="5 5"/><text class="s b mid" x="470" y="70" fill="#d29922">spam filter</text><text class="s m mid" x="470" y="356" style="font-size:10px">LGTM · thanks · done</text>
+<line x1="610" y1="82" x2="610" y2="340" stroke="#d29922" stroke-width="2" stroke-dasharray="5 5"/><text class="s b mid" x="610" y="70" fill="#d29922">time window</text><text class="s m mid" x="610" y="356" style="font-size:10px">--date_from / --date_to</text>
+<g style="animation:c0 12s linear infinite;opacity:0"><rect style="animation:t0 12s linear infinite" class="card" x="30" y="100" width="230" height="28" rx="6"/><text class="mono s" x="40" y="118">Borda · fix typo in docs</text></g>
+<g style="animation:c1 12s linear infinite;opacity:0"><rect style="animation:t1 12s linear infinite" class="card" x="30" y="140" width="230" height="28" rx="6"/><text class="mono s" x="40" y="158">dependabot[bot] · bump pytest</text></g>
+<text style="animation:x1 12s linear infinite;opacity:0;font-weight:700" x="340" y="159" fill="#f85149">✗ dropped</text>
+<g style="animation:c2 12s linear infinite;opacity:0"><rect style="animation:t2 12s linear infinite" class="card" x="30" y="180" width="230" height="28" rx="6"/><text class="mono s" x="40" y="198">alice · LGTM</text></g>
+<text style="animation:x2 12s linear infinite;opacity:0;font-weight:700" x="480" y="199" fill="#f85149">✗ dropped</text>
+<g style="animation:c3 12s linear infinite;opacity:0"><rect style="animation:t3 12s linear infinite" class="card" x="30" y="220" width="230" height="28" rx="6"/><text class="mono s" x="40" y="238">bob · why is the cache stale?</text></g>
+<g style="animation:c4 12s linear infinite;opacity:0"><rect style="animation:t4 12s linear infinite" class="card" x="30" y="260" width="230" height="28" rx="6"/><text class="mono s" x="40" y="278">stale[bot] · closing…</text></g>
+<text style="animation:x4 12s linear infinite;opacity:0;font-weight:700" x="340" y="279" fill="#f85149">✗ dropped</text>
+<g style="animation:c5 12s linear infinite;opacity:0"><rect style="animation:t5 12s linear infinite" class="card" x="30" y="300" width="230" height="28" rx="6"/><text class="mono s" x="40" y="318">carol · added a test</text></g>
+<rect class="card" x="700" y="82" width="270" height="280" rx="10"/>
+<text class="b" x="716" y="106">per user, per period</text>
+<rect style="animation:b0 12s linear infinite;transform-box:fill-box;transform-origin:bottom" x="730" y="160" width="50" height="70" rx="4" fill="#58a6ff"/><text class="s m mid" x="755" y="246">Borda</text>
+<rect style="animation:b1 12s linear infinite;transform-box:fill-box;transform-origin:bottom" x="808" y="186" width="50" height="44" rx="4" fill="#3fb950"/><text class="s m mid" x="833" y="246">bob</text>
+<rect style="animation:b2 12s linear infinite;transform-box:fill-box;transform-origin:bottom" x="886" y="204" width="50" height="26" rx="4" fill="#bc8cff"/><text class="s m mid" x="911" y="246">carol</text>
+<line x1="716" y1="230" x2="954" y2="230" stroke="#30363d"/>
+<rect style="animation:hm00 12s linear infinite;opacity:0" x="716" y="264" width="56" height="13" rx="3" fill="#3fb950"/>
+<rect style="animation:hm01 12s linear infinite;opacity:0" x="776" y="264" width="56" height="13" rx="3" fill="#3fb950"/>
+<rect style="animation:hm02 12s linear infinite;opacity:0" x="836" y="264" width="56" height="13" rx="3" fill="#3fb950"/>
+<rect style="animation:hm03 12s linear infinite;opacity:0" x="896" y="264" width="56" height="13" rx="3" fill="#3fb950"/>
+<rect style="animation:hm10 12s linear infinite;opacity:0" x="716" y="280" width="56" height="13" rx="3" fill="#3fb950"/>
+<rect style="animation:hm11 12s linear infinite;opacity:0" x="776" y="280" width="56" height="13" rx="3" fill="#3fb950"/>
+<rect style="animation:hm12 12s linear infinite;opacity:0" x="836" y="280" width="56" height="13" rx="3" fill="#3fb950"/>
+<rect style="animation:hm13 12s linear infinite;opacity:0" x="896" y="280" width="56" height="13" rx="3" fill="#3fb950"/>
+<rect style="animation:hm20 12s linear infinite;opacity:0" x="716" y="296" width="56" height="13" rx="3" fill="#3fb950"/>
+<rect style="animation:hm21 12s linear infinite;opacity:0" x="776" y="296" width="56" height="13" rx="3" fill="#3fb950"/>
+<rect style="animation:hm22 12s linear infinite;opacity:0" x="836" y="296" width="56" height="13" rx="3" fill="#3fb950"/>
+<rect style="animation:hm23 12s linear infinite;opacity:0" x="896" y="296" width="56" height="13" rx="3" fill="#3fb950"/>
+<text class="s m" x="716" y="326">+ users table · CSV · PDF/PNG/SVG</text>
+</svg>
