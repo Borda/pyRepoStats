@@ -23,12 +23,11 @@ jobs:
         run: |
           pip install -q check-manifest
           check-manifest
-          python setup.py check --metadata --strict
 
       - name: Create package
         run: |
-          pip install -q --upgrade setuptools wheel
-          python setup.py sdist bdist_wheel
+          pip install -q --upgrade build
+          python -m build
 
       - name: Verify package
         run: |

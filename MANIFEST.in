@@ -21,11 +21,11 @@ exclude notebooks
 recursive-exclude docs *
 exclude docs
 
-# Include the Requirements
-include *.txt
+# Include the build config, it declares metadata and dependencies
+include pyproject.toml
 
-# Exclude build configs
-exclude *.yml *.yaml *.toml
+# Exclude other configs
+exclude *.yml *.yaml
 
 prune .git
 prune .github

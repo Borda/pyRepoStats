@@ -39,7 +39,7 @@ jobs:
       - name: Set min. dependencies
         if: matrix.requires == 'oldest'
         run: |
-          python -c "fname = 'requirements.txt' ; req = open(fname).read().replace('>=', '==') ; open(fname, 'w').write(req)"
+          python -c "fname = 'pyproject.toml' ; req = open(fname).read().replace('>= ', '== ') ; open(fname, 'w').write(req)"
           python -c "fname = 'tests/requirements.txt' ; req = open(fname).read().replace('>=', '==') ; open(fname, 'w').write(req)"
 
       # Note: This uses an internal pip API and may not always work
@@ -51,7 +51,7 @@ jobs:
       #  uses: actions/cache@v2
       #  with:
       #    path: ${{ steps.pip-cache.outputs.dir }}
-      #    key: ${{ runner.os }}-pip-py${{ matrix.python-version }}-${{ matrix.requires }}-${{ hashFiles('requirements.txt') }}
+      #    key: ${{ runner.os }}-pip-py${{ matrix.python-version }}-${{ matrix.requires }}-${{ hashFiles('pyproject.toml') }}
       #    restore-keys: |
       #      ${{ runner.os }}-pip-py${{ matrix.python-version }}-${{ matrix.requires }}-
 
