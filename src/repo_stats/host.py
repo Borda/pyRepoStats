@@ -58,6 +58,7 @@ class Host:
         output_path: str,
         auth_token: str | None = None,
         min_contribution: int = 3,
+        resolve_auth: bool = True,
     ):
         """
         Args:
@@ -65,13 +66,14 @@ class Host:
             output_path: Path to saving dumped cache, csw tables, pdf figures
             auth_token: authentication token for API access
             min_contribution: minimal nb contributions for visualization
+            resolve_auth: resolve missing credentials from the environment or host CLI
         """
         self.repo_name = repo_name
         self.name = repo_name.replace("/", "-")
         self.output_path = os.path.realpath(os.path.expanduser(output_path))
         assert os.path.isdir(self.output_path), f"Wrong folder: {self.output_path}"
         self.min_contribution_count = min_contribution
-        self.auth_token = auth_token or self._resolve_token()
+        self.auth_token = auth_token or (self._resolve_token() if resolve_auth else None)
 
         self.data = {}
         self.outdated = 0

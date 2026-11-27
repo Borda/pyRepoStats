@@ -7,7 +7,11 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:#e6edf
 .m{fill:#8b949e} .s{font-size:11px} .h{font-size:20px;font-weight:600} .b{font-weight:600}
 .card{fill:#161b22;stroke:#30363d;stroke-width:1.5}
 .mid{text-anchor:middle} .end{text-anchor:end}
-@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important}
+  .scan{display:none}
+  .a0,.a3,.a4,[style*="animation:f1 "],[style*="animation:f2 "],[style*="animation:f5 "],[style*="animation:sum "]{opacity:1!important}
+}
 @keyframes scan{0%{transform:translateY(0);opacity:1}60%{transform:translateY(200px);opacity:1}64%{transform:translateY(200px);opacity:0}100%{opacity:0}}
 .scan{animation:scan 10s linear infinite}
 @keyframes a0{0%{opacity:0}2.0%{opacity:0}4.0%{opacity:1}93%{opacity:1}97%{opacity:0}100%{opacity:0}}

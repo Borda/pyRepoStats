@@ -75,6 +75,7 @@ def analyze(
         output_path=output_path,
         auth_token=auth_token,
         min_contribution=min_contribution,
+        resolve_auth=not offline,
     )
 
     # Load data (offline by default, can fetch fresh data if offline=False)

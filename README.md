@@ -39,6 +39,7 @@ pip install -e .
 gh auth login
 
 # 2. download the repository data (needs internet)
+mkdir -p ./stats
 repostat scrape Borda/pyRepoStats --output_path ./stats
 
 # 3. analyze the cache (works offline)
@@ -59,7 +60,7 @@ Without a token GitHub allows only 60 requests per hour, which is not enough for
 1. the session of the [GitHub CLI](https://cli.github.com/): `repostat` runs `gh auth token` and reads the answer from the pipe
 1. anonymous access
 
-The `gh` route is the recommended one. After a single `gh auth login` there is nothing to export or paste, and the token stays out of your shell history, your dotfiles, the logs and the JSON cache. `repostat` never prints the token and never writes it to disk.
+The `gh` route is the recommended one. After a single `gh auth login` there is nothing to export or paste. `repostat` never prints the token or writes it to disk; GitHub CLI stores its login in the system credential store when available and can fall back to a plaintext file.
 
 > [!WARNING]
 > Prefer the `gh` login or an environment variable over `--auth_token`: a token typed on the command line ends up in your shell history and is visible to other users in the process list.
@@ -67,7 +68,9 @@ The `gh` route is the recommended one. After a single `gh auth login` there is n
 In GitHub Actions the built-in token is enough for public repositories:
 
 ```yaml
-- run: repostat scrape ${{ github.repository }} --output_path ./stats
+- run: |
+    mkdir -p ./stats
+    repostat scrape ${{ github.repository }} --output_path ./stats
   env:
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -76,7 +79,7 @@ In GitHub Actions the built-in token is enough for public repositories:
 
 ### Scraping is incremental
 
-The `scrape` command first asks GitHub for the cheap listing of all issues and PRs, then compares the `updated_at` stamp of each item with the cache. Only new or changed items get a detailed request for comments and reviews. The cache is written as `dump-github_<owner>-<repo>.json` in the output folder, so an interrupted run loses nothing and a second run on an unchanged repository is nearly free.
+The `scrape` command first asks GitHub for the cheap listing of all issues and PRs, then compares the `updated_at` stamp of each item with the cache. Only new or changed items get a detailed request for comments and reviews. The cache is written as `dump-github_<owner>-<repo>.json` in the output folder after fetching and preprocessing. An interrupted run can lose its unsaved progress or leave an incomplete cache if interrupted during the write.
 
 ![Incremental cache: only new or changed items are fetched](./assets/incremental-cache.svg)
 
@@ -111,7 +114,7 @@ repostat analyze --help
   | pre-commit-ci[bot]                    |         11 |             0 |
   | [Copilot](https://github.com/Copilot) |          4 |             0 |
 
-- **Contribution filter**: `--min_contribution N` hides users below `N` contributions in tables and charts:
+- **Contribution filter**: `--min_contribution N` hides users below `N` in the printed table (using its first selected column) and in charts (using their timeline totals). CSV exports retain all users:
 
   ```bash
   repostat analyze Borda/pyRepoStats --output_path ./stats --min_contribution 10 --users_summary+ "merged PRs"
@@ -142,11 +145,11 @@ repostat analyze --help
 
 ### Example output
 
-The monthly timeline of this very repository, produced with `repostat analyze Borda/pyRepoStats --user_comments+ M --figure_format svg`:
+An illustrative monthly timeline with sample contribution counts:
 
 ![User comments aggregated per month](./assets/user-comments-monthly.svg)
 
-A weekly view of the same data as PNG, and an older example from a larger project:
+A weekly view of the same sample counts as PNG, and an older example from a larger project:
 
 ![User comments aggregated per week](./assets/user-comments-weekly.png)
 

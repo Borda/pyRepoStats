@@ -60,7 +60,7 @@ def draw_comments_timeline(
         ylabel="Contributions / commented",
         xlabel="Aggregated time",
         legend=False,
-        cmap="gist_ncar",
+        cmap="turbo",
     )
     times, x_step = list(df_comments.index), 2
     ax_abar.set_xticks(range(len(times))[::x_step])

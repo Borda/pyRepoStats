@@ -3,9 +3,13 @@ import shutil
 from pathlib import Path
 from unittest import mock
 
+import matplotlib.pyplot as plt
+import pandas as pd
 import pytest
 
 from repo_stats.__main__ import cli_main
+from repo_stats.cli import analyze
+from repo_stats.visual import draw_comments_timeline
 
 
 @pytest.fixture
@@ -39,6 +43,32 @@ def test_offline_github(cli_args, temp_output_with_cache):
         mock.patch("repo_stats.cli.SHOW_FIGURES", False),
     ):
         cli_main()
+
+
+def test_offline_analysis_does_not_read_gh_credentials(temp_output_with_cache, monkeypatch):
+    """Analyze cached data without invoking the GitHub credential helper."""
+    monkeypatch.delenv("GH_API_TOKEN", raising=False)
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    monkeypatch.delenv("GH_TOKEN", raising=False)
+    with (
+        mock.patch("repo_stats.github.shutil.which", return_value="/usr/bin/gh"),
+        mock.patch("repo_stats.github.subprocess.run", autospec=True) as run,
+        mock.patch("repo_stats.cli.SHOW_FIGURES", False),
+    ):
+        analyze("Borda/pyRepoStats", output_path=temp_output_with_cache)
+        run.assert_not_called()
+
+
+@pytest.mark.parametrize("n_users", [2, 25])
+def test_timeline_series_remain_visible_on_white(n_users):
+    """Keep contribution series distinguishable and visible against the chart background."""
+    data = pd.DataFrame({f"user{i}": [1, 2] for i in range(n_users)}, index=["2024-01", "2024-02"])
+    fig, _ = draw_comments_timeline(data)
+    colors = [collection.get_facecolor()[0][:3] for collection in fig.axes[0].collections]
+    assert len(colors) == n_users
+    assert len({tuple(color) for color in colors}) == n_users
+    assert all(max(abs(1 - component) for component in color) > 0.15 for color in colors)
+    plt.close(fig)
 
 
 @pytest.mark.skipif(

@@ -7,7 +7,10 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:#e6edf
 .m{fill:#8b949e} .s{font-size:11px} .h{font-size:20px;font-weight:600} .b{font-weight:600}
 .card{fill:#161b22;stroke:#30363d;stroke-width:1.5}
 .mid{text-anchor:middle} .end{text-anchor:end}
-@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important}
+  [style*="animation:m0 "],[style*="animation:m1 "],[style*="animation:m2 "],[style*="animation:m4 "],[style*="animation:h3 "],[style*="animation:p0 "],[style*="animation:p1 "],[style*="animation:p2 "],[style*="animation:p3 "]{opacity:1!important}
+}
 @keyframes m0{0%{opacity:0}6%{opacity:0}8%{opacity:1}93%{opacity:1}97%{opacity:0}100%{opacity:0}}
 @keyframes m1{0%{opacity:0}19%{opacity:0}21%{opacity:1}93%{opacity:1}97%{opacity:0}100%{opacity:0}}
 @keyframes m2{0%{opacity:0}32%{opacity:0}34%{opacity:1}93%{opacity:1}97%{opacity:0}100%{opacity:0}}

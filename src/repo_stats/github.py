@@ -55,12 +55,14 @@ see https://developer.github.com/v3/#rate-limiting
         output_path: str,
         auth_token: str | None = None,
         min_contribution: int = 3,
+        resolve_auth: bool = True,
     ):
         super().__init__(
             repo_name=repo_name,
             output_path=output_path,
             auth_token=auth_token,
             min_contribution=min_contribution,
+            resolve_auth=resolve_auth,
         )
         # Initialize PyGithub client with the token resolved by the base class (argument, env or `gh` CLI)
         auth = Auth.Token(self.auth_token) if self.auth_token else None

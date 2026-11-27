@@ -7,7 +7,19 @@ text{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;fill:#e6edf
 .m{fill:#8b949e} .s{font-size:11px} .h{font-size:20px;font-weight:600} .b{font-weight:600}
 .card{fill:#161b22;stroke:#30363d;stroke-width:1.5}
 .mid{text-anchor:middle} .end{text-anchor:end}
-@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important}
+  g[style*="animation:c"],text[style*="animation:x"]{opacity:1!important}
+  [style*="animation:hm00 "],[style*="animation:hm21 "],[style*="animation:hm23 "]{opacity:.32!important}
+  [style*="animation:hm01 "]{opacity:.92!important}
+  [style*="animation:hm02 "]{opacity:.49!important}
+  [style*="animation:hm03 "],[style*="animation:hm10 "]{opacity:.23!important}
+  [style*="animation:hm11 "]{opacity:.57!important}
+  [style*="animation:hm12 "]{opacity:.83!important}
+  [style*="animation:hm13 "]{opacity:.41!important}
+  [style*="animation:hm20 "]{opacity:.15!important}
+  [style*="animation:hm22 "]{opacity:.66!important}
+}
 @keyframes c0{0%{opacity:0;transform:translateX(0)}2%{opacity:0;transform:translateX(0)}4%{opacity:1}28%{opacity:1;transform:translateX(380px)}34%{opacity:.0;transform:translateX(440px)}100%{opacity:0}}
 @keyframes t0{0%{stroke:#30363d}26%{stroke:#30363d}29%{stroke:#3fb950}100%{stroke:#3fb950}}
 @keyframes c1{0%{opacity:0;transform:translateX(0)}8%{opacity:0;transform:translateX(0)}10%{opacity:1}34%{opacity:1;transform:translateX(62px)}36%{opacity:1;transform:translateX(62px)}42%{opacity:0;transform:translateX(62px)}100%{opacity:0}}
