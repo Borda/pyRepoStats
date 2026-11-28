@@ -18,8 +18,7 @@ Linting and formatting are pinned in `.pre-commit-config.yaml`, run them with `p
 ## Building these docs
 
 ```bash
-pip install -r requirements-docs.txt
-mkdocs serve
+uv run --only-group docs mkdocs serve
 ```
 
 The site is rebuilt and published to GitHub Pages on every push to `main`.

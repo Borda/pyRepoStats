@@ -1,11 +1,11 @@
-name: Docs
+name: Build docs
 
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-    paths: ["docs/**", "mkdocs.yml", "requirements-docs.txt", ".github/workflows/docs.yml"]
+    paths: ["docs/**", "mkdocs.yml", "pyproject.toml", ".github/workflows/build-docs.yml"]
 
 defaults:
   run:
@@ -17,12 +17,11 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
+      - uses: astral-sh/setup-uv@v10
         with:
           python-version: "3.12"
-      - run: pip install -r requirements-docs.txt
       - name: Build (fail on warnings)
-        run: mkdocs build --strict
+        run: uv run --only-group docs mkdocs build --strict
       - uses: actions/configure-pages@v6
         if: github.event_name == 'push'
       - uses: actions/upload-pages-artifact@v5
