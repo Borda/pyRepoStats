@@ -7,7 +7,7 @@
 
 Who actually keeps an open-source project alive? `repostat` answers with numbers Git alone cannot give you: it collects issues, pull requests and their comments from GitHub, caches them locally, and turns them into per-user summaries and contribution timelines.
 
-![How repostat works: GitHub API, scrape, JSON cache, analyze, outputs](./docs/assets/how-it-works.svg)
+![How repostat works: GitHub API, scrape, JSON cache, analyze, outputs](./docs/images/how-it-works.svg)
 
 ### Highlighted features
 
@@ -52,7 +52,7 @@ repostat analyze Borda/pyRepoStats --output_path ./stats --users_summary+ "merge
 
 Without a token GitHub allows only 60 requests per hour, which is not enough for any real repository. `repostat` looks for a token in this order and uses the first one it finds:
 
-![Token lookup order: argument, GH_API_TOKEN, GITHUB_TOKEN or GH_TOKEN, gh auth token, anonymous](./docs/assets/token-resolution.svg)
+![Token lookup order: argument, GH_API_TOKEN, GITHUB_TOKEN or GH_TOKEN, gh auth token, anonymous](./docs/images/token-resolution.svg)
 
 1. `--auth_token <token>` argument
 1. `GH_API_TOKEN` environment variable
@@ -81,7 +81,7 @@ In GitHub Actions the built-in token is enough for public repositories:
 
 The `scrape` command first asks GitHub for the cheap listing of all issues and PRs, then compares the `updated_at` stamp of each item with the cache. Only new or changed items get a detailed request for comments and reviews. The cache is written as `dump-github_<owner>-<repo>.json` in the output folder after fetching and preprocessing. An interrupted run can lose its unsaved progress or leave an incomplete cache if interrupted during the write.
 
-![Incremental cache: only new or changed items are fetched](./docs/assets/incremental-cache.svg)
+![Incremental cache: only new or changed items are fetched](./docs/images/incremental-cache.svg)
 
 If you hit the API limit midway, the run exits with a message and the progress made so far stays in the cache, so the next `scrape` continues from there.
 
@@ -89,7 +89,7 @@ If you hit the API limit midway, the run exits with a message and the progress m
 
 The `analyze` command reads only the cache. Comments from bots (for example `dependabot[bot]`, `codecov`, `stale`), low-value messages such as "LGTM" or "Thanks", and anything outside the `--date_from` / `--date_to` window are dropped before the numbers are computed.
 
-![Analyze flow: bot, spam and time filters feed per-user bars and a heatmap](./docs/assets/analyze-flow.svg)
+![Analyze flow: bot, spam and time filters feed per-user bars and a heatmap](./docs/images/analyze-flow.svg)
 
 ## Analyze command options
 
@@ -147,13 +147,13 @@ repostat analyze --help
 
 An illustrative monthly timeline with sample contribution counts:
 
-![User comments aggregated per month](./docs/assets/user-comments-monthly.svg)
+![User comments aggregated per month](./docs/images/user-comments-monthly.svg)
 
 A weekly view of the same sample counts as PNG, and an older example from a larger project:
 
-![User comments aggregated per week](./docs/assets/user-comments-weekly.png)
+![User comments aggregated per week](./docs/images/user-comments-weekly.png)
 
-![User-comments-aggregation](./docs/assets/user-comments-aggregation.png)
+![User-comments-aggregation](./docs/images/user-comments-aggregation.png)
 
 ## Output files
 

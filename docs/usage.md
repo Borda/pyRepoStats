@@ -64,10 +64,10 @@ Each call draws a double chart: (a) cumulative aggregation over all users and (b
 
 An illustrative monthly timeline with sample contribution counts:
 
-![User comments aggregated per month](assets/user-comments-monthly.svg)
+![User comments aggregated per month](images/user-comments-monthly.svg)
 
 A weekly view of the same sample counts as PNG, and an older example from a larger project:
 
-![User comments aggregated per week](assets/user-comments-weekly.png)
+![User comments aggregated per week](images/user-comments-weekly.png)
 
-![User-comments-aggregation](assets/user-comments-aggregation.png)
+![User-comments-aggregation](images/user-comments-aggregation.png)

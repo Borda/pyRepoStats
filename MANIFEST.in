@@ -19,7 +19,7 @@ recursive-exclude docs *
 exclude docs
 
 # Include the visualisations referenced by README (after the docs exclusion, order matters)
-recursive-include docs/assets *.jpg *.png *.svg
+recursive-include docs/images *.jpg *.png *.svg
 
 # Exclude build configs
 exclude *.yml *.yaml

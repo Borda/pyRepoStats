@@ -2,7 +2,7 @@
 
 Without a token GitHub allows only 60 requests per hour, which is not enough for any real repository. `repostat` looks for a token in this order and uses the first one it finds:
 
-![Token lookup order: argument, GH_API_TOKEN, GITHUB_TOKEN or GH_TOKEN, gh auth token, anonymous](assets/token-resolution.svg)
+![Token lookup order: argument, GH_API_TOKEN, GITHUB_TOKEN or GH_TOKEN, gh auth token, anonymous](images/token-resolution.svg)
 
 1. `--auth_token <token>` argument
 1. `GH_API_TOKEN` environment variable

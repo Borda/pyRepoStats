@@ -2,7 +2,7 @@
 
 Who actually keeps an open-source project alive? `repostat` answers with numbers Git alone cannot give you: it collects issues, pull requests and their comments from GitHub, caches them locally, and turns them into per-user summaries and contribution timelines.
 
-![How repostat works: GitHub API, scrape, JSON cache, analyze, outputs](assets/how-it-works.svg)
+![How repostat works: GitHub API, scrape, JSON cache, analyze, outputs](images/how-it-works.svg)
 
 ## Highlighted features
 
