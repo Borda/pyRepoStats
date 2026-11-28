@@ -1,0 +1,40 @@
+site_name: Repository Stats
+site_description: Per-user contribution statistics and timelines for GitHub issues and pull requests
+site_url: https://borda.github.io/pyRepoStats/
+repo_url: https://github.com/Borda/pyRepoStats
+repo_name: Borda/pyRepoStats
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - content.code.copy
+    - content.action.edit
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Authentication: authentication.md
+  - How it works: how-it-works.md
+  - Usage: usage.md
+  - Reference: reference.md
+  - Contributing: contributing.md
