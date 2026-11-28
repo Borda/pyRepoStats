@@ -14,4 +14,6 @@ The `gh` route is the recommended one. After a single `gh auth login` there is n
 
 !!! warning
 
-    Prefer the `gh` login or an environment variable over `--auth_token`: a token typed on the command line ends up in your shell history and is visible to other users in the process list.
+```
+Prefer the `gh` login or an environment variable over `--auth_token`: a token typed on the command line ends up in your shell history and is visible to other users in the process list.
+```
