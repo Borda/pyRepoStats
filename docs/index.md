@@ -16,6 +16,6 @@ Who actually keeps an open-source project alive? `repostat` answers with numbers
 - [Getting started](getting-started.md): install the package and run your first scrape
 - [Authentication](authentication.md): how `repostat` finds a GitHub token
 - [How it works](how-it-works.md): incremental scraping and noise filtering
-- [Usage](usage.md): every option of the `analyze` command, with example output
+- [Usage](usage.md): reporting options for `analyze`, with examples and the command for viewing all options
 - [Reference](reference.md): output files and environment variables
 - [Contributing](contributing.md): development setup and where to ask questions

@@ -33,10 +33,10 @@ repostat analyze Borda/pyRepoStats --output_path ./stats --min_contribution 10 -
 
 ## Time frame
 
-`--date_from` and `--date_to` limit created issues, merged PRs and comments/reviews:
+`--date_from` and `--date_to` limit issue and PR openings, PR merges, and comments and reviews. Both bounds are inclusive, and a date without a time means midnight UTC. The example uses an explicit end time to include contributions on the final day.
 
 ```bash
-repostat analyze Borda/pyRepoStats --output_path ./stats --date_from "2023-01-01" --date_to "2023-12-31"
+repostat analyze Borda/pyRepoStats --output_path ./stats --date_from "2023-01-01" --date_to "2023-12-31T23:59:59Z" --users_summary+ "all opened"
 ```
 
 ## Contribution timeline

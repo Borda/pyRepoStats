@@ -21,4 +21,4 @@ Linting and formatting are pinned in `.pre-commit-config.yaml`, run them with `p
 uv run --only-group docs mkdocs serve
 ```
 
-The site is rebuilt and published to GitHub Pages on every push to `main`.
+To enable publication, set the repository’s Pages source to **GitHub Actions** under **Settings → Pages → Build and deployment**. After that, a successful build on a push to `main` deploys the site.

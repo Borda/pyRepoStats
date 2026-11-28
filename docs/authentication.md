@@ -12,8 +12,6 @@ Without a token GitHub allows only 60 requests per hour, which is not enough for
 
 The `gh` route is the recommended one. After a single `gh auth login` there is nothing to export or paste. `repostat` never prints the token or writes it to disk; GitHub CLI stores its login in the system credential store when available and can fall back to a plaintext file.
 
-!!! warning
-
-```
-Prefer the `gh` login or an environment variable over `--auth_token`: a token typed on the command line ends up in your shell history and is visible to other users in the process list.
-```
+> **Warning**
+>
+> Prefer the `gh` login or an environment variable over `--auth_token`. A token typed on the command line can appear in your shell history and be visible to other users in the process list.

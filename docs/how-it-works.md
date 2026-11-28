@@ -6,10 +6,10 @@ The `scrape` command first asks GitHub for the cheap listing of all issues and P
 
 ![Incremental cache: only new or changed items are fetched](images/incremental-cache.svg)
 
-If you hit the API limit midway, the run exits with a message and the progress made so far stays in the cache, so the next `scrape` continues from there.
+If GitHub rate-limits the initial issue and PR listing, the scrape exits before saving any new progress. If the limit is reached while fetching details and the cache save completes, the next `scrape` can reuse the saved work and retry unfinished items.
 
 ## Analysis filters out the noise
 
-The `analyze` command reads only the cache. Comments from bots (for example `dependabot[bot]`, `codecov`, `stale`), low-value messages such as "LGTM" or "Thanks", and anything outside the `--date_from` / `--date_to` window are dropped before the numbers are computed.
+By default, `analyze` reads the cache without contacting GitHub. Set `--offline false` to refresh the cache from GitHub before computing the results. Comments from bots (for example `dependabot[bot]`, `codecov`, `stale`), low-value messages such as "LGTM" or "Thanks", and anything outside the `--date_from` / `--date_to` window are dropped before the numbers are computed.
 
 ![Analyze flow: bot, spam and time filters feed per-user bars and a heatmap](images/analyze-flow.svg)
