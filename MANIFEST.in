@@ -10,9 +10,6 @@ include *.md
 # Include the license file
 include LICENSE
 
-# Include the visualisations
-recursive-include assets *.jpg *.png *.svg
-
 # Exclude Jupyter notebooks
 recursive-exclude notebooks *.ipynb *.txt
 exclude notebooks
@@ -20,6 +17,9 @@ exclude notebooks
 # Exclude the documentation files
 recursive-exclude docs *
 exclude docs
+
+# Include the visualisations referenced by README (after the docs exclusion, order matters)
+recursive-include docs/images *.jpg *.png *.svg
 
 # Exclude build configs
 exclude *.yml *.yaml

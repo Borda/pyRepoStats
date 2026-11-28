@@ -130,3 +130,8 @@ dmypy.json
 
 # Jetbrain IDE
 .idea/
+
+# AI assited
+.plans/
+.reports/
+.temp/
